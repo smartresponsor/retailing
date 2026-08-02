@@ -1,0 +1,24 @@
+{% extends '@Interfacing/base.html.twig' %}
+
+{% set retail = data.retail %}
+
+{% block title %}{{ retail.title }}{% endblock %}
+
+{% block body %}
+    <article class="retail-view" data-retail-kind="{{ retail.kind }}">
+        <p>{{ retail.kindLabel }}</p>
+        <h1>{{ retail.title }}</h1>
+
+        {% if retail.description %}
+            <div>{{ retail.description|nl2br }}</div>
+        {% endif %}
+
+        {% if retail.location %}
+            <p>{{ retail.location }}</p>
+        {% endif %}
+
+        {% if retail.amountMinor is not null %}
+            <p>{{ (retail.amountMinor / 100)|number_format(2) }} {{ retail.currency }}</p>
+        {% endif %}
+    </article>
+{% endblock %}

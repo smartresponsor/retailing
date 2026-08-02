@@ -1,0 +1,44 @@
+{
+  "name": "retailing/retail",
+  "description": "Retail marketplace product component",
+  "type": "symfony-bundle",
+  "license": "proprietary",
+  "require": {
+    "php": "^8.4",
+    "cruding/crud": "dev-master",
+    "doctrine/doctrine-bundle": "^3.2",
+    "doctrine/orm": "^3.3",
+    "easycorp/easyadmin-bundle": "^5.0",
+    "interfacing/interface": "dev-master",
+    "objecting/object": "dev-master",
+    "symfony/dependency-injection": "^8.1",
+    "symfony/form": "^8.1",
+    "symfony/framework-bundle": "^8.1",
+    "symfony/http-kernel": "^8.1",
+    "symfony/options-resolver": "^8.1",
+    "symfony/twig-bundle": "^8.1",
+    "symfony/validator": "^8.1",
+    "viewing/view": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\Retailing\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "App\\Retailing\\Tests\\": "tests/"
+    }
+  },
+  "repositories": [
+    { "type": "path", "url": "../Cruding", "options": { "symlink": true } },
+    { "type": "path", "url": "../Interfacing", "options": { "symlink": true } },
+    { "type": "path", "url": "../Objecting", "options": { "symlink": true } },
+    { "type": "path", "url": "../Viewing", "options": { "symlink": true } }
+  ],
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "config": {
+    "sort-packages": true
+  }
+}
