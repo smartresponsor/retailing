@@ -51,7 +51,7 @@ final class RetailNewService extends AbstractCrudService
 
         return CrudServiceResult::response(new RedirectResponse($this->urlGenerator->generate(
             'cruding_tokenized_catch_all',
-            ['crudPath' => 'shipment/new'],
+            ['crudPath' => 'address/new'],
         )));
     }
 
