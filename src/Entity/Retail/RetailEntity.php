@@ -57,6 +57,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     private ?string $location = null;
 
     /** @var array<string, mixed>|null */
+    #[ORM\Column(name: 'location_profile', type: 'json', nullable: true)]
+    private ?array $locationProfile = null;
+
+    /** @var array<string, mixed>|null */
     #[ORM\Column(name: 'fulfillment_profile', type: 'json', nullable: true)]
     private ?array $fulfillmentProfile = null;
 
@@ -169,6 +173,16 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     }
 
     /** @return array<string, mixed>|null */
+    public function getLocationProfile(): ?array { return $this->locationProfile; }
+
+    /** @param array<string, mixed>|null $profile */
+    public function setLocationProfile(?array $profile): void
+    {
+        $this->locationProfile = null === $profile || [] === $profile ? null : $profile;
+        $this->touchModified();
+    }
+
+    /** @return array<string, mixed>|null */
     public function getFulfillmentProfile(): ?array { return $this->fulfillmentProfile; }
 
     /** @param array<string, mixed>|null $profile */
@@ -197,11 +211,23 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
             || null === $this->owner
             || null === $this->fulfillmentProfile
             || null === $this->pricingProfile
+            || ($this->requiresExactLocation() && null === $this->locationProfile)
         ) {
-            throw new \DomainException('Retail owner, catalog, category, title, fulfillment, and pricing are required before publication.');
+            throw new \DomainException('Retail owner, catalog, category, title, required location, fulfillment, and pricing are required before publication.');
         }
         $this->setObjectStatus('published');
         $this->touchModified();
+    }
+
+    private function requiresExactLocation(): bool
+    {
+        $mode = is_string($this->fulfillmentProfile['mode'] ?? null) ? $this->fulfillmentProfile['mode'] : '';
+
+        return match ($this->kind) {
+            RetailKind::Goods => in_array($mode, ['shipping', 'pickup'], true),
+            RetailKind::Task => in_array($mode, ['onsite', 'hybrid'], true),
+            default => false,
+        };
     }
 
     public function __toString(): string { return $this->title; }
