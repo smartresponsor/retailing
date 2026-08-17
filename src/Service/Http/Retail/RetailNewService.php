@@ -38,11 +38,12 @@ final class RetailNewService extends AbstractCrudService
         }
 
         $placement = $context->request->getSession()->get(self::SESSION_KEY);
-        if (!is_array($placement) || !isset($placement['orderId']) || !is_scalar($placement['orderId']) || '' === trim((string) $placement['orderId'])) {
-            return $result;
+        if (!is_array($placement)) {
+            $placement = [];
         }
 
         $placement['retailId'] = (string) $context->object->getId();
+        $placement['placementReference'] = 'retail:'.(string) $context->object->getId();
         $placement['tenantId'] = $this->tenantId($context);
         $placement['vendorId'] = $vendorId;
         $placement['kind'] = $context->object->getKind()->value;
