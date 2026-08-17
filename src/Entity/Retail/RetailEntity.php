@@ -38,6 +38,9 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     #[ORM\Column(name: 'category_id', type: 'string', length: 64, nullable: true)]
     private ?string $categoryId = null;
 
+    #[ORM\Column(name: 'catalog_code', type: 'string', length: 64, nullable: true)]
+    private ?string $catalogCode = 'services';
+
     #[ORM\Column(type: 'string', length: 180)]
     private string $title = '';
 
@@ -69,7 +72,12 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         if ('draft' !== $this->getObjectStatus()) {
             throw new \DomainException('Published retail kind is immutable.');
         }
+
+        $previousCatalogCode = $this->kind->catalogCode();
         $this->kind = $kind;
+        if (null === $this->catalogCode || $previousCatalogCode === $this->catalogCode) {
+            $this->catalogCode = $kind->catalogCode();
+        }
         $this->touchModified();
     }
 
@@ -93,6 +101,14 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     {
         $normalized = null === $categoryId ? null : trim($categoryId);
         $this->categoryId = '' === $normalized ? null : $normalized;
+        $this->touchModified();
+    }
+
+    public function getCatalogCode(): ?string { return $this->catalogCode; }
+    public function setCatalogCode(?string $catalogCode): void
+    {
+        $normalized = null === $catalogCode ? null : strtolower(trim($catalogCode));
+        $this->catalogCode = '' === $normalized ? null : $normalized;
         $this->touchModified();
     }
 
@@ -146,8 +162,8 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
 
     public function publish(): void
     {
-        if (null === $this->categoryId || '' === $this->title || null === $this->owner) {
-            throw new \DomainException('Retail owner, category, and title are required before publication.');
+        if (null === $this->catalogCode || null === $this->categoryId || '' === $this->title || null === $this->owner) {
+            throw new \DomainException('Retail owner, catalog, category, and title are required before publication.');
         }
         $this->setObjectStatus('published');
         $this->touchModified();

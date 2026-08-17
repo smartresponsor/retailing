@@ -45,6 +45,9 @@ final class RetailNewService extends AbstractCrudService
         $placement['retailId'] = (string) $context->object->getId();
         $placement['tenantId'] = $this->tenantId($context);
         $placement['vendorId'] = $vendorId;
+        $placement['kind'] = $context->object->getKind()->value;
+        $placement['catalogCode'] = $context->object->getCatalogCode();
+        $placement['categoryId'] = $context->object->getCategoryId();
         $placement['amountMinor'] = $context->object->getAmountMinor();
         $placement['currency'] = $context->object->getCurrency();
         $context->request->getSession()->set(self::SESSION_KEY, $placement);

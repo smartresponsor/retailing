@@ -30,9 +30,18 @@ final class RetailType extends AbstractType
                 ],
                 'choice_value' => static fn (?RetailKind $kind): ?string => $kind?->value,
             ])
+            ->add('catalogCode', ChoiceType::class, [
+                'label' => 'Catalog',
+                'required' => true,
+                'choices' => [
+                    'Services' => 'services',
+                    'Products' => 'products',
+                    'Projects' => 'projects',
+                ],
+            ])
             ->add('categoryId', TextType::class, [
                 'label' => 'Category',
-                'required' => false,
+                'required' => true,
             ])
             ->add('title', TextType::class)
             ->add('description', TextareaType::class, [
