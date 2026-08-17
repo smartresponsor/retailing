@@ -5,6 +5,7 @@
   "license": "proprietary",
   "require": {
     "php": "^8.4",
+    "cataloging/catalog": "dev-master",
     "cruding/crud": "dev-master",
     "doctrine/doctrine-bundle": "^3.2",
     "doctrine/doctrine-migrations-bundle": "^4.0",
@@ -32,6 +33,7 @@
     }
   },
   "repositories": [
+    { "type": "path", "url": "../Cataloging", "options": { "symlink": true } },
     { "type": "path", "url": "../Cruding", "options": { "symlink": true } },
     { "type": "path", "url": "../Interfacing", "options": { "symlink": true } },
     { "type": "path", "url": "../Objecting", "options": { "symlink": true } },
