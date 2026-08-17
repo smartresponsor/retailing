@@ -38,6 +38,8 @@ final readonly class RetailViewPayload implements ViewObjectPayloadInterface
             'amountMinor' => $this->retail->getAmountMinor(),
             'currency' => $this->retail->getCurrency(),
             'location' => $this->retail->getLocation(),
+            'fulfillmentProfile' => $this->retail->getFulfillmentProfile(),
+            'pricingProfile' => $this->retail->getPricingProfile(),
             'status' => $this->retail->getObjectStatus(),
         ];
     }

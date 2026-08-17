@@ -56,6 +56,14 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $location = null;
 
+    /** @var array<string, mixed>|null */
+    #[ORM\Column(name: 'fulfillment_profile', type: 'json', nullable: true)]
+    private ?array $fulfillmentProfile = null;
+
+    /** @var array<string, mixed>|null */
+    #[ORM\Column(name: 'pricing_profile', type: 'json', nullable: true)]
+    private ?array $pricingProfile = null;
+
     public function __construct()
     {
         $this->initializeObjectCode();
@@ -160,10 +168,37 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
+    /** @return array<string, mixed>|null */
+    public function getFulfillmentProfile(): ?array { return $this->fulfillmentProfile; }
+
+    /** @param array<string, mixed>|null $profile */
+    public function setFulfillmentProfile(?array $profile): void
+    {
+        $this->fulfillmentProfile = null === $profile || [] === $profile ? null : $profile;
+        $this->touchModified();
+    }
+
+    /** @return array<string, mixed>|null */
+    public function getPricingProfile(): ?array { return $this->pricingProfile; }
+
+    /** @param array<string, mixed>|null $profile */
+    public function setPricingProfile(?array $profile): void
+    {
+        $this->pricingProfile = null === $profile || [] === $profile ? null : $profile;
+        $this->touchModified();
+    }
+
     public function publish(): void
     {
-        if (null === $this->catalogCode || null === $this->categoryId || '' === $this->title || null === $this->owner) {
-            throw new \DomainException('Retail owner, catalog, category, and title are required before publication.');
+        if (
+            null === $this->catalogCode
+            || null === $this->categoryId
+            || '' === $this->title
+            || null === $this->owner
+            || null === $this->fulfillmentProfile
+            || null === $this->pricingProfile
+        ) {
+            throw new \DomainException('Retail owner, catalog, category, title, fulfillment, and pricing are required before publication.');
         }
         $this->setObjectStatus('published');
         $this->touchModified();
