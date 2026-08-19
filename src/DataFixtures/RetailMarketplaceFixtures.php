@@ -15,25 +15,25 @@ final class RetailMarketplaceFixtures extends Fixture implements FixtureGroupInt
 {
     private const OFFERINGS = [
         'OneTasker Houston' => [
-            ['standard-tv-mounting', 'Standard TV Mounting', 12900, 9900],
-            ['chandelier-installation', 'Chandelier Installation', 14900, 11900],
-            ['ceiling-fan-replacement', 'Ceiling Fan Replacement', 13900, 10900],
-            ['video-doorbell-installation', 'Video Doorbell Installation', 8900, 7900],
-            ['smart-lock-installation', 'Smart Lock Installation', 9900, 7900],
-            ['dishwasher-installation', 'Dishwasher Installation', 16900, 13900],
+            ['standard-tv-mounting', 'Standard TV Mounting', 12900, 9900, null],
+            ['chandelier-installation', 'Chandelier Installation', 14900, 11900, 4900],
+            ['ceiling-fan-replacement', 'Ceiling Fan Replacement', 13900, 10900, 4900],
+            ['video-doorbell-installation', 'Video Doorbell Installation', 8900, 7900, null],
+            ['smart-lock-installation', 'Smart Lock Installation', 9900, 7900, null],
+            ['dishwasher-installation', 'Dishwasher Installation', 16900, 13900, null],
         ],
         'Katy Home Care' => [
-            ['standard-home-cleaning', 'Standard Home Cleaning', 12900, 10900],
-            ['deep-cleaning', 'Deep Cleaning', 19900, 16900],
-            ['closet-organization', 'Closet Organization', 11900, 9900],
-            ['kitchen-organization', 'Kitchen Organization', 11900, 9900],
+            ['standard-home-cleaning', 'Standard Home Cleaning', 12900, 10900, null],
+            ['deep-cleaning', 'Deep Cleaning', 19900, 16900, null],
+            ['closet-organization', 'Closet Organization', 11900, 9900, null],
+            ['kitchen-organization', 'Kitchen Organization', 11900, 9900, null],
         ],
         'Bayou Assembly & Mounting' => [
-            ['standard-furniture-assembly', 'Standard Furniture Assembly', 8900, 6900],
-            ['gallery-wall-installation', 'Gallery Wall Installation', 11900, 9900],
-            ['heavy-mirror-hanging', 'Heavy Mirror Hanging', 12900, 10900],
-            ['floating-shelf-installation', 'Floating Shelf Installation', 9900, 7900],
-            ['curtain-rod-installation', 'Curtain Rod Installation', 7900, 6900],
+            ['standard-furniture-assembly', 'Standard Furniture Assembly', 8900, 6900, null],
+            ['gallery-wall-installation', 'Gallery Wall Installation', 11900, 9900, null],
+            ['heavy-mirror-hanging', 'Heavy Mirror Hanging', 12900, 10900, null],
+            ['floating-shelf-installation', 'Floating Shelf Installation', 9900, 7900, null],
+            ['curtain-rod-installation', 'Curtain Rod Installation', 7900, 6900, null],
         ],
     ];
 
@@ -57,7 +57,7 @@ final class RetailMarketplaceFixtures extends Fixture implements FixtureGroupInt
                 continue;
             }
 
-            foreach ($offerings as [$categorySlug, $title, $startingAmount, $minimumAmount]) {
+            foreach ($offerings as [$categorySlug, $title, $startingAmount, $minimumAmount, $serviceCallAmount]) {
                 $categoryId = $manager->getConnection()->fetchOne(
                     <<<'SQL'
 SELECT category.id
@@ -98,13 +98,17 @@ SQL,
                     'mode' => 'onsite',
                     'serviceAreaRequired' => true,
                 ]);
-                $retail->setPricingProfile([
+                $pricingProfile = [
                     'mode' => 'starting_at',
                     'startingAmountMinor' => $startingAmount,
                     'minimumProjectAmountMinor' => $minimumAmount,
                     'currency' => 'USD',
                     'customerBudgetSupported' => true,
-                ]);
+                ];
+                if (null !== $serviceCallAmount) {
+                    $pricingProfile['serviceCallAmountMinor'] = $serviceCallAmount;
+                }
+                $retail->setPricingProfile($pricingProfile);
                 $retail->publish();
                 $manager->persist($retail);
             }
