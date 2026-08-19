@@ -17,6 +17,11 @@ final class RetailingExtension extends Extension
         $loader = new YamlFileLoader($container, new FileLocator(dirname(__DIR__, 2).'/config'));
         $loader->load('services.yaml');
         $loader->load('services.bundle.yaml');
+
+        $environment = (string) $container->getParameter('kernel.environment');
+        if (in_array($environment, ['dev', 'test'], true)) {
+            $loader->load('services.fixtures.yaml');
+        }
     }
 
     public function getAlias(): string

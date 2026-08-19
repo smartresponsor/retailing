@@ -1,0 +1,6 @@
+services:
+    App\Retailing\DataFixtures\RetailMarketplaceFixtures:
+        autowire: true
+        autoconfigure: true
+        tags:
+            - { name: 'doctrine.fixture.orm', group: 'retailing_marketplace' }

@@ -13,13 +13,3 @@ services:
 
     App\Retailing\Controller\Admin\RetailCrudController:
         tags: ['controller.service_arguments']
-
-when@dev:
-    services:
-        App\Retailing\DataFixtures\RetailMarketplaceFixtures:
-            tags: ['doctrine.fixture.orm']
-
-when@test:
-    services:
-        App\Retailing\DataFixtures\RetailMarketplaceFixtures:
-            tags: ['doctrine.fixture.orm']
