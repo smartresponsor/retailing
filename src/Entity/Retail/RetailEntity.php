@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RetailRepository::class)]
 #[ORM\Table(name: 'retail')]
-#[ORM\Index(name: 'idx_retail_owner_kind', columns: ['owner_vendor_id', 'kind'])]
+#[ORM\Index(name: 'idx_retail_owner_scope_kind', columns: ['owner_type', 'owner_id', 'kind'])]
 #[ORM\Index(name: 'idx_retail_category_kind', columns: ['category_id', 'kind'])]
 final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface, ObjectStatefulInterface
 {
@@ -32,7 +32,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     #[ORM\Column(enumType: RetailKind::class, length: 16)]
     private RetailKind $kind = RetailKind::Task;
 
-    #[ORM\Column(name: 'owner_vendor_id', type: 'string', length: 64, nullable: true)]
+    #[ORM\Column(name: 'owner_type', type: 'string', length: 32, nullable: true)]
+    private ?string $ownerType = null;
+
+    #[ORM\Column(name: 'owner_id', type: 'string', length: 64, nullable: true)]
     private ?string $owner = null;
 
     #[ORM\Column(name: 'category_id', type: 'string', length: 64, nullable: true)]
@@ -90,6 +93,17 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         if (null === $this->catalogCode || $previousCatalogCode === $this->catalogCode) {
             $this->catalogCode = $kind->catalogCode();
         }
+        $this->touchModified();
+    }
+
+    public function getOwnerType(): ?string { return $this->ownerType; }
+    public function setOwnerType(?string $ownerType): void
+    {
+        $normalized = null === $ownerType ? null : strtolower(trim($ownerType));
+        if (null !== $normalized && !in_array($normalized, ['vendor', 'access'], true)) {
+            throw new \InvalidArgumentException('Retail owner type must be vendor or access.');
+        }
+        $this->ownerType = '' === $normalized ? null : $normalized;
         $this->touchModified();
     }
 
@@ -208,6 +222,7 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
             null === $this->catalogCode
             || null === $this->categoryId
             || '' === $this->title
+            || null === $this->ownerType
             || null === $this->owner
             || null === $this->fulfillmentProfile
             || null === $this->pricingProfile

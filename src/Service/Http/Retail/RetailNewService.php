@@ -29,20 +29,25 @@ final class RetailNewService extends AbstractCrudService
             return $result;
         }
 
-        $vendorId = $context->object->getOwner()
+        $ownerId = $context->object->getOwner()
             ?? $this->scalarString($context->actorIdentityValue())
             ?? $this->scalarString($context->actorUserId());
 
-        if (null === $vendorId) {
+        if (null === $ownerId) {
             return $result;
         }
 
+        $ownerType = $context->object->getOwnerType() ?? 'access';
         $placement = [];
 
         $placement['retailId'] = (string) $context->object->getId();
         $placement['placementReference'] = 'retail:'.(string) $context->object->getId();
         $placement['tenantId'] = $this->tenantId($context);
-        $placement['vendorId'] = $vendorId;
+        $placement['ownerType'] = $ownerType;
+        $placement['ownerId'] = $ownerId;
+        if ('vendor' === $ownerType) {
+            $placement['vendorId'] = $ownerId;
+        }
         $placement['kind'] = $context->object->getKind()->value;
         $placement['catalogCode'] = $context->object->getCatalogCode();
         $placement['categoryId'] = $context->object->getCategoryId();

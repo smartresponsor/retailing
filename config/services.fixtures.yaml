@@ -4,3 +4,9 @@ services:
         autoconfigure: true
         tags:
             - { name: 'doctrine.fixture.orm', group: 'retailing_marketplace' }
+
+    App\Retailing\DataFixtures\RetailCustomerRequestFixtures:
+        autowire: true
+        autoconfigure: true
+        tags:
+            - { name: 'doctrine.fixture.orm', group: 'retailing_customer_requests' }

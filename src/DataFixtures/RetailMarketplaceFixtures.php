@@ -84,6 +84,7 @@ SQL,
                 } elseif (RetailKind::Service !== $retail->getKind()) {
                     continue;
                 }
+                $retail->setOwnerType('vendor');
                 $retail->setOwner((string) $vendorId);
                 $retail->setCatalogCode('services');
                 $retail->setCategoryId((string) $categoryId);

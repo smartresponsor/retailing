@@ -29,7 +29,8 @@ final class RetailCrudController extends AbstractCrudController
             'Product' => RetailKind::Goods,
             'Project' => RetailKind::Project,
         ]);
-        yield TextField::new('owner', 'Owner vendor');
+        yield TextField::new('ownerType', 'Owner type');
+        yield TextField::new('owner', 'Owner ID');
         yield ChoiceField::new('catalogCode', 'Catalog')->setChoices([
             'Services' => 'services',
             'Products' => 'products',
