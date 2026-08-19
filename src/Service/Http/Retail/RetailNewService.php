@@ -8,6 +8,8 @@ use App\Cruding\Dto\Crud\Entrypoint\CrudServiceContext;
 use App\Cruding\Dto\Crud\Entrypoint\CrudServiceResult;
 use App\Cruding\Service\Crud\AbstractCrudService;
 use App\Retailing\Entity\Retail\RetailEntity;
+use App\Retailing\Enum\Retail\RetailKind;
+use App\Retailing\Service\Marketplace\RetailCandidateMatchService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -15,8 +17,10 @@ final class RetailNewService extends AbstractCrudService
 {
     private const SESSION_KEY = 'retail_placement';
 
-    public function __construct(private readonly UrlGeneratorInterface $urlGenerator)
-    {
+    public function __construct(
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly RetailCandidateMatchService $candidateMatchService,
+    ) {
     }
 
     protected function afterDefault(CrudServiceContext $context, CrudServiceResult $result): CrudServiceResult
@@ -53,6 +57,18 @@ final class RetailNewService extends AbstractCrudService
         $placement['categoryId'] = $context->object->getCategoryId();
         $placement['amountMinor'] = $context->object->getAmountMinor();
         $placement['currency'] = $context->object->getCurrency();
+        if (RetailKind::Task === $context->object->getKind() && 'published' === $context->object->getObjectStatus()) {
+            $placement['candidateServices'] = array_map(
+                static fn (array $match): array => [
+                    'serviceId' => (string) $match['service']->getId(),
+                    'vendorId' => $match['service']->getOwner(),
+                    'amountMinor' => $match['service']->getAmountMinor(),
+                    'currency' => $match['service']->getCurrency(),
+                    'serviceAreaStatus' => $match['serviceAreaStatus'],
+                ],
+                $this->candidateMatchService->matchForTask($context->object),
+            );
+        }
         $context->request->getSession()->set(self::SESSION_KEY, $placement);
 
         return CrudServiceResult::response(new RedirectResponse($this->urlGenerator->generate(
