@@ -10,12 +10,14 @@ use App\Retailing\Repository\Retail\RetailRepository;
 
 final class RetailCandidateMatchService
 {
-    public function __construct(private readonly RetailRepository $retailRepository)
-    {
+    public function __construct(
+        private readonly RetailRepository $retailRepository,
+        private readonly RetailServiceAreaMatchService $serviceAreaMatchService,
+    ) {
     }
 
     /**
-     * @return list<array{service: RetailEntity, serviceAreaStatus: 'exact'|'requires_geovalidation'}>
+     * @return list<array{service: RetailEntity, serviceAreaStatus: 'exact'|'requires_geovalidation', distanceMeters: ?float}>
      */
     public function matchForTask(RetailEntity $task): array
     {
@@ -30,75 +32,18 @@ final class RetailCandidateMatchService
 
         $matches = [];
         foreach ($this->retailRepository->findPublishedVendorServicesByCategory($categoryId) as $service) {
-            $areaStatus = $this->serviceAreaStatus($task->getLocationProfile(), $service->getLocationProfile());
-            if (null === $areaStatus) {
+            $areaMatch = $this->serviceAreaMatchService->match($task->getLocationProfile(), $service->getLocationProfile());
+            if (null === $areaMatch) {
                 continue;
             }
 
             $matches[] = [
                 'service' => $service,
-                'serviceAreaStatus' => $areaStatus,
+                'serviceAreaStatus' => $areaMatch['status'],
+                'distanceMeters' => $areaMatch['distanceMeters'],
             ];
         }
 
         return $matches;
-    }
-
-    /**
-     * @param array<string, mixed>|null $taskProfile
-     * @param array<string, mixed>|null $serviceProfile
-     *
-     * @return 'exact'|'requires_geovalidation'|null
-     */
-    private function serviceAreaStatus(?array $taskProfile, ?array $serviceProfile): ?string
-    {
-        $postalCode = $this->postalCode($taskProfile);
-        if (null === $postalCode || null === $serviceProfile) {
-            return 'requires_geovalidation';
-        }
-
-        $mode = is_string($serviceProfile['mode'] ?? null) ? strtolower(trim($serviceProfile['mode'])) : '';
-        if ('postal_codes' === $mode) {
-            $postalCodes = $serviceProfile['postalCodes'] ?? null;
-            if (!is_array($postalCodes)) {
-                return 'requires_geovalidation';
-            }
-
-            foreach ($postalCodes as $candidate) {
-                if (is_scalar($candidate) && $postalCode === trim((string) $candidate)) {
-                    return 'exact';
-                }
-            }
-
-            return null;
-        }
-
-        if ('radius' === $mode) {
-            $origin = $serviceProfile['origin'] ?? null;
-            if (is_array($origin) && $postalCode === $this->postalCode($origin)) {
-                return 'exact';
-            }
-
-            return 'requires_geovalidation';
-        }
-
-        return 'requires_geovalidation';
-    }
-
-    /** @param array<string, mixed>|null $profile */
-    private function postalCode(?array $profile): ?string
-    {
-        if (null === $profile) {
-            return null;
-        }
-
-        $value = $profile['postalCode'] ?? null;
-        if (!is_scalar($value)) {
-            return null;
-        }
-
-        $postalCode = trim((string) $value);
-
-        return '' === $postalCode ? null : $postalCode;
     }
 }

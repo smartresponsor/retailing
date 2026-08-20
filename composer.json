@@ -12,6 +12,7 @@
     "doctrine/orm": "^3.3",
     "easycorp/easyadmin-bundle": "^5.0",
     "interfacing/interface": "dev-master",
+    "locating/location": "dev-master",
     "objecting/object": "dev-master",
     "symfony/dependency-injection": "^8.1",
     "symfony/form": "^8.1",
@@ -39,6 +40,7 @@
     { "type": "path", "url": "../Cataloging", "options": { "symlink": true } },
     { "type": "path", "url": "../Cruding", "options": { "symlink": true } },
     { "type": "path", "url": "../Interfacing", "options": { "symlink": true } },
+    { "type": "path", "url": "../Locating", "options": { "symlink": true } },
     { "type": "path", "url": "../Objecting", "options": { "symlink": true } },
     { "type": "path", "url": "../Viewing", "options": { "symlink": true } }
   ],
