@@ -34,23 +34,8 @@ final readonly class RetailResponseAcceptanceService
             throw new \DomainException('Customer request already has an accepted vendor response.');
         }
 
-        $serviceId = $response->getServiceId();
-        if (null === $serviceId) {
-            throw new \DomainException('Accepted retail response must reference a marketplace service.');
-        }
-        $service = $this->retailRepository->find($serviceId);
-        if (!$service instanceof RetailEntity) {
-            throw new \DomainException('Accepted retail response references a missing marketplace service.');
-        }
-
-        $pricing = $response->getPricingProfile() ?? [];
-        $amountMinor = $pricing['amountMinor'] ?? null;
-        if (!is_numeric($amountMinor) || (int) $amountMinor < 0) {
-            throw new \DomainException('Accepted retail response requires an exact non-negative amountMinor.');
-        }
-
-        $response->accept();
-        $retail->selectServiceCandidate($service, (int) $amountMinor, $response->getId());
+        $service = $this->service($response);
+        $retail->acceptResponse($response, $service);
 
         foreach ($this->responseRepository->findSubmittedForRetail($retail->getId()) as $otherResponse) {
             if ($otherResponse->getId() !== $response->getId()) {
@@ -63,5 +48,34 @@ final readonly class RetailResponseAcceptanceService
         $this->entityManager->flush();
 
         return $retail;
+    }
+
+    public function synchronizeAccepted(RetailResponseEntity $response): RetailEntity
+    {
+        if ('accepted' !== $response->getStatus()) {
+            throw new \DomainException('Only an accepted retail response can synchronize customer selection.');
+        }
+
+        $retail = $response->getRetail();
+        $service = $this->service($response);
+        $retail->synchronizeAcceptedResponse($response, $service);
+        $this->entityManager->persist($retail);
+        $this->entityManager->flush();
+
+        return $retail;
+    }
+
+    private function service(RetailResponseEntity $response): RetailEntity
+    {
+        $serviceId = $response->getServiceId();
+        if (null === $serviceId) {
+            throw new \DomainException('Accepted retail response must reference a marketplace service.');
+        }
+        $service = $this->retailRepository->find($serviceId);
+        if (!$service instanceof RetailEntity) {
+            throw new \DomainException('Accepted retail response references a missing marketplace service.');
+        }
+
+        return $service;
     }
 }

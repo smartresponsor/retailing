@@ -96,14 +96,7 @@ final class RetailResponseFixtures extends Fixture implements FixtureGroupInterf
             }
 
             if ('accepted' === $response->getStatus()) {
-                $pricing = $response->getPricingProfile() ?? [];
-                $acceptedAmount = $pricing['amountMinor'] ?? null;
-                if (!is_numeric($acceptedAmount)) {
-                    throw new \RuntimeException(sprintf('Accepted marketplace response %d has no exact amount.', $response->getId()));
-                }
-                $task->selectServiceCandidate($service, (int) $acceptedAmount, $response->getId());
-                $manager->persist($task);
-                $manager->flush();
+                $this->acceptanceService->synchronizeAccepted($response);
                 continue;
             }
 

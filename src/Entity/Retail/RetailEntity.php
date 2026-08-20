@@ -237,13 +237,34 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     /** @return array<string, mixed>|null */
     public function getSelectionProfile(): ?array { return $this->selectionProfile; }
 
-    public function acceptResponse(RetailResponseEntity $response): void
+    public function acceptResponse(RetailResponseEntity $response, ?RetailEntity $service = null): void
+    {
+        if ('submitted' !== $response->getStatus()) {
+            throw new \DomainException('Only a submitted retail response can be accepted.');
+        }
+        if (null !== $this->selectionProfile) {
+            throw new \DomainException('Customer request already has accepted commercial terms.');
+        }
+
+        $this->assertResponseSelection($response, $service);
+        $response->accept();
+        $this->projectAcceptedResponse($response, $service);
+    }
+
+    public function synchronizeAcceptedResponse(RetailResponseEntity $response, RetailEntity $service): void
+    {
+        if ('accepted' !== $response->getStatus()) {
+            throw new \DomainException('Only an accepted retail response can synchronize customer selection.');
+        }
+
+        $this->assertResponseSelection($response, $service);
+        $this->projectAcceptedResponse($response, $service);
+    }
+
+    private function assertResponseSelection(RetailResponseEntity $response, ?RetailEntity $service): void
     {
         if ($response->getRetail() !== $this) {
             throw new \DomainException('Retail response does not belong to this customer request.');
-        }
-        if ('submitted' !== $response->getStatus()) {
-            throw new \DomainException('Only a submitted retail response can be accepted.');
         }
         if ($response->getId() <= 0) {
             throw new \DomainException('Retail response must be persisted before acceptance.');
@@ -254,20 +275,49 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         if ('access' !== $this->ownerType || 'published' !== $this->getObjectStatus()) {
             throw new \DomainException('Only a published customer request can accept a vendor response.');
         }
-        if (null !== $this->selectionProfile) {
-            throw new \DomainException('Customer request already has accepted commercial terms.');
+        $serviceId = $response->getServiceId();
+        if (null === $serviceId || $serviceId <= 0) {
+            throw new \DomainException('Accepted retail response must reference a persisted marketplace service.');
+        }
+
+        if (null !== $service) {
+            if (RetailKind::Service !== $service->getKind() || 'vendor' !== $service->getOwnerType() || 'published' !== $service->getObjectStatus()) {
+                throw new \DomainException('Accepted retail response must reference a published vendor service.');
+            }
+            if ($service->getId() <= 0 || $serviceId !== $service->getId() || $response->getVendorId() !== $service->getOwner()) {
+                throw new \DomainException('Accepted retail response service identity does not match the responding vendor.');
+            }
+            if ($this->categoryId !== $service->getCategoryId()) {
+                throw new \DomainException('Accepted retail response service category must match the customer request.');
+            }
+            if ($this->currency !== $service->getCurrency()) {
+                throw new \DomainException('Accepted retail response currency must match the customer request.');
+            }
         }
 
         $pricingProfile = $response->getPricingProfile();
-        if (null === $pricingProfile) {
-            throw new \DomainException('Accepted retail response must include pricing terms.');
+        $amountMinor = $pricingProfile['amountMinor'] ?? null;
+        if (!is_numeric($amountMinor) || (int) $amountMinor < 0) {
+            throw new \DomainException('Accepted retail response requires an exact non-negative amountMinor.');
         }
+        if (null !== $service) {
+            $minimumAmount = $service->getPricingProfile()['minimumProjectAmountMinor'] ?? null;
+            if (is_numeric($minimumAmount) && (int) $amountMinor < (int) $minimumAmount) {
+                throw new \DomainException('Accepted retail response amount cannot be below the service minimum project amount.');
+            }
+        }
+    }
 
-        $response->accept();
+    private function projectAcceptedResponse(RetailResponseEntity $response, ?RetailEntity $service): void
+    {
+        $pricingProfile = $response->getPricingProfile() ?? [];
+        $serviceId = $service?->getId() ?? $response->getServiceId();
         $this->selectionProfile = [
-            'responseId' => $response->getId(),
+            'responseId' => (string) $response->getId(),
+            'serviceId' => (string) $serviceId,
             'vendorId' => $response->getVendorId(),
-            'serviceId' => $response->getServiceId(),
+            'agreedAmountMinor' => (int) $pricingProfile['amountMinor'],
+            'currency' => $service?->getCurrency() ?? $this->currency,
             'pricingProfile' => $pricingProfile,
             'fulfillmentProfile' => $response->getFulfillmentProfile(),
             'availabilityProfile' => $response->getAvailabilityProfile(),
@@ -277,7 +327,7 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
-    public function selectServiceCandidate(RetailEntity $service, int $agreedAmountMinor, ?int $responseId = null): void
+    public function selectServiceCandidate(RetailEntity $service, int $agreedAmountMinor): void
     {
         if (RetailKind::Task !== $this->kind || 'access' !== $this->ownerType || 'published' !== $this->getObjectStatus()) {
             throw new \DomainException('Only a published access-owned task can select a marketplace service.');
@@ -309,12 +359,6 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
             'agreedAmountMinor' => $agreedAmountMinor,
             'currency' => $service->getCurrency(),
         ];
-        if (null !== $responseId) {
-            if ($responseId <= 0) {
-                throw new \InvalidArgumentException('Retail response identifier must be positive.');
-            }
-            $this->selectionProfile['responseId'] = (string) $responseId;
-        }
         $this->touchModified();
     }
 

@@ -10,3 +10,9 @@ services:
         autoconfigure: true
         tags:
             - { name: 'doctrine.fixture.orm', group: 'retailing_customer_requests' }
+
+    App\Retailing\DataFixtures\RetailResponseFixtures:
+        autowire: true
+        autoconfigure: true
+        tags:
+            - { name: 'doctrine.fixture.orm', group: 'retailing_responses' }
