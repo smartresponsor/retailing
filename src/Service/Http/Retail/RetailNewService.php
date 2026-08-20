@@ -10,6 +10,7 @@ use App\Cruding\Service\Crud\AbstractCrudService;
 use App\Retailing\Entity\Retail\RetailEntity;
 use App\Retailing\Enum\Retail\RetailKind;
 use App\Retailing\Service\Marketplace\RetailCandidateMatchService;
+use App\Retailing\Service\Marketplace\RetailOrderIntentFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -20,6 +21,7 @@ final class RetailNewService extends AbstractCrudService
     public function __construct(
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly RetailCandidateMatchService $candidateMatchService,
+        private readonly RetailOrderIntentFactory $orderIntentFactory,
     ) {
     }
 
@@ -59,16 +61,22 @@ final class RetailNewService extends AbstractCrudService
         $placement['currency'] = $context->object->getCurrency();
         if (RetailKind::Task === $context->object->getKind() && 'published' === $context->object->getObjectStatus()) {
             $placement['candidateServices'] = array_map(
-                static fn (array $match): array => [
-                    'serviceId' => (string) $match['service']->getId(),
-                    'vendorId' => $match['service']->getOwner(),
-                    'amountMinor' => $match['service']->getAmountMinor(),
-                    'currency' => $match['service']->getCurrency(),
-                    'serviceAreaStatus' => $match['serviceAreaStatus'],
-                    'distanceMeters' => $match['distanceMeters'],
-                    'availabilityStatus' => $match['availabilityStatus'],
-                    'budgetStatus' => $match['budgetStatus'],
-                ],
+                function (array $match) use ($context): array {
+                    $orderIntent = $this->orderIntentFactory->forCandidate($context->object, $match['service']);
+
+                    return [
+                        'serviceId' => (string) $match['service']->getId(),
+                        'vendorId' => $match['service']->getOwner(),
+                        'amountMinor' => $match['service']->getAmountMinor(),
+                        'currency' => $match['service']->getCurrency(),
+                        'serviceAreaStatus' => $match['serviceAreaStatus'],
+                        'distanceMeters' => $match['distanceMeters'],
+                        'availabilityStatus' => $match['availabilityStatus'],
+                        'budgetStatus' => $match['budgetStatus'],
+                        'orderingStatus' => $orderIntent['status'],
+                        'orderIntent' => $orderIntent['payload'],
+                    ];
+                },
                 $this->candidateMatchService->matchForTask($context->object),
             );
         }
