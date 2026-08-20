@@ -13,11 +13,12 @@ final class RetailCandidateMatchService
     public function __construct(
         private readonly RetailRepository $retailRepository,
         private readonly RetailServiceAreaMatchService $serviceAreaMatchService,
+        private readonly RetailAvailabilityMatchService $availabilityMatchService,
     ) {
     }
 
     /**
-     * @return list<array{service: RetailEntity, serviceAreaStatus: 'exact'|'requires_geovalidation', distanceMeters: ?float, budgetStatus: 'within_budget'|'over_budget'|'unknown'}>
+     * @return list<array{service: RetailEntity, serviceAreaStatus: 'exact'|'requires_geovalidation', distanceMeters: ?float, availabilityStatus: 'compatible'|'requires_scheduling', budgetStatus: 'within_budget'|'over_budget'|'unknown'}>
      */
     public function matchForTask(RetailEntity $task): array
     {
@@ -37,10 +38,16 @@ final class RetailCandidateMatchService
                 continue;
             }
 
+            $availabilityStatus = $this->availabilityMatchService->match($task->getAvailabilityProfile(), $service->getAvailabilityProfile());
+            if (null === $availabilityStatus) {
+                continue;
+            }
+
             $matches[] = [
                 'service' => $service,
                 'serviceAreaStatus' => $areaMatch['status'],
                 'distanceMeters' => $areaMatch['distanceMeters'],
+                'availabilityStatus' => $availabilityStatus,
                 'budgetStatus' => $this->budgetStatus($task, $service),
             ];
         }
@@ -66,15 +73,21 @@ final class RetailCandidateMatchService
     }
 
     /**
-     * @param array{service: RetailEntity, serviceAreaStatus: string, distanceMeters: ?float, budgetStatus: string} $left
-     * @param array{service: RetailEntity, serviceAreaStatus: string, distanceMeters: ?float, budgetStatus: string} $right
+     * @param array{service: RetailEntity, serviceAreaStatus: string, distanceMeters: ?float, availabilityStatus: string, budgetStatus: string} $left
+     * @param array{service: RetailEntity, serviceAreaStatus: string, distanceMeters: ?float, availabilityStatus: string, budgetStatus: string} $right
      */
     private function compareMatches(array $left, array $right): int
     {
         $areaOrder = ['exact' => 0, 'requires_geovalidation' => 1];
+        $availabilityOrder = ['compatible' => 0, 'requires_scheduling' => 1];
         $budgetOrder = ['within_budget' => 0, 'unknown' => 1, 'over_budget' => 2];
 
         $comparison = ($areaOrder[$left['serviceAreaStatus']] ?? 99) <=> ($areaOrder[$right['serviceAreaStatus']] ?? 99);
+        if (0 !== $comparison) {
+            return $comparison;
+        }
+
+        $comparison = ($availabilityOrder[$left['availabilityStatus']] ?? 99) <=> ($availabilityOrder[$right['availabilityStatus']] ?? 99);
         if (0 !== $comparison) {
             return $comparison;
         }

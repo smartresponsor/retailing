@@ -73,6 +73,7 @@ final class RetailCustomerRequestFixtures extends Fixture implements FixtureGrou
                 'state' => $state,
                 'country' => 'US',
             ]);
+            $retail->setAvailabilityProfile($this->availability($email));
             $retail->setFulfillmentProfile(['mode' => 'onsite', 'customerRequest' => true]);
             $retail->setPricingProfile([
                 'mode' => 'customer_budget',
@@ -85,5 +86,34 @@ final class RetailCustomerRequestFixtures extends Fixture implements FixtureGrou
         }
 
         $manager->flush();
+    }
+
+    /** @return array<string, mixed> */
+    private function availability(string $email): array
+    {
+        return match ($email) {
+            'emily.customer@smartresponsor.local' => [
+                'timezone' => 'America/Chicago',
+                'preferredWindows' => ['saturday' => [['start' => '10:00', 'end' => '15:00']]],
+            ],
+            'james.customer@smartresponsor.local' => [
+                'timezone' => 'America/Chicago',
+                'preferredWindows' => [
+                    'thursday' => [['start' => '15:00', 'end' => '18:00']],
+                    'friday' => [['start' => '15:00', 'end' => '18:00']],
+                ],
+            ],
+            'sophia.customer@smartresponsor.local' => [
+                'timezone' => 'America/Chicago',
+                'preferredWindows' => [
+                    'tuesday' => [['start' => '09:00', 'end' => '13:00']],
+                    'wednesday' => [['start' => '09:00', 'end' => '13:00']],
+                ],
+            ],
+            default => [
+                'timezone' => 'America/Chicago',
+                'preferredWindows' => ['saturday' => [['start' => '10:00', 'end' => '16:00']]],
+            ],
+        };
     }
 }
