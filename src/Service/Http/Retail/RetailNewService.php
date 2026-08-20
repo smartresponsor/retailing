@@ -66,6 +66,7 @@ final class RetailNewService extends AbstractCrudService
                     'currency' => $match['service']->getCurrency(),
                     'serviceAreaStatus' => $match['serviceAreaStatus'],
                     'distanceMeters' => $match['distanceMeters'],
+                    'budgetStatus' => $match['budgetStatus'],
                 ],
                 $this->candidateMatchService->matchForTask($context->object),
             );
