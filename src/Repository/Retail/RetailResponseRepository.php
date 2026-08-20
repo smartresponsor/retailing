@@ -29,6 +29,14 @@ final class RetailResponseRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findAcceptedForRetail(int $retailId): ?RetailResponseEntity
+    {
+        return $this->findOneBy([
+            'retail' => $retailId,
+            'status' => 'accepted',
+        ]);
+    }
+
     public function findForRetailAndVendor(int $retailId, string $vendorId): ?RetailResponseEntity
     {
         return $this->findOneBy([

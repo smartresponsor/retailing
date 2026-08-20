@@ -14,10 +14,10 @@ use Doctrine\Persistence\ObjectManager;
 final class RetailCustomerRequestFixtures extends Fixture implements FixtureGroupInterface
 {
     private const REQUESTS = [
-        ['emily.customer@smartresponsor.local', 'tv-mounting', 'Mount a 65-inch TV in living room', 18000, '77493', 'Katy', 'TX', true],
-        ['james.customer@smartresponsor.local', 'ceiling-fan-replacement', 'Replace bedroom ceiling fan', 22000, '77449', 'Katy', 'TX', true],
-        ['sophia.customer@smartresponsor.local', 'home-cleaning', 'Clean a two-bedroom apartment', 17000, '77084', 'Houston', 'TX', false],
-        ['michael.customer@smartresponsor.local', 'furniture-assembly', 'Assemble bedroom furniture set', 16000, '77094', 'Houston', 'TX', true],
+        ['emily.customer@smartresponsor.local', 'tv-mounting', 'Mount a 65-inch TV in living room', 18000, '77493', 'Katy', 'TX'],
+        ['james.customer@smartresponsor.local', 'ceiling-fan-replacement', 'Replace bedroom ceiling fan', 22000, '77449', 'Katy', 'TX'],
+        ['sophia.customer@smartresponsor.local', 'home-cleaning', 'Clean a two-bedroom apartment', 17000, '77084', 'Houston', 'TX'],
+        ['michael.customer@smartresponsor.local', 'furniture-assembly', 'Assemble bedroom furniture set', 16000, '77094', 'Houston', 'TX'],
     ];
 
     public static function getGroups(): array
@@ -31,7 +31,7 @@ final class RetailCustomerRequestFixtures extends Fixture implements FixtureGrou
             return;
         }
 
-        foreach (self::REQUESTS as [$email, $categorySlug, $title, $budgetAmountMinor, $postalCode, $city, $state, $selectCandidate]) {
+        foreach (self::REQUESTS as [$email, $categorySlug, $title, $budgetAmountMinor, $postalCode, $city, $state]) {
             $customerId = $manager->getConnection()->fetchOne('SELECT id FROM access WHERE email = :email ORDER BY id LIMIT 1', ['email' => $email]);
             if (false === $customerId) {
                 continue;
@@ -82,19 +82,6 @@ final class RetailCustomerRequestFixtures extends Fixture implements FixtureGrou
                 'negotiable' => true,
             ]);
             $retail->publish();
-
-            if ($selectCandidate) {
-                $serviceId = $manager->getConnection()->fetchOne(
-                    "SELECT id FROM retail WHERE kind = 'service' AND owner_type = 'vendor' AND object_status = 'published' AND category_id = :categoryId ORDER BY id LIMIT 1",
-                    ['categoryId' => (string) $categoryId],
-                );
-                $service = false === $serviceId ? null : $manager->getRepository(RetailEntity::class)->find((int) $serviceId);
-                if (!$service instanceof RetailEntity || null === $service->getAmountMinor()) {
-                    throw new \RuntimeException(sprintf('Published service fixture is required for selected customer category %s.', (string) $categoryId));
-                }
-                $retail->selectServiceCandidate($service, $service->getAmountMinor());
-            }
-
             $manager->persist($retail);
         }
 

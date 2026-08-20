@@ -277,7 +277,7 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
-    public function selectServiceCandidate(RetailEntity $service, int $agreedAmountMinor): void
+    public function selectServiceCandidate(RetailEntity $service, int $agreedAmountMinor, ?int $responseId = null): void
     {
         if (RetailKind::Task !== $this->kind || 'access' !== $this->ownerType || 'published' !== $this->getObjectStatus()) {
             throw new \DomainException('Only a published access-owned task can select a marketplace service.');
@@ -309,6 +309,12 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
             'agreedAmountMinor' => $agreedAmountMinor,
             'currency' => $service->getCurrency(),
         ];
+        if (null !== $responseId) {
+            if ($responseId <= 0) {
+                throw new \InvalidArgumentException('Retail response identifier must be positive.');
+            }
+            $this->selectionProfile['responseId'] = (string) $responseId;
+        }
         $this->touchModified();
     }
 
