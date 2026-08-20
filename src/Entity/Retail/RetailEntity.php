@@ -237,6 +237,46 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     /** @return array<string, mixed>|null */
     public function getSelectionProfile(): ?array { return $this->selectionProfile; }
 
+    public function acceptResponse(RetailResponseEntity $response): void
+    {
+        if ($response->getRetail() !== $this) {
+            throw new \DomainException('Retail response does not belong to this customer request.');
+        }
+        if ('submitted' !== $response->getStatus()) {
+            throw new \DomainException('Only a submitted retail response can be accepted.');
+        }
+        if ($response->getId() <= 0) {
+            throw new \DomainException('Retail response must be persisted before acceptance.');
+        }
+        if (RetailKind::Task !== $this->kind && RetailKind::Project !== $this->kind) {
+            throw new \DomainException('Only task or project requests can accept vendor responses.');
+        }
+        if ('access' !== $this->ownerType || 'published' !== $this->getObjectStatus()) {
+            throw new \DomainException('Only a published customer request can accept a vendor response.');
+        }
+        if (null !== $this->selectionProfile) {
+            throw new \DomainException('Customer request already has accepted commercial terms.');
+        }
+
+        $pricingProfile = $response->getPricingProfile();
+        if (null === $pricingProfile) {
+            throw new \DomainException('Accepted retail response must include pricing terms.');
+        }
+
+        $response->accept();
+        $this->selectionProfile = [
+            'responseId' => $response->getId(),
+            'vendorId' => $response->getVendorId(),
+            'serviceId' => $response->getServiceId(),
+            'pricingProfile' => $pricingProfile,
+            'fulfillmentProfile' => $response->getFulfillmentProfile(),
+            'availabilityProfile' => $response->getAvailabilityProfile(),
+            'locationProfile' => $response->getLocationProfile(),
+            'acceptedAt' => $response->getAcceptedAt()?->format(DATE_ATOM),
+        ];
+        $this->touchModified();
+    }
+
     public function selectServiceCandidate(RetailEntity $service, int $agreedAmountMinor): void
     {
         if (RetailKind::Task !== $this->kind || 'access' !== $this->ownerType || 'published' !== $this->getObjectStatus()) {
