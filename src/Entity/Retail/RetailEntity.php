@@ -71,6 +71,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     #[ORM\Column(name: 'pricing_profile', type: 'json', nullable: true)]
     private ?array $pricingProfile = null;
 
+    /** @var array<string, mixed>|null */
+    #[ORM\Column(name: 'availability_profile', type: 'json', nullable: true)]
+    private ?array $availabilityProfile = null;
+
     public function __construct()
     {
         $this->initializeObjectCode();
@@ -213,6 +217,16 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     public function setPricingProfile(?array $profile): void
     {
         $this->pricingProfile = null === $profile || [] === $profile ? null : $profile;
+        $this->touchModified();
+    }
+
+    /** @return array<string, mixed>|null */
+    public function getAvailabilityProfile(): ?array { return $this->availabilityProfile; }
+
+    /** @param array<string, mixed>|null $profile */
+    public function setAvailabilityProfile(?array $profile): void
+    {
+        $this->availabilityProfile = null === $profile || [] === $profile ? null : $profile;
         $this->touchModified();
     }
 

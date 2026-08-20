@@ -94,6 +94,7 @@ SQL,
                 $retail->setCurrency('USD');
                 $retail->setLocation('Houston, TX');
                 $retail->setLocationProfile($this->serviceArea($brand));
+                $retail->setAvailabilityProfile($this->availability($brand));
                 $retail->setFulfillmentProfile([
                     'mode' => 'onsite',
                     'serviceAreaRequired' => true,
@@ -115,6 +116,39 @@ SQL,
         }
 
         $manager->flush();
+    }
+
+    /** @return array<string, mixed> */
+    private function availability(string $brand): array
+    {
+        return match ($brand) {
+            'Katy Home Care' => [
+                'timezone' => 'America/Chicago',
+                'weeklyWindows' => [
+                    'monday' => [['start' => '08:00', 'end' => '17:00']],
+                    'tuesday' => [['start' => '08:00', 'end' => '17:00']],
+                    'wednesday' => [['start' => '08:00', 'end' => '17:00']],
+                    'thursday' => [['start' => '08:00', 'end' => '17:00']],
+                    'friday' => [['start' => '08:00', 'end' => '17:00']],
+                    'saturday' => [['start' => '09:00', 'end' => '15:00']],
+                ],
+                'minimumLeadHours' => 24,
+                'bookingHorizonDays' => 30,
+            ],
+            default => [
+                'timezone' => 'America/Chicago',
+                'weeklyWindows' => [
+                    'monday' => [['start' => '09:00', 'end' => '18:00']],
+                    'tuesday' => [['start' => '09:00', 'end' => '18:00']],
+                    'wednesday' => [['start' => '09:00', 'end' => '18:00']],
+                    'thursday' => [['start' => '09:00', 'end' => '18:00']],
+                    'friday' => [['start' => '09:00', 'end' => '18:00']],
+                    'saturday' => [['start' => '10:00', 'end' => '16:00']],
+                ],
+                'minimumLeadHours' => 4,
+                'bookingHorizonDays' => 21,
+            ],
+        };
     }
 
     /** @return array<string, mixed> */
