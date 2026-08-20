@@ -75,6 +75,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     #[ORM\Column(name: 'availability_profile', type: 'json', nullable: true)]
     private ?array $availabilityProfile = null;
 
+    /** @var array<string, mixed>|null */
+    #[ORM\Column(name: 'selection_profile', type: 'json', nullable: true)]
+    private ?array $selectionProfile = null;
+
     public function __construct()
     {
         $this->initializeObjectCode();
@@ -227,6 +231,44 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     public function setAvailabilityProfile(?array $profile): void
     {
         $this->availabilityProfile = null === $profile || [] === $profile ? null : $profile;
+        $this->touchModified();
+    }
+
+    /** @return array<string, mixed>|null */
+    public function getSelectionProfile(): ?array { return $this->selectionProfile; }
+
+    public function selectServiceCandidate(RetailEntity $service, int $agreedAmountMinor): void
+    {
+        if (RetailKind::Task !== $this->kind || 'access' !== $this->ownerType || 'published' !== $this->getObjectStatus()) {
+            throw new \DomainException('Only a published access-owned task can select a marketplace service.');
+        }
+        if (RetailKind::Service !== $service->getKind() || 'vendor' !== $service->getOwnerType() || 'published' !== $service->getObjectStatus()) {
+            throw new \DomainException('Only a published vendor-owned service can be selected.');
+        }
+        if ($service->getId() <= 0 || null === $service->getOwner()) {
+            throw new \DomainException('Selected marketplace service must be persisted and vendor-owned.');
+        }
+        if (null === $this->categoryId || $this->categoryId !== $service->getCategoryId()) {
+            throw new \DomainException('Customer task and selected service must use the same category.');
+        }
+        if ($this->currency !== $service->getCurrency()) {
+            throw new \DomainException('Customer task and selected service currencies must match.');
+        }
+        if ($agreedAmountMinor < 0) {
+            throw new \InvalidArgumentException('Agreed service amount cannot be negative.');
+        }
+
+        $minimumAmount = $service->getPricingProfile()['minimumProjectAmountMinor'] ?? null;
+        if (is_numeric($minimumAmount) && $agreedAmountMinor < (int) $minimumAmount) {
+            throw new \DomainException('Agreed service amount cannot be below the service minimum project amount.');
+        }
+
+        $this->selectionProfile = [
+            'serviceId' => (string) $service->getId(),
+            'vendorId' => $service->getOwner(),
+            'agreedAmountMinor' => $agreedAmountMinor,
+            'currency' => $service->getCurrency(),
+        ];
         $this->touchModified();
     }
 

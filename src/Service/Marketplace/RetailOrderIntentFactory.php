@@ -32,7 +32,7 @@ final class RetailOrderIntentFactory
 
         $pricingProfile = $service->getPricingProfile() ?? [];
         $pricingMode = is_string($pricingProfile['mode'] ?? null) ? strtolower(trim($pricingProfile['mode'])) : '';
-        $amountMinor = $agreedAmountMinor;
+        $amountMinor = $agreedAmountMinor ?? $this->selectedAmount($task, $service);
         if (null === $amountMinor && 'fixed' === $pricingMode) {
             $amountMinor = $service->getAmountMinor();
         }
@@ -57,5 +57,27 @@ final class RetailOrderIntentFactory
                 ]],
             ],
         ];
+    }
+
+    private function selectedAmount(RetailEntity $task, RetailEntity $service): ?int
+    {
+        $selection = $task->getSelectionProfile();
+        if (null === $selection) {
+            return null;
+        }
+
+        if ((string) ($selection['serviceId'] ?? '') !== (string) $service->getId()) {
+            return null;
+        }
+        if ((string) ($selection['vendorId'] ?? '') !== (string) $service->getOwner()) {
+            return null;
+        }
+        if ((string) ($selection['currency'] ?? '') !== $service->getCurrency()) {
+            return null;
+        }
+
+        $amountMinor = $selection['agreedAmountMinor'] ?? null;
+
+        return is_numeric($amountMinor) ? (int) $amountMinor : null;
     }
 }
