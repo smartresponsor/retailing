@@ -15,7 +15,7 @@ final class RetailMarketplaceFixtures extends Fixture implements FixtureGroupInt
 {
     private const OFFERINGS = [
         'OneTasker Houston' => [
-            ['standard-tv-mounting', 'TV Mounting', 12900, 9900, null],
+            ['tv-mounting', 'TV Mounting', 12900, 9900, null],
             ['chandelier-installation', 'Chandelier Installation', 14900, 11900, 4900],
             ['ceiling-fan-replacement', 'Ceiling Fan Replacement', 13900, 10900, 4900],
             ['security-camera-installation', 'Security Camera Installation', 11900, 9900, null],
@@ -25,13 +25,13 @@ final class RetailMarketplaceFixtures extends Fixture implements FixtureGroupInt
             ['dishwasher-installation', 'Dishwasher Installation', 16900, 13900, null],
         ],
         'Katy Home Care' => [
-            ['standard-home-cleaning', 'House Cleaning', 12900, 10900, null],
+            ['home-cleaning', 'House Cleaning', 12900, 10900, null],
             ['deep-cleaning', 'Deep Cleaning', 19900, 16900, null],
             ['closet-organization', 'Closet Organization', 11900, 9900, null],
             ['kitchen-organization', 'Kitchen Organization', 11900, 9900, null],
         ],
         'Bayou Assembly & Mounting' => [
-            ['standard-furniture-assembly', 'Furniture Assembly', 8900, 6900, null],
+            ['furniture-assembly', 'Furniture Assembly', 8900, 6900, null],
             ['gallery-wall-installation', 'Gallery Wall Installation', 11900, 9900, null],
             ['heavy-mirror-hanging', 'Heavy Mirror Hanging', 12900, 10900, null],
             ['floating-shelf-installation', 'Floating Shelf Installation', 9900, 7900, null],
@@ -81,6 +81,13 @@ SQL,
                     'owner' => (string) $vendorId,
                     'categoryId' => (string) $categoryId,
                 ]);
+                if (!$retail instanceof RetailEntity) {
+                    $retail = $manager->getRepository(RetailEntity::class)->findOneBy([
+                        'ownerType' => 'vendor',
+                        'owner' => (string) $vendorId,
+                        'title' => $title,
+                    ]);
+                }
                 if (!$retail instanceof RetailEntity) {
                     $retail = new RetailEntity();
                     $retail->setKind(RetailKind::Service);

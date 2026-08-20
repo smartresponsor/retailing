@@ -14,10 +14,10 @@ use Doctrine\Persistence\ObjectManager;
 final class RetailCustomerRequestFixtures extends Fixture implements FixtureGroupInterface
 {
     private const REQUESTS = [
-        ['emily.customer@smartresponsor.local', 'standard-tv-mounting', 'Mount a 65-inch TV in living room', 18000, '77493', 'Katy', 'TX', true],
+        ['emily.customer@smartresponsor.local', 'tv-mounting', 'Mount a 65-inch TV in living room', 18000, '77493', 'Katy', 'TX', true],
         ['james.customer@smartresponsor.local', 'ceiling-fan-replacement', 'Replace bedroom ceiling fan', 22000, '77449', 'Katy', 'TX', true],
-        ['sophia.customer@smartresponsor.local', 'standard-home-cleaning', 'Clean a two-bedroom apartment', 17000, '77084', 'Houston', 'TX', false],
-        ['michael.customer@smartresponsor.local', 'standard-furniture-assembly', 'Assemble bedroom furniture set', 16000, '77094', 'Houston', 'TX', true],
+        ['sophia.customer@smartresponsor.local', 'home-cleaning', 'Clean a two-bedroom apartment', 17000, '77084', 'Houston', 'TX', false],
+        ['michael.customer@smartresponsor.local', 'furniture-assembly', 'Assemble bedroom furniture set', 16000, '77094', 'Houston', 'TX', true],
     ];
 
     public static function getGroups(): array
