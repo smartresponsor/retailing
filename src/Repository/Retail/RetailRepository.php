@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Retailing\Repository\Retail;
 
 use App\Retailing\Entity\Retail\RetailEntity;
+use App\Retailing\Enum\Retail\RetailKind;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -25,6 +26,24 @@ final class RetailRepository extends ServiceEntityRepository
             ->setParameter('categoryId', trim($categoryId))
             ->setParameter('status', 'published')
             ->orderBy('retail.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /** @return list<RetailEntity> */
+    public function findPublishedVendorServicesByCategory(string $categoryId): array
+    {
+        return $this->createQueryBuilder('retail')
+            ->andWhere('retail.categoryId = :categoryId')
+            ->andWhere('retail.kind = :kind')
+            ->andWhere('retail.ownerType = :ownerType')
+            ->andWhere('retail.objectState.objectStatus = :status')
+            ->setParameter('categoryId', trim($categoryId))
+            ->setParameter('kind', RetailKind::Service)
+            ->setParameter('ownerType', 'vendor')
+            ->setParameter('status', 'published')
+            ->orderBy('retail.amountMinor', 'ASC')
+            ->addOrderBy('retail.id', 'ASC')
             ->getQuery()
             ->getResult();
     }

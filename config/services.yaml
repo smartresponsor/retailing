@@ -6,6 +6,7 @@ services:
     App\Retailing\:
         resource: '../src/'
         exclude:
+            - '../src/DataFixtures/'
             - '../src/Entity/'
             - '../src/Enum/'
             - '../src/RetailingBundle.php'

@@ -20,4 +20,13 @@ enum RetailKind: string
             self::Project => 'Project',
         };
     }
+
+    public function catalogCode(): string
+    {
+        return match ($this) {
+            self::Task, self::Service => 'services',
+            self::Goods => 'products',
+            self::Project => 'projects',
+        };
+    }
 }

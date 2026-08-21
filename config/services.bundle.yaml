@@ -1,0 +1,14 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Retailing\Form\Retail\RetailType: ~
+    App\Retailing\Service\Pricing\RetailPricingProfileNormalizer: ~
+
+    App\Retailing\Subscriber\Retail\RetailOwnershipSubscriber:
+        tags: ['cruding.mutation_lifecycle_subscriber']
+
+    App\Retailing\Service\Http\Retail\RetailNewService:
+        tags: ['cruding.resource_service']
+
