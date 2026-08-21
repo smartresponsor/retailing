@@ -147,11 +147,57 @@ final class RetailResponseEntity
         if (3 !== strlen($currency) || $currency !== $this->retail->getCurrency()) {
             throw new \DomainException('Retail response currency must match the customer request currency.');
         }
+
+        $amountMinor = $this->pricingAmount($profile['amountMinor'] ?? $profile['minimumAmountMinor'] ?? null, 'amountMinor');
+        $maximumAmountMinor = $this->pricingAmount($profile['maximumAmountMinor'] ?? null, 'maximumAmountMinor');
+        $hourlyAmountMinor = $this->pricingAmount($profile['hourlyAmountMinor'] ?? null, 'hourlyAmountMinor');
+
+        if (in_array($model, ['fixed', 'quote'], true) && null === $amountMinor) {
+            throw new \InvalidArgumentException('Fixed or quote response requires amountMinor.');
+        }
+        if ('range' === $model && (null === $amountMinor || null === $maximumAmountMinor || $maximumAmountMinor < $amountMinor)) {
+            throw new \InvalidArgumentException('Range response requires ordered amountMinor and maximumAmountMinor.');
+        }
+        if ('estimate' === $model && null === $amountMinor) {
+            throw new \InvalidArgumentException('Estimate response requires amountMinor.');
+        }
+        if ('hourly' === $model && null === $hourlyAmountMinor && null === $amountMinor) {
+            throw new \InvalidArgumentException('Hourly response requires hourlyAmountMinor.');
+        }
+
         $profile['model'] = $model;
-        unset($profile['mode']);
         $profile['currency'] = $currency;
+        unset($profile['mode'], $profile['minimumAmountMinor']);
+        if (null !== $amountMinor) {
+            $profile['amountMinor'] = $amountMinor;
+        } else {
+            unset($profile['amountMinor']);
+        }
+        if (null !== $maximumAmountMinor) {
+            $profile['maximumAmountMinor'] = $maximumAmountMinor;
+        } else {
+            unset($profile['maximumAmountMinor']);
+        }
+        if (null !== $hourlyAmountMinor) {
+            $profile['hourlyAmountMinor'] = $hourlyAmountMinor;
+        } else {
+            unset($profile['hourlyAmountMinor']);
+        }
+
         $this->pricingProfile = $profile;
         $this->touch();
+    }
+
+    private function pricingAmount(mixed $value, string $field): ?int
+    {
+        if (null === $value || '' === trim((string) $value)) {
+            return null;
+        }
+        if (!is_numeric($value) || (int) $value < 0) {
+            throw new \InvalidArgumentException(sprintf('Retail response %s must be a non-negative integer amount.', $field));
+        }
+
+        return (int) $value;
     }
 
     /** @param array<string, mixed>|null $profile */

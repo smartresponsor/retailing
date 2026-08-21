@@ -310,18 +310,20 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         }
 
         $amount = $this->nonNegativePricingAmount($pricingProfile, 'amountMinor');
-        $minimum = $this->nonNegativePricingAmount($pricingProfile, 'minimumAmountMinor');
+        if (null === $amount) {
+            $amount = $this->nonNegativePricingAmount($pricingProfile, 'minimumAmountMinor');
+        }
         $maximum = $this->nonNegativePricingAmount($pricingProfile, 'maximumAmountMinor');
         $hourly = $this->nonNegativePricingAmount($pricingProfile, 'hourlyAmountMinor');
 
         if (in_array($model, ['fixed', 'quote'], true) && null === $amount) {
             throw new \DomainException('Fixed or quote response requires amountMinor.');
         }
-        if ('range' === $model && (null === $minimum || null === $maximum || $minimum > $maximum)) {
-            throw new \DomainException('Range response requires ordered minimumAmountMinor and maximumAmountMinor.');
+        if ('range' === $model && (null === $amount || null === $maximum || $amount > $maximum)) {
+            throw new \DomainException('Range response requires ordered amountMinor and maximumAmountMinor.');
         }
-        if ('estimate' === $model && null === $amount && (null === $minimum || null === $maximum || $minimum > $maximum)) {
-            throw new \DomainException('Estimate response requires amountMinor or an ordered amount range.');
+        if ('estimate' === $model && null === $amount) {
+            throw new \DomainException('Estimate response requires amountMinor.');
         }
         if ('hourly' === $model && null === $hourly && null === $amount) {
             throw new \DomainException('Hourly response requires hourlyAmountMinor.');
@@ -329,7 +331,7 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
 
         if (null !== $service) {
             $serviceMinimum = $service->getPricingProfile()['minimumProjectAmountMinor'] ?? null;
-            $responseFloor = $amount ?? $minimum;
+            $responseFloor = $amount;
             if (is_numeric($serviceMinimum) && null !== $responseFloor && $responseFloor < (int) $serviceMinimum) {
                 throw new \DomainException('Accepted retail response amount cannot be below the service minimum project amount.');
             }
