@@ -18,12 +18,12 @@ final class RetailRepository extends ServiceEntityRepository
     }
 
     /** @return list<RetailEntity> */
-    public function findPublishedByCategory(string $categoryId): array
+    public function findPublishedByTypePath(string $typePath): array
     {
         return $this->createQueryBuilder('retail')
-            ->andWhere('retail.categoryId = :categoryId')
+            ->andWhere('retail.typePath = :typePath')
             ->andWhere('retail.objectState.objectStatus = :status')
-            ->setParameter('categoryId', trim($categoryId))
+            ->setParameter('typePath', trim($typePath))
             ->setParameter('status', 'published')
             ->orderBy('retail.id', 'DESC')
             ->getQuery()
@@ -31,14 +31,14 @@ final class RetailRepository extends ServiceEntityRepository
     }
 
     /** @return list<RetailEntity> */
-    public function findPublishedVendorServicesByCategory(string $categoryId): array
+    public function findPublishedVendorServicesByTypePath(string $typePath): array
     {
         return $this->createQueryBuilder('retail')
-            ->andWhere('retail.categoryId = :categoryId')
+            ->andWhere('retail.typePath = :typePath')
             ->andWhere('retail.kind = :kind')
             ->andWhere('retail.ownerType = :ownerType')
             ->andWhere('retail.objectState.objectStatus = :status')
-            ->setParameter('categoryId', trim($categoryId))
+            ->setParameter('typePath', trim($typePath))
             ->setParameter('kind', RetailKind::Service)
             ->setParameter('ownerType', 'vendor')
             ->setParameter('status', 'published')

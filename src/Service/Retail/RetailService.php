@@ -31,8 +31,8 @@ final readonly class RetailService
     }
 
     /** @return list<RetailEntity> */
-    public function publishedByCategory(string $categoryId): array
+    public function publishedByTypePath(string $typePath): array
     {
-        return $this->repository->findPublishedByCategory($categoryId);
+        return $this->repository->findPublishedByTypePath($typePath);
     }
 }

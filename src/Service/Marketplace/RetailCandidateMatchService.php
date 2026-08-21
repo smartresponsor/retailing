@@ -26,13 +26,13 @@ final class RetailCandidateMatchService
             throw new \InvalidArgumentException('Marketplace candidate matching requires a published access-owned task.');
         }
 
-        $categoryId = $task->getCategoryId();
-        if (null === $categoryId || '' === trim($categoryId)) {
+        $typePath = $task->getTypePath();
+        if (null === $typePath || '' === trim($typePath)) {
             return [];
         }
 
         $matches = [];
-        foreach ($this->retailRepository->findPublishedVendorServicesByCategory($categoryId) as $service) {
+        foreach ($this->retailRepository->findPublishedVendorServicesByTypePath($typePath) as $service) {
             $areaMatch = $this->serviceAreaMatchService->match($task->getLocationProfile(), $service->getLocationProfile());
             if (null === $areaMatch) {
                 continue;

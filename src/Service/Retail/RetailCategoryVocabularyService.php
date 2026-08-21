@@ -47,12 +47,12 @@ final readonly class RetailCategoryVocabularyService
         } catch (\Throwable) {
         }
 
-        return $this->legacyChoices($kind->catalogCode());
+        return $this->legacyChoices($this->legacyCatalogCode($kind));
     }
 
-    public function contains(RetailKind $kind, string $categoryId): bool
+    public function contains(RetailKind $kind, string $typePath): bool
     {
-        return in_array(trim($categoryId), array_values($this->choicesForKind($kind)), true);
+        return in_array(trim($typePath), array_values($this->choicesForKind($kind)), true);
     }
 
     private function categoryCode(RetailKind $kind): string
@@ -66,7 +66,7 @@ final readonly class RetailCategoryVocabularyService
     }
 
     /** @param array<int, mixed> $types @return array<string, string> */
-    private function flattenTypes(array $types, string $prefix = ''): array
+    private function flattenTypes(array $types, string $labelPrefix = '', string $pathPrefix = ''): array
     {
         $choices = [];
         foreach ($types as $type) {
@@ -74,19 +74,16 @@ final readonly class RetailCategoryVocabularyService
                 continue;
             }
             $label = isset($type['label']) && is_scalar($type['label']) ? trim((string) $type['label']) : '';
-            $sourceCategoryId = isset($type['sourceCategoryId']) && is_scalar($type['sourceCategoryId'])
-                ? trim((string) $type['sourceCategoryId'])
-                : '';
-            if ('' === $label) {
+            $code = isset($type['code']) && is_scalar($type['code']) ? strtolower(trim((string) $type['code'])) : '';
+            if ('' === $label || '' === $code) {
                 continue;
             }
-            $choiceLabel = '' === $prefix ? $label : $prefix.' › '.$label;
-            if ('' !== $sourceCategoryId) {
-                $choices[$choiceLabel] = $sourceCategoryId;
-            }
+            $choiceLabel = '' === $labelPrefix ? $label : $labelPrefix.' › '.$label;
+            $typePath = '' === $pathPrefix ? $code : $pathPrefix.'/'.$code;
+            $choices[$choiceLabel] = $typePath;
             $children = $type['types'] ?? null;
             if (is_array($children)) {
-                $choices += $this->flattenTypes($children, $choiceLabel);
+                $choices += $this->flattenTypes($children, $choiceLabel, $typePath);
             }
         }
 
@@ -107,26 +104,36 @@ final readonly class RetailCategoryVocabularyService
     }
 
     /** @param array<int, mixed> $nodes @return array<string, string> */
-    private function flattenLegacyNodes(array $nodes, string $prefix = ''): array
+    private function flattenLegacyNodes(array $nodes, string $labelPrefix = '', string $pathPrefix = ''): array
     {
         $choices = [];
         foreach ($nodes as $node) {
             if (!is_array($node)) {
                 continue;
             }
-            $id = isset($node['nodeId']) && is_scalar($node['nodeId']) ? trim((string) $node['nodeId']) : '';
             $title = isset($node['title']) && is_scalar($node['title']) ? trim((string) $node['title']) : '';
-            if ('' === $id || '' === $title) {
+            $slug = isset($node['slug']) && is_scalar($node['slug']) ? strtolower(trim((string) $node['slug'])) : '';
+            if ('' === $slug || '' === $title) {
                 continue;
             }
-            $choiceLabel = '' === $prefix ? $title : $prefix.' › '.$title;
-            $choices[$choiceLabel] = $id;
+            $choiceLabel = '' === $labelPrefix ? $title : $labelPrefix.' › '.$title;
+            $typePath = '' === $pathPrefix ? $slug : $pathPrefix.'/'.$slug;
+            $choices[$choiceLabel] = $typePath;
             $children = $node['children'] ?? null;
             if (is_array($children)) {
-                $choices += $this->flattenLegacyNodes($children, $choiceLabel);
+                $choices += $this->flattenLegacyNodes($children, $choiceLabel, $typePath);
             }
         }
 
         return $choices;
+    }
+
+    private function legacyCatalogCode(RetailKind $kind): string
+    {
+        return match ($kind) {
+            RetailKind::Task, RetailKind::Service => 'services',
+            RetailKind::Goods => 'products',
+            RetailKind::Project => 'projects',
+        };
     }
 }

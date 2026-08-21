@@ -56,7 +56,7 @@ final class RetailNewService extends AbstractCrudService
         }
         $placement['kind'] = $context->object->getKind()->value;
         $placement['catalogCode'] = $context->object->getCatalogCode();
-        $placement['categoryId'] = $context->object->getCategoryId();
+        $placement['typePath'] = $context->object->getTypePath();
         $placement['amountMinor'] = $context->object->getAmountMinor();
         $placement['currency'] = $context->object->getCurrency();
         if (RetailKind::Task === $context->object->getKind() && 'published' === $context->object->getObjectStatus()) {

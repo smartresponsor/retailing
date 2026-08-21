@@ -60,9 +60,9 @@ final class RetailMarketplaceFixtures extends Fixture implements FixtureGroupInt
             }
 
             foreach ($offerings as [$categorySlug, $title, $startingAmount, $minimumAmount, $serviceCallAmount]) {
-                $categoryId = $manager->getConnection()->fetchOne(
+                $legacyPath = $manager->getConnection()->fetchOne(
                     <<<'SQL'
-SELECT category.id
+SELECT category.path
 FROM category
 JOIN catalog ON catalog.id = category.catalog_id
 WHERE catalog.object_code = 'services'
@@ -72,14 +72,15 @@ LIMIT 1
 SQL,
                     ['slug' => $categorySlug],
                 );
-                if (false === $categoryId) {
+                if (!is_string($legacyPath) || '' === $legacyPath) {
                     continue;
                 }
 
+                $typePath = $this->canonicalTypePath($legacyPath, 'services');
                 $retail = $manager->getRepository(RetailEntity::class)->findOneBy([
                     'ownerType' => 'vendor',
                     'owner' => (string) $vendorId,
-                    'categoryId' => (string) $categoryId,
+                    'typePath' => $typePath,
                 ]);
                 if (!$retail instanceof RetailEntity) {
                     $retail = $manager->getRepository(RetailEntity::class)->findOneBy([
@@ -96,8 +97,8 @@ SQL,
                 }
                 $retail->setOwnerType('vendor');
                 $retail->setOwner((string) $vendorId);
-                $retail->setCatalogCode('services');
-                $retail->setCategoryId((string) $categoryId);
+                $retail->setCatalogCode('retailing');
+                $retail->setTypePath($typePath);
                 $retail->setTitle($title);
                 $retail->setDescription($this->description($brand, $title));
                 $retail->setAmountMinor($startingAmount);
@@ -126,6 +127,24 @@ SQL,
         }
 
         $manager->flush();
+    }
+
+    private function canonicalTypePath(string $legacyPath, string $catalogCode): string
+    {
+        $segments = explode('.', $legacyPath);
+        if (($segments[0] ?? null) === $catalogCode) {
+            array_shift($segments);
+        }
+        $segments = array_values(array_filter(array_map(
+            static fn (string $segment): string => str_replace('_', '-', strtolower(trim($segment))),
+            $segments,
+        ), static fn (string $segment): bool => '' !== $segment));
+
+        if ([] === $segments) {
+            throw new \RuntimeException('Legacy service category path cannot be converted to a Retailing type path.');
+        }
+
+        return implode('/', $segments);
     }
 
     /** @return array<string, mixed> */

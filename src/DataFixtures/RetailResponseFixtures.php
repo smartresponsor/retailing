@@ -61,7 +61,7 @@ final class RetailResponseFixtures extends Fixture implements FixtureGroupInterf
             $service = $manager->getRepository(RetailEntity::class)->findOneBy([
                 'ownerType' => 'vendor',
                 'title' => $serviceTitle,
-                'categoryId' => $task->getCategoryId(),
+                'typePath' => $task->getTypePath(),
             ]);
             if (!$service instanceof RetailEntity || null === $service->getOwner()) {
                 throw new \RuntimeException(sprintf('Marketplace response fixture service is missing: %s.', $serviceTitle));

@@ -116,8 +116,8 @@ final class RetailResponseEntity
             if ('service' !== $service->getKind()->value || 'vendor' !== $service->getOwnerType() || $service->getOwner() !== $this->vendorId) {
                 throw new \DomainException('Retail response service must be a service owned by the responding vendor.');
             }
-            if ($service->getCategoryId() !== $this->retail->getCategoryId()) {
-                throw new \DomainException('Retail response service category must match the customer request.');
+            if ($service->getTypePath() !== $this->retail->getTypePath()) {
+                throw new \DomainException('Retail response service type must match the customer request.');
             }
             if ($service->getId() <= 0) {
                 throw new \DomainException('Retail response service must be persisted.');

@@ -18,6 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'retail')]
 #[ORM\Index(name: 'idx_retail_owner_scope_kind', columns: ['owner_type', 'owner_id', 'kind'])]
 #[ORM\Index(name: 'idx_retail_category_kind', columns: ['category_id', 'kind'])]
+#[ORM\Index(name: 'idx_retail_type_path_kind', columns: ['type_path', 'kind'])]
 final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface, ObjectStatefulInterface
 {
     use ObjectAuditEmbeddableTrait;
@@ -41,8 +42,11 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     #[ORM\Column(name: 'category_id', type: 'string', length: 64, nullable: true)]
     private ?string $categoryId = null;
 
+    #[ORM\Column(name: 'type_path', type: 'string', length: 255, nullable: true)]
+    private ?string $typePath = null;
+
     #[ORM\Column(name: 'catalog_code', type: 'string', length: 64, nullable: true)]
-    private ?string $catalogCode = 'services';
+    private ?string $catalogCode = 'retailing';
 
     #[ORM\Column(type: 'string', length: 180)]
     private string $title = '';
@@ -96,11 +100,8 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
             throw new \DomainException('Published retail kind is immutable.');
         }
 
-        $previousCatalogCode = $this->kind->catalogCode();
         $this->kind = $kind;
-        if (null === $this->catalogCode || $previousCatalogCode === $this->catalogCode) {
-            $this->catalogCode = $kind->catalogCode();
-        }
+        $this->catalogCode = $kind->catalogCode();
         $this->touchModified();
     }
 
@@ -130,11 +131,17 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
-    public function getCategoryId(): ?string { return $this->categoryId; }
-    public function setCategoryId(?string $categoryId): void
+    public function getTypePath(): ?string { return $this->typePath; }
+    public function setTypePath(?string $typePath): void
     {
-        $normalized = null === $categoryId ? null : trim($categoryId);
-        $this->categoryId = '' === $normalized ? null : $normalized;
+        $normalized = null === $typePath ? null : strtolower(trim($typePath));
+        if (null !== $normalized) {
+            $normalized = trim($normalized, '/');
+            if ('' !== $normalized && 1 !== preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/', $normalized)) {
+                throw new \InvalidArgumentException('Retail type path must use slash-separated lowercase machine codes.');
+            }
+        }
+        $this->typePath = '' === $normalized ? null : $normalized;
         $this->touchModified();
     }
 
@@ -283,8 +290,8 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
             if ($service->getId() <= 0 || $serviceId !== $service->getId() || $response->getVendorId() !== $service->getOwner()) {
                 throw new \DomainException('Accepted retail response service identity does not match the responding vendor.');
             }
-            if ($this->categoryId !== $service->getCategoryId()) {
-                throw new \DomainException('Accepted retail response service category must match the customer request.');
+            if ($this->typePath !== $service->getTypePath()) {
+                throw new \DomainException('Accepted retail response service type must match the customer request.');
             }
             if ($this->currency !== $service->getCurrency()) {
                 throw new \DomainException('Accepted retail response currency must match the customer request.');
@@ -385,8 +392,8 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         if ($service->getId() <= 0 || null === $service->getOwner()) {
             throw new \DomainException('Selected marketplace service must be persisted and vendor-owned.');
         }
-        if (null === $this->categoryId || $this->categoryId !== $service->getCategoryId()) {
-            throw new \DomainException('Customer task and selected service must use the same category.');
+        if (null === $this->typePath || $this->typePath !== $service->getTypePath()) {
+            throw new \DomainException('Customer task and selected service must use the same classification type.');
         }
         if ($this->currency !== $service->getCurrency()) {
             throw new \DomainException('Customer task and selected service currencies must match.');
@@ -413,7 +420,7 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     {
         if (
             null === $this->catalogCode
-            || null === $this->categoryId
+            || null === $this->typePath
             || '' === $this->title
             || null === $this->ownerType
             || null === $this->owner

@@ -37,11 +37,11 @@ final class RetailCustomerRequestFixtures extends Fixture implements FixtureGrou
                 continue;
             }
 
-            $categoryId = $manager->getConnection()->fetchOne(
-                "SELECT category.id FROM category JOIN catalog ON catalog.id = category.catalog_id WHERE catalog.object_code = 'services' AND category.slug = :slug AND category.published = TRUE LIMIT 1",
+            $legacyPath = $manager->getConnection()->fetchOne(
+                "SELECT category.path FROM category JOIN catalog ON catalog.id = category.catalog_id WHERE catalog.object_code = 'services' AND category.slug = :slug AND category.published = TRUE LIMIT 1",
                 ['slug' => $categorySlug],
             );
-            if (false === $categoryId) {
+            if (!is_string($legacyPath) || '' === $legacyPath) {
                 continue;
             }
 
@@ -59,8 +59,8 @@ final class RetailCustomerRequestFixtures extends Fixture implements FixtureGrou
 
             $retail->setOwnerType('access');
             $retail->setOwner((string) $customerId);
-            $retail->setCatalogCode('services');
-            $retail->setCategoryId((string) $categoryId);
+            $retail->setCatalogCode('retailing');
+            $retail->setTypePath($this->canonicalTypePath($legacyPath, 'services'));
             $retail->setTitle($title);
             $retail->setDescription('Customer marketplace request fixture with realistic budget and on-site location details.');
             $retail->setAmountMinor($budgetAmountMinor);
@@ -86,6 +86,24 @@ final class RetailCustomerRequestFixtures extends Fixture implements FixtureGrou
         }
 
         $manager->flush();
+    }
+
+    private function canonicalTypePath(string $legacyPath, string $catalogCode): string
+    {
+        $segments = explode('.', $legacyPath);
+        if (($segments[0] ?? null) === $catalogCode) {
+            array_shift($segments);
+        }
+        $segments = array_values(array_filter(array_map(
+            static fn (string $segment): string => str_replace('_', '-', strtolower(trim($segment))),
+            $segments,
+        ), static fn (string $segment): bool => '' !== $segment));
+
+        if ([] === $segments) {
+            throw new \RuntimeException('Legacy service category path cannot be converted to a Retailing type path.');
+        }
+
+        return implode('/', $segments);
     }
 
     /** @return array<string, mixed> */

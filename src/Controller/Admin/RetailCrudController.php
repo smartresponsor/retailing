@@ -35,7 +35,7 @@ final class RetailCrudController extends AbstractCrudController
         yield TextField::new('ownerType', 'Owner type');
         yield TextField::new('owner', 'Owner ID');
         yield TextField::new('catalogCode', 'Catalog')->hideOnForm();
-        yield ChoiceField::new('categoryId', 'Category')->setChoices($this->categoryVocabulary->choices());
+        yield ChoiceField::new('typePath', 'Type')->setChoices($this->categoryVocabulary->choices());
         yield TextField::new('title');
         yield TextareaField::new('description')->hideOnIndex();
         yield IntegerField::new('amountMinor', 'Amount in minor units');
@@ -64,9 +64,9 @@ final class RetailCrudController extends AbstractCrudController
 
     private function normalizeCatalogSelection(RetailEntity $retail): void
     {
-        $categoryId = $retail->getCategoryId();
-        if (null === $categoryId || !$this->categoryVocabulary->contains($retail->getKind(), $categoryId)) {
-            throw new \DomainException('Choose a category for the selected listing type.');
+        $typePath = $retail->getTypePath();
+        if (null === $typePath || !$this->categoryVocabulary->contains($retail->getKind(), $typePath)) {
+            throw new \DomainException('Choose a type for the selected listing type.');
         }
 
         $retail->setCatalogCode($retail->getKind()->catalogCode());

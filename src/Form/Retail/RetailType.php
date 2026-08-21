@@ -36,8 +36,8 @@ final class RetailType extends AbstractType
                 'choices' => $this->kindVocabulary->choices(),
                 'choice_value' => static fn (?RetailKind $kind): ?string => $kind?->value,
             ])
-            ->add('categoryId', ChoiceType::class, [
-                'label' => 'Category',
+            ->add('typePath', ChoiceType::class, [
+                'label' => 'Type',
                 'required' => true,
                 'placeholder' => 'Choose a category',
                 'choices' => $this->categoryVocabulary->choices(),
@@ -61,14 +61,14 @@ final class RetailType extends AbstractType
                 return;
             }
 
-            $categoryId = $retail->getCategoryId();
-            if (null === $categoryId) {
+            $typePath = $retail->getTypePath();
+            if (null === $typePath) {
                 return;
             }
 
             $retail->setCatalogCode($retail->getKind()->catalogCode());
-            if (!$this->categoryVocabulary->contains($retail->getKind(), $categoryId)) {
-                $event->getForm()->get('categoryId')->addError(new FormError('Choose a category for the selected listing type.'));
+            if (!$this->categoryVocabulary->contains($retail->getKind(), $typePath)) {
+                $event->getForm()->get('typePath')->addError(new FormError('Choose a type for the selected listing type.'));
             }
         });
     }
