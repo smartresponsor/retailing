@@ -65,11 +65,11 @@ final readonly class RetailResponseAcceptanceService
         return $retail;
     }
 
-    private function service(RetailResponseEntity $response): RetailEntity
+    private function service(RetailResponseEntity $response): ?RetailEntity
     {
         $serviceId = $response->getServiceId();
         if (null === $serviceId) {
-            throw new \DomainException('Accepted retail response must reference a marketplace service.');
+            return null;
         }
         $service = $this->retailRepository->find($serviceId);
         if (!$service instanceof RetailEntity) {

@@ -251,7 +251,7 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->projectAcceptedResponse($response, $service);
     }
 
-    public function synchronizeAcceptedResponse(RetailResponseEntity $response, RetailEntity $service): void
+    public function synchronizeAcceptedResponse(RetailResponseEntity $response, ?RetailEntity $service = null): void
     {
         if ('accepted' !== $response->getStatus()) {
             throw new \DomainException('Only an accepted retail response can synchronize customer selection.');
@@ -275,12 +275,8 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         if ('access' !== $this->ownerType || 'published' !== $this->getObjectStatus()) {
             throw new \DomainException('Only a published customer request can accept a vendor response.');
         }
-        $serviceId = $response->getServiceId();
-        if (null === $serviceId || $serviceId <= 0) {
-            throw new \DomainException('Accepted retail response must reference a persisted marketplace service.');
-        }
-
         if (null !== $service) {
+            $serviceId = $response->getServiceId();
             if (RetailKind::Service !== $service->getKind() || 'vendor' !== $service->getOwnerType() || 'published' !== $service->getObjectStatus()) {
                 throw new \DomainException('Accepted retail response must reference a published vendor service.');
             }
@@ -295,17 +291,62 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
             }
         }
 
-        $pricingProfile = $response->getPricingProfile();
-        $amountMinor = $pricingProfile['amountMinor'] ?? null;
-        if (!is_numeric($amountMinor) || (int) $amountMinor < 0) {
-            throw new \DomainException('Accepted retail response requires an exact non-negative amountMinor.');
+        $this->assertAcceptedPricingProfile($response->getPricingProfile(), $service);
+    }
+
+    /** @param array<string, mixed>|null $pricingProfile */
+    private function assertAcceptedPricingProfile(?array $pricingProfile, ?RetailEntity $service): void
+    {
+        if (null === $pricingProfile) {
+            throw new \DomainException('Accepted retail response requires commercial pricing terms.');
         }
+        $model = strtolower(trim((string) ($pricingProfile['model'] ?? '')));
+        if (!in_array($model, ['fixed', 'quote', 'estimate', 'range', 'hourly', 'negotiable'], true)) {
+            throw new \DomainException('Accepted retail response pricing model is invalid.');
+        }
+        $currency = strtoupper(trim((string) ($pricingProfile['currency'] ?? '')));
+        if ($currency !== $this->currency) {
+            throw new \DomainException('Accepted retail response currency must match the customer request.');
+        }
+
+        $amount = $this->nonNegativePricingAmount($pricingProfile, 'amountMinor');
+        $minimum = $this->nonNegativePricingAmount($pricingProfile, 'minimumAmountMinor');
+        $maximum = $this->nonNegativePricingAmount($pricingProfile, 'maximumAmountMinor');
+        $hourly = $this->nonNegativePricingAmount($pricingProfile, 'hourlyAmountMinor');
+
+        if (in_array($model, ['fixed', 'quote'], true) && null === $amount) {
+            throw new \DomainException('Fixed or quote response requires amountMinor.');
+        }
+        if ('range' === $model && (null === $minimum || null === $maximum || $minimum > $maximum)) {
+            throw new \DomainException('Range response requires ordered minimumAmountMinor and maximumAmountMinor.');
+        }
+        if ('estimate' === $model && null === $amount && (null === $minimum || null === $maximum || $minimum > $maximum)) {
+            throw new \DomainException('Estimate response requires amountMinor or an ordered amount range.');
+        }
+        if ('hourly' === $model && null === $hourly && null === $amount) {
+            throw new \DomainException('Hourly response requires hourlyAmountMinor.');
+        }
+
         if (null !== $service) {
-            $minimumAmount = $service->getPricingProfile()['minimumProjectAmountMinor'] ?? null;
-            if (is_numeric($minimumAmount) && (int) $amountMinor < (int) $minimumAmount) {
+            $serviceMinimum = $service->getPricingProfile()['minimumProjectAmountMinor'] ?? null;
+            $responseFloor = $amount ?? $minimum;
+            if (is_numeric($serviceMinimum) && null !== $responseFloor && $responseFloor < (int) $serviceMinimum) {
                 throw new \DomainException('Accepted retail response amount cannot be below the service minimum project amount.');
             }
         }
+    }
+
+    /** @param array<string, mixed> $pricingProfile */
+    private function nonNegativePricingAmount(array $pricingProfile, string $key): ?int
+    {
+        if (!array_key_exists($key, $pricingProfile) || null === $pricingProfile[$key] || '' === $pricingProfile[$key]) {
+            return null;
+        }
+        if (!is_numeric($pricingProfile[$key]) || (int) $pricingProfile[$key] < 0) {
+            throw new \DomainException(sprintf('Accepted retail response %s must be non-negative.', $key));
+        }
+
+        return (int) $pricingProfile[$key];
     }
 
     private function projectAcceptedResponse(RetailResponseEntity $response, ?RetailEntity $service): void
@@ -314,16 +355,20 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $serviceId = $service?->getId() ?? $response->getServiceId();
         $this->selectionProfile = [
             'responseId' => (string) $response->getId(),
-            'serviceId' => (string) $serviceId,
             'vendorId' => $response->getVendorId(),
-            'agreedAmountMinor' => (int) $pricingProfile['amountMinor'],
-            'currency' => $service?->getCurrency() ?? $this->currency,
             'pricingProfile' => $pricingProfile,
             'fulfillmentProfile' => $response->getFulfillmentProfile(),
             'availabilityProfile' => $response->getAvailabilityProfile(),
             'locationProfile' => $response->getLocationProfile(),
             'acceptedAt' => $response->getAcceptedAt()?->format(DATE_ATOM),
+            'currency' => $this->currency,
         ];
+        if (null !== $serviceId) {
+            $this->selectionProfile['serviceId'] = (string) $serviceId;
+        }
+        if (is_numeric($pricingProfile['amountMinor'] ?? null)) {
+            $this->selectionProfile['agreedAmountMinor'] = (int) $pricingProfile['amountMinor'];
+        }
         $this->touchModified();
     }
 
