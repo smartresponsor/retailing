@@ -10,6 +10,3 @@ services:
             - '../src/Entity/'
             - '../src/Enum/'
             - '../src/RetailingBundle.php'
-
-    App\Retailing\Controller\Admin\RetailCrudController:
-        tags: ['controller.service_arguments']
