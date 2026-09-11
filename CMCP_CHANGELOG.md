@@ -22,3 +22,12 @@
 - Removed its explicit `controller.service_arguments` registration from `config/services.yaml`.
 - Removed direct `easycorp/easyadmin-bundle` dependency because the component no longer owns an EasyAdmin admin CRUD surface.
 - Preserved `cruding/crud` and the mandatory Objecting/Viewing/Interfacing runtime contour.
+
+### Iteration 3 — verification and fix
+
+- Verified the resulting branch tree has no component-local `RetailCrudController` and no direct EasyAdmin dependency or service registration.
+- Reviewed Retailing Entity/Form/Cruding integration and the `retail_placement` handoff path.
+- Found an identity-canon violation in `RetailNewService`: a separate tenant identity was synthesized from request attributes with a `default` fallback.
+- Removed that tenant resolver. The legacy downstream `tenantId` payload key is retained only as a compatibility alias and now carries the already established Retailing owner identity rather than an independent tenant identity.
+- Verified downstream Shipping currently requires the legacy `tenantId` session key, so removing the key itself would cross the Retailing boundary and break the current integration contract.
+- Remaining runtime limitation: local Composer/PHPStan/PHPUnit/Symfony/Doctrine/Gating execution is unavailable until the Windows workspace execution plane is connected.
