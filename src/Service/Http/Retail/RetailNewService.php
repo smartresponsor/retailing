@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Retailing\Service\Http\Retail;
 
-use App\Cruding\Dto\Crud\Entrypoint\CrudServiceContext;
-use App\Cruding\Dto\Crud\Entrypoint\CrudServiceResult;
-use App\Cruding\Service\Crud\AbstractCrudService;
+use App\Cruding\Dto\Entrypoint\CrudServiceContextDTO;
+use App\Cruding\Dto\Entrypoint\CrudServiceResultDTO;
+use App\Cruding\Service\AbstractCrudService;
 use App\Retailing\Entity\Retail\RetailEntity;
 use App\Retailing\Enum\Retail\RetailKind;
 use App\Retailing\Service\Marketplace\RetailCandidateMatchService;
@@ -25,7 +25,7 @@ final class RetailNewService extends AbstractCrudService
     ) {
     }
 
-    protected function afterDefault(CrudServiceContext $context, CrudServiceResult $result): CrudServiceResult
+    protected function afterDefault(CrudServiceContextDTO $context, CrudServiceResultDTO $result): CrudServiceResultDTO
     {
         if (!$context->isPost() || !$result->payload() instanceof RedirectResponse || !$context->object instanceof RetailEntity) {
             return $result;
@@ -83,7 +83,7 @@ final class RetailNewService extends AbstractCrudService
         }
         $context->request->getSession()->set(self::SESSION_KEY, $placement);
 
-        return CrudServiceResult::response(new RedirectResponse($this->urlGenerator->generate(
+        return CrudServiceResultDTO::response(new RedirectResponse($this->urlGenerator->generate(
             'cruding_tokenized_catch_all',
             ['crudPath' => 'fulfillment/new'],
         )));

@@ -47,3 +47,14 @@
 - GitHub reported the PR clean/mergeable before integration and no commit status contexts were registered for the head.
 - Local executable gates (`composer validate`, PHP syntax/static analysis, PHPUnit, Symfony container/YAML lint, Doctrine validation, Gating) were not runnable in this session because the authoritative Windows execution plane was unavailable; they are not claimed as passing.
 - Bounded repository work is complete. Any further growth work remains post-RC and must be separately authorized.
+
+### Local execution-plane closure — 2026-09-11
+
+- Connected to the authoritative Windows workspace through Console MCP and fetched `origin`; `origin/master` resolves to `f84e01ebcf5acad5d6c8e03d68124eff915fa9fa`.
+- Preserved the pre-existing local feature branch `feature/retail-response-pricing-20260820` and its unpushed commit `20c8f62286edaae60633e0bd3b302d7c9f391f55`; no destructive reset was used.
+- Preserved the local `.gating/` tooling copy and excluded it only through `.git/info/exclude` so branch synchronization could proceed without deleting or committing local tooling.
+- Verified the merged RC state from `origin/master` on local branch `engine/retailing-846401-local-verify`.
+- Found a real integration drift against current local Cruding: `RetailNewService` still referenced the previous Cruding DTO and service namespaces. Updated it to `CrudServiceContextDTO`, `CrudServiceResultDTO`, and `App\\Cruding\\Service\\AbstractCrudService`, matching the current `afterDefault(...)` contract.
+- `composer validate --strict` passes. Full tracked PHP syntax validation passes.
+- PHPUnit cannot run because this component workspace has no installed `vendor/bin/phpunit`; Composer reports no installed dependencies. No Composer scripts are declared by Retailing.
+- Current Console MCP allowlist does not expose a targetable executable Gating command for the sibling `Gating` CLI, so executable Gating remains an explicit tooling limitation rather than a claimed pass.
