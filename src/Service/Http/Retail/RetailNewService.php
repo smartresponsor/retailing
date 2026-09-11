@@ -48,7 +48,8 @@ final class RetailNewService extends AbstractCrudService
 
         $placement['retailId'] = (string) $context->object->getId();
         $placement['placementReference'] = 'retail:'.(string) $context->object->getId();
-        $placement['tenantId'] = $this->tenantId($context);
+        // Keep the legacy downstream key without creating a separate tenant identity.
+        $placement['tenantId'] = $ownerId;
         $placement['ownerType'] = $ownerType;
         $placement['ownerId'] = $ownerId;
         if ('vendor' === $ownerType) {
@@ -86,18 +87,6 @@ final class RetailNewService extends AbstractCrudService
             'cruding_tokenized_catch_all',
             ['crudPath' => 'fulfillment/new'],
         )));
-    }
-
-    private function tenantId(CrudServiceContext $context): string
-    {
-        foreach (['tenantId', 'tenant_id', '_tenant_id'] as $attribute) {
-            $value = $context->request->attributes->get($attribute);
-            if (is_scalar($value) && '' !== trim((string) $value)) {
-                return trim((string) $value);
-            }
-        }
-
-        return 'default';
     }
 
     private function scalarString(string|int|null $value): ?string
