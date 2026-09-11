@@ -38,3 +38,12 @@
 - Opened PR #3 (`Retailing RC boundary hardening`) from `engine/retailing-846401-rc` to `master`.
 - PR mergeability resolved green (`mergeable: true`) with no reported commit status checks on the current head.
 - No additional in-scope code debt requiring speculative changes was introduced; executable local-runtime gates remain unavailable in this session and are explicitly carried as an environment limitation rather than reported as passing.
+
+### Iteration 5 — final acceptance and handoff
+
+- PR #3 merged successfully into `master` with merge commit `66f1eddd0002f7e5ac2d999e5e902d5cf2eda383`.
+- Post-merge acceptance confirms the bounded RC changes are present on `master`: component-local generic CRUD surface removed, EasyAdmin dependency/registration removed, and Retailing placement identity no longer synthesizes a separate tenant identity.
+- Mandatory runtime dependency contour remains declared and no sibling repository was modified by this task.
+- GitHub reported the PR clean/mergeable before integration and no commit status contexts were registered for the head.
+- Local executable gates (`composer validate`, PHP syntax/static analysis, PHPUnit, Symfony container/YAML lint, Doctrine validation, Gating) were not runnable in this session because the authoritative Windows execution plane was unavailable; they are not claimed as passing.
+- Bounded repository work is complete. Any further growth work remains post-RC and must be separately authorized.
