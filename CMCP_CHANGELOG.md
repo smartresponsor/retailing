@@ -31,3 +31,10 @@
 - Removed that tenant resolver. The legacy downstream `tenantId` payload key is retained only as a compatibility alias and now carries the already established Retailing owner identity rather than an independent tenant identity.
 - Verified downstream Shipping currently requires the legacy `tenantId` session key, so removing the key itself would cross the Retailing boundary and break the current integration contract.
 - Remaining runtime limitation: local Composer/PHPStan/PHPUnit/Symfony/Doctrine/Gating execution is unavailable until the Windows workspace execution plane is connected.
+
+### Iteration 4 — debt closure and integration
+
+- Rechecked branch scope against `master`: only the bounded Retailing RC files are changed; branch was ahead and not behind.
+- Opened PR #3 (`Retailing RC boundary hardening`) from `engine/retailing-846401-rc` to `master`.
+- PR mergeability resolved green (`mergeable: true`) with no reported commit status checks on the current head.
+- No additional in-scope code debt requiring speculative changes was introduced; executable local-runtime gates remain unavailable in this session and are explicitly carried as an environment limitation rather than reported as passing.
