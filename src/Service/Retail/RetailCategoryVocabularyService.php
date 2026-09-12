@@ -13,8 +13,7 @@ final readonly class RetailCategoryVocabularyService
     public function __construct(
         private CatalogCategoryLookupServiceInterface $categoryLookup,
         private CatalogCatalogTreeReadServiceInterface $legacyCatalogTree,
-    ) {
-    }
+    ) {}
 
     /** @return array<string, array<string, string>> */
     public function choices(): array
@@ -65,7 +64,11 @@ final readonly class RetailCategoryVocabularyService
         };
     }
 
-    /** @param array<int, mixed> $types @return array<string, string> */
+    /**
+     * @param array<int, mixed> $types
+     *
+     * @return array<string, string>
+     */
     private function flattenTypes(array $types, string $prefix = ''): array
     {
         $choices = [];
@@ -80,7 +83,7 @@ final readonly class RetailCategoryVocabularyService
             if ('' === $label) {
                 continue;
             }
-            $choiceLabel = '' === $prefix ? $label : $prefix.' › '.$label;
+            $choiceLabel = '' === $prefix ? $label : $prefix . ' › ' . $label;
             if ('' !== $sourceCategoryId) {
                 $choices[$choiceLabel] = $sourceCategoryId;
             }
@@ -106,7 +109,11 @@ final readonly class RetailCategoryVocabularyService
         return is_array($nodes) ? $this->flattenLegacyNodes($nodes) : [];
     }
 
-    /** @param array<int, mixed> $nodes @return array<string, string> */
+    /**
+     * @param array<int, mixed> $nodes
+     *
+     * @return array<string, string>
+     */
     private function flattenLegacyNodes(array $nodes, string $prefix = ''): array
     {
         $choices = [];
@@ -119,7 +126,7 @@ final readonly class RetailCategoryVocabularyService
             if ('' === $id || '' === $title) {
                 continue;
             }
-            $choiceLabel = '' === $prefix ? $title : $prefix.' › '.$title;
+            $choiceLabel = '' === $prefix ? $title : $prefix . ' › ' . $title;
             $choices[$choiceLabel] = $id;
             $children = $node['children'] ?? null;
             if (is_array($children)) {

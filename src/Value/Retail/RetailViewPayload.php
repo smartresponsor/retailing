@@ -9,9 +9,7 @@ use App\Viewing\ValueInterface\View\ViewObjectPayloadInterface;
 
 final readonly class RetailViewPayload implements ViewObjectPayloadInterface
 {
-    public function __construct(private RetailEntity $retail)
-    {
-    }
+    public function __construct(private RetailEntity $retail) {}
 
     public function toTemplateContext(): array
     {

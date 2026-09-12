@@ -14,11 +14,14 @@ final class RetailingExtension extends Extension
     /** @param array<int, array<string, mixed>> $configs */
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $loader = new YamlFileLoader($container, new FileLocator(dirname(__DIR__, 2).'/config'));
+        $loader = new YamlFileLoader($container, new FileLocator(dirname(__DIR__, 2) . '/config'));
         $loader->load('services.yaml');
         $loader->load('services.bundle.yaml');
 
-        $environment = (string) $container->getParameter('kernel.environment');
+        $environment = $container->getParameter('kernel.environment');
+        if (!is_string($environment)) {
+            throw new \LogicException('The kernel.environment parameter must be a string.');
+        }
         if (in_array($environment, ['dev', 'test'], true)) {
             $loader->load('services.fixtures.yaml');
         }

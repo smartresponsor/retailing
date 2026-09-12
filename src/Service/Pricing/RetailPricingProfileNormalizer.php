@@ -6,6 +6,11 @@ namespace App\Retailing\Service\Pricing;
 
 final class RetailPricingProfileNormalizer
 {
+    /**
+     * @param array<string, mixed> $input
+     *
+     * @return array<string, int|string>
+     */
     public function normalize(string $retailKind, array $input): array
     {
         $kind = strtolower(trim($retailKind));
@@ -42,7 +47,7 @@ final class RetailPricingProfileNormalizer
             'amountMinor' => $amountMinor,
             'maximumAmountMinor' => $maximumAmountMinor,
             'currency' => $currency,
-        ], static fn (mixed $value): bool => null !== $value);
+        ], static fn(mixed $value): bool => null !== $value);
     }
 
     private function nullableNonNegativeInt(mixed $value, string $label): ?int
@@ -51,7 +56,7 @@ final class RetailPricingProfileNormalizer
             return null;
         }
         if (!is_numeric($value) || (int) $value < 0) {
-            throw new \InvalidArgumentException($label.' must be a non-negative integer amount in minor units.');
+            throw new \InvalidArgumentException($label . ' must be a non-negative integer amount in minor units.');
         }
 
         return (int) $value;

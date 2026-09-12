@@ -18,4 +18,5 @@ return new PhpCsFixer\Config()
         'declare_strict_types' => true,
         'single_quote' => true,
     ])
+    ->setLineEnding("\r\n")
     ->setFinder($finder);

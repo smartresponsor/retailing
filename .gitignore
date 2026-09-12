@@ -1,0 +1,17 @@
+# Composer dependencies
+/vendor/
+
+# Runtime and cache output
+/var/
+/.php-cs-fixer.cache
+/.phpunit.result.cache
+/.phpunit.cache/
+
+# Local environment overrides
+/.env.local
+/.env.*.local
+
+# IDE and OS-local state
+/.idea/
+/.vscode/
+.DS_Store

@@ -94,3 +94,26 @@
 - Pushed the dedicated branch and opened PR #5, `Retailing RC: align Cruding lifecycle contract`, against `master`.
 - PR inspection reports `MERGEABLE`, non-draft, no conflicts, no pending/failed status checks, and a green safe-merge gate.
 - No additional in-scope source debt was identified; remaining work is integration plus post-merge acceptance, not speculative feature growth.
+
+### Iteration 2 continuation — MATERIAL_IMPLEMENTATION quality repair
+
+- Engine continuation converted the previously unexecuted PHPUnit/PHPStan evidence into a bounded implementation task instead of treating missing tooling as an external blocker.
+- Consulted Canon029, Canon039, Canon034, Canon023, and Canon025. Added repository-owned PHPStan/PHPUnit tooling, PHPUnit coverage execution, PHP-CS-Fixer/PHPStan/PHPUnit dev dependencies, and Composer scripts.
+- Added `Administering` and `Navigating` as root development path repositories only, because Cataloging and Locating require them transitively and Composer does not inherit repositories from dependencies. They were not added as direct Retailing business dependencies and no sibling repository was mutated.
+- Development resolution now uses `minimum-stability: dev` with `prefer-stable: true`, allowing the real local `dev-master` component graph to resolve without inventing direct dependencies.
+- Added the required Composer `symfony/runtime` plugin allowlist entry and generated the development `composer.lock`; `composer install --no-scripts` now succeeds with local sibling junctions.
+- Added a focused `RetailKindTest`; PHPUnit is green with 4 tests and 8 assertions. PHPUnit 12 configuration was corrected to keep branch-capable coverage in the executable `--path-coverage` script rather than an invalid XML attribute.
+- Enabled Xdebug coverage at PHP process startup; persistent path-coverage execution is green and writes `var/coverage.txt`.
+- PHPStan level 8 exposed 10 Retailing-only issues. Fixed the unsafe kernel parameter cast, impossible owner-type branch, literal return contract, array-shape/value-type annotations, and redundant null coalescing. PHPStan now reports no errors.
+- PHP-CS-Fixer was configured to preserve the repository's CRLF convention, then its canonical formatting was applied to 17 tracked PHP files; subsequent `cs:check` is green.
+- Added root `.gitignore` to close Canon034 and keep `vendor/`, `var/`, quality caches, local env overrides, IDE state, and OS noise out of Git.
+
+### Iteration 3 — VERIFICATION_AND_FIX
+
+- Ran RC validation against committed quality-tooling state. Composer validation, PHPUnit, and coverage were green; PHPStan exposed current sibling-contract drift against Cruding.
+- Verified the authoritative Cruding source directly. Current DTO namespaces are `App\\Cruding\\DTO\\...`, and the abstract entrypoint service is `App\\Cruding\\Service\\CrudAbstractService`.
+- Updated `RetailNewService` to use `CrudAbstractService` and the canonical uppercase `DTO` namespace for `CrudServiceContextDTO` / `CrudServiceResultDTO`.
+- Updated `RetailOwnershipSubscriber` to use `App\\Cruding\\DTO\\CrudMutationLifecycleContextDTO` with the current root `CrudMutationLifecycleSubscriberInterface`.
+- Re-ran PHPStan: no errors. Re-ran PHPUnit: 4 tests / 8 assertions green. Re-ran PHP-CS-Fixer check: 0 files fixable.
+- RC validation then reported all executable validation commands green; the only temporary blocker was the expected uncommitted change state prior to this iteration's commit.
+- The `placeholder` warning in `RetailType` remains a scanner false positive caused by Symfony's legitimate `ChoiceType` `placeholder` option, not a TODO/stub marker.

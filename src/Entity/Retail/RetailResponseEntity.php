@@ -85,29 +85,71 @@ final class RetailResponseEntity
         $this->updatedAt = $this->createdAt;
     }
 
-    public function getId(): int { return $this->id; }
-    public function getRetail(): RetailEntity { return $this->retail; }
-    public function getVendorId(): string { return $this->vendorId; }
-    public function getServiceId(): ?int { return $this->serviceId; }
-    public function getStatus(): string { return $this->status; }
-    public function getDescription(): ?string { return $this->description; }
+    public function getId(): int
+    {
+        return $this->id;
+    }
+    public function getRetail(): RetailEntity
+    {
+        return $this->retail;
+    }
+    public function getVendorId(): string
+    {
+        return $this->vendorId;
+    }
+    public function getServiceId(): ?int
+    {
+        return $this->serviceId;
+    }
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
 
     /** @return array<string, mixed>|null */
-    public function getPricingProfile(): ?array { return $this->pricingProfile; }
+    public function getPricingProfile(): ?array
+    {
+        return $this->pricingProfile;
+    }
 
     /** @return array<string, mixed>|null */
-    public function getFulfillmentProfile(): ?array { return $this->fulfillmentProfile; }
+    public function getFulfillmentProfile(): ?array
+    {
+        return $this->fulfillmentProfile;
+    }
 
     /** @return array<string, mixed>|null */
-    public function getAvailabilityProfile(): ?array { return $this->availabilityProfile; }
+    public function getAvailabilityProfile(): ?array
+    {
+        return $this->availabilityProfile;
+    }
 
     /** @return array<string, mixed>|null */
-    public function getLocationProfile(): ?array { return $this->locationProfile; }
+    public function getLocationProfile(): ?array
+    {
+        return $this->locationProfile;
+    }
 
-    public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
-    public function getUpdatedAt(): \DateTimeImmutable { return $this->updatedAt; }
-    public function getSubmittedAt(): ?\DateTimeImmutable { return $this->submittedAt; }
-    public function getAcceptedAt(): ?\DateTimeImmutable { return $this->acceptedAt; }
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+    public function getUpdatedAt(): \DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+    public function getSubmittedAt(): ?\DateTimeImmutable
+    {
+        return $this->submittedAt;
+    }
+    public function getAcceptedAt(): ?\DateTimeImmutable
+    {
+        return $this->acceptedAt;
+    }
 
     public function setService(?RetailEntity $service): void
     {

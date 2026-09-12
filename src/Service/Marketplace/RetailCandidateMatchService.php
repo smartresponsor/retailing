@@ -14,8 +14,7 @@ final class RetailCandidateMatchService
         private readonly RetailRepository $retailRepository,
         private readonly RetailServiceAreaMatchService $serviceAreaMatchService,
         private readonly RetailAvailabilityMatchService $availabilityMatchService,
-    ) {
-    }
+    ) {}
 
     /**
      * @return list<array{service: RetailEntity, serviceAreaStatus: 'exact'|'requires_geovalidation', distanceMeters: ?float, availabilityStatus: 'compatible'|'requires_scheduling', budgetStatus: 'within_budget'|'over_budget'|'unknown'}>
@@ -57,6 +56,7 @@ final class RetailCandidateMatchService
         return $matches;
     }
 
+    /** @return 'within_budget'|'over_budget'|'unknown' */
     private function budgetStatus(RetailEntity $task, RetailEntity $service): string
     {
         if ($task->getCurrency() !== $service->getCurrency()) {

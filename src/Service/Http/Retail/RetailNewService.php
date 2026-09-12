@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Retailing\Service\Http\Retail;
 
-use App\Cruding\Dto\Entrypoint\CrudServiceContextDTO;
-use App\Cruding\Dto\Entrypoint\CrudServiceResultDTO;
-use App\Cruding\Service\AbstractCrudService;
+use App\Cruding\DTO\Entrypoint\CrudServiceContextDTO;
+use App\Cruding\DTO\Entrypoint\CrudServiceResultDTO;
+use App\Cruding\Service\CrudAbstractService;
 use App\Retailing\Entity\Retail\RetailEntity;
 use App\Retailing\Enum\Retail\RetailKind;
 use App\Retailing\Service\Marketplace\RetailCandidateMatchService;
@@ -14,7 +14,7 @@ use App\Retailing\Service\Marketplace\RetailOrderIntentFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-final class RetailNewService extends AbstractCrudService
+final class RetailNewService extends CrudAbstractService
 {
     private const SESSION_KEY = 'retail_placement';
 
@@ -22,8 +22,7 @@ final class RetailNewService extends AbstractCrudService
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly RetailCandidateMatchService $candidateMatchService,
         private readonly RetailOrderIntentFactory $orderIntentFactory,
-    ) {
-    }
+    ) {}
 
     protected function afterDefault(CrudServiceContextDTO $context, CrudServiceResultDTO $result): CrudServiceResultDTO
     {
@@ -47,7 +46,7 @@ final class RetailNewService extends AbstractCrudService
         $placement = [];
 
         $placement['retailId'] = (string) $context->object->getId();
-        $placement['placementReference'] = 'retail:'.(string) $context->object->getId();
+        $placement['placementReference'] = 'retail:' . (string) $context->object->getId();
         // Keep the legacy downstream key without creating a separate tenant identity.
         $placement['tenantId'] = $ownerId;
         $placement['ownerType'] = $ownerType;

@@ -13,8 +13,7 @@ final readonly class RetailService
     public function __construct(
         private EntityManagerInterface $entityManager,
         private RetailRepository $repository,
-    ) {
-    }
+    ) {}
 
     public function save(RetailEntity $retail): RetailEntity
     {

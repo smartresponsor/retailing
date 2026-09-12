@@ -51,7 +51,7 @@ final class RetailOrderIntentFactory
                 'vendorId' => $vendorId,
                 'currency' => $service->getCurrency(),
                 'items' => [[
-                    'sku' => 'retail:'.$service->getId(),
+                    'sku' => 'retail:' . $service->getId(),
                     'qty' => 1,
                     'price' => number_format($amountMinor / 100, 2, '.', ''),
                 ]],

@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace App\Retailing\Subscriber\Retail;
 
-use App\Cruding\Dto\CrudMutationLifecycleContextDTO;
+use App\Cruding\DTO\CrudMutationLifecycleContextDTO;
 use App\Cruding\ServiceInterface\CrudMutationLifecycleSubscriberInterface;
 use App\Retailing\Entity\Retail\RetailEntity;
 use Symfony\Bundle\SecurityBundle\Security;
 
 final readonly class RetailOwnershipSubscriber implements CrudMutationLifecycleSubscriberInterface
 {
-    public function __construct(private Security $security)
-    {
-    }
+    public function __construct(private Security $security) {}
 
     public function supports(CrudMutationLifecycleContextDTO $context): bool
     {
@@ -36,7 +34,5 @@ final readonly class RetailOwnershipSubscriber implements CrudMutationLifecycleS
         $context->object->setOwner((string) $actorId);
     }
 
-    public function after(CrudMutationLifecycleContextDTO $context): void
-    {
-    }
+    public function after(CrudMutationLifecycleContextDTO $context): void {}
 }

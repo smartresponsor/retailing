@@ -24,8 +24,7 @@ final class RetailType extends AbstractType
     public function __construct(
         private readonly RetailKindVocabularyService $kindVocabulary,
         private readonly RetailCategoryVocabularyService $categoryVocabulary,
-    ) {
-    }
+    ) {}
 
     /** @param array<string, mixed> $options */
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -34,7 +33,7 @@ final class RetailType extends AbstractType
             ->add('kind', ChoiceType::class, [
                 'label' => 'Listing type',
                 'choices' => $this->kindVocabulary->choices(),
-                'choice_value' => static fn (?RetailKind $kind): ?string => $kind?->value,
+                'choice_value' => static fn(?RetailKind $kind): ?string => $kind?->value,
             ])
             ->add('categoryId', ChoiceType::class, [
                 'label' => 'Category',
