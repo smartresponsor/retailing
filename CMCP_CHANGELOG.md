@@ -107,3 +107,13 @@
 - PHPStan level 8 exposed 10 Retailing-only issues. Fixed the unsafe kernel parameter cast, impossible owner-type branch, literal return contract, array-shape/value-type annotations, and redundant null coalescing. PHPStan now reports no errors.
 - PHP-CS-Fixer was configured to preserve the repository's CRLF convention, then its canonical formatting was applied to 17 tracked PHP files; subsequent `cs:check` is green.
 - Added root `.gitignore` to close Canon034 and keep `vendor/`, `var/`, quality caches, local env overrides, IDE state, and OS noise out of Git.
+
+### Iteration 3 — VERIFICATION_AND_FIX
+
+- Ran RC validation against committed quality-tooling state. Composer validation, PHPUnit, and coverage were green; PHPStan exposed current sibling-contract drift against Cruding.
+- Verified the authoritative Cruding source directly. Current DTO namespaces are `App\\Cruding\\DTO\\...`, and the abstract entrypoint service is `App\\Cruding\\Service\\CrudAbstractService`.
+- Updated `RetailNewService` to use `CrudAbstractService` and the canonical uppercase `DTO` namespace for `CrudServiceContextDTO` / `CrudServiceResultDTO`.
+- Updated `RetailOwnershipSubscriber` to use `App\\Cruding\\DTO\\CrudMutationLifecycleContextDTO` with the current root `CrudMutationLifecycleSubscriberInterface`.
+- Re-ran PHPStan: no errors. Re-ran PHPUnit: 4 tests / 8 assertions green. Re-ran PHP-CS-Fixer check: 0 files fixable.
+- RC validation then reported all executable validation commands green; the only temporary blocker was the expected uncommitted change state prior to this iteration's commit.
+- The `placeholder` warning in `RetailType` remains a scanner false positive caused by Symfony's legitimate `ChoiceType` `placeholder` option, not a TODO/stub marker.
