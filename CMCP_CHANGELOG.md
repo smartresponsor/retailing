@@ -86,3 +86,11 @@
 - `php -l src/Subscriber/Retail/RetailOwnershipSubscriber.php` passes with no syntax errors.
 - Composer confirms that no dependencies are installed and there is no `composer.lock`; therefore PHPUnit/PHPStan/Symfony container execution is not claimed. An unbounded dependency resolution/install was intentionally not introduced as part of this bounded compatibility RC.
 - Exact branch diff against `origin/master` remains one PHP file plus this task journal; no unrelated source changes were found.
+
+### Iteration 4 — DEBT_CLOSURE_AND_INTEGRATION
+
+- Committed the current-task journal as `52e4bfa` after the pre-existing bounded implementation commit `751aac6`.
+- Because the prior local verification branch tracked `origin/master`, created dedicated integration branch `engine/retailing-b47af5-rc` at the same verified HEAD instead of risking a protected-branch push.
+- Pushed the dedicated branch and opened PR #5, `Retailing RC: align Cruding lifecycle contract`, against `master`.
+- PR inspection reports `MERGEABLE`, non-draft, no conflicts, no pending/failed status checks, and a green safe-merge gate.
+- No additional in-scope source debt was identified; remaining work is integration plus post-merge acceptance, not speculative feature growth.
