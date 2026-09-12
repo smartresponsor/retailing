@@ -22,9 +22,7 @@ final class RetailResponseFixtures extends Fixture implements FixtureGroupInterf
         ['michael.customer@smartresponsor.local', 'Assemble bedroom furniture set', 'Furniture Assembly', 'quote', 8500, true],
     ];
 
-    public function __construct(private readonly RetailResponseAcceptanceService $acceptanceService)
-    {
-    }
+    public function __construct(private readonly RetailResponseAcceptanceService $acceptanceService) {}
 
     public static function getGroups(): array
     {

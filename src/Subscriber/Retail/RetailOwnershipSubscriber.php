@@ -11,9 +11,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 
 final readonly class RetailOwnershipSubscriber implements CrudMutationLifecycleSubscriberInterface
 {
-    public function __construct(private Security $security)
-    {
-    }
+    public function __construct(private Security $security) {}
 
     public function supports(CrudMutationLifecycleContextDTO $context): bool
     {
@@ -36,7 +34,5 @@ final readonly class RetailOwnershipSubscriber implements CrudMutationLifecycleS
         $context->object->setOwner((string) $actorId);
     }
 
-    public function after(CrudMutationLifecycleContextDTO $context): void
-    {
-    }
+    public function after(CrudMutationLifecycleContextDTO $context): void {}
 }

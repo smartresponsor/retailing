@@ -6,6 +6,4 @@ namespace App\Retailing;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-final class RetailingBundle extends Bundle
-{
-}
+final class RetailingBundle extends Bundle {}

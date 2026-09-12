@@ -86,9 +86,18 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->initializeObjectAudit();
     }
 
-    public function getId(): int { return $this->id; }
-    public function getCode(): string { return $this->getObjectCode() ?? ''; }
-    public function getKind(): RetailKind { return $this->kind; }
+    public function getId(): int
+    {
+        return $this->id;
+    }
+    public function getCode(): string
+    {
+        return $this->getObjectCode() ?? '';
+    }
+    public function getKind(): RetailKind
+    {
+        return $this->kind;
+    }
 
     public function setKind(RetailKind $kind): void
     {
@@ -104,18 +113,24 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
-    public function getOwnerType(): ?string { return $this->ownerType; }
+    public function getOwnerType(): ?string
+    {
+        return $this->ownerType;
+    }
     public function setOwnerType(?string $ownerType): void
     {
         $normalized = null === $ownerType ? null : strtolower(trim($ownerType));
         if (null !== $normalized && !in_array($normalized, ['vendor', 'access'], true)) {
             throw new \InvalidArgumentException('Retail owner type must be vendor or access.');
         }
-        $this->ownerType = '' === $normalized ? null : $normalized;
+        $this->ownerType = $normalized;
         $this->touchModified();
     }
 
-    public function getOwner(): ?string { return $this->owner; }
+    public function getOwner(): ?string
+    {
+        return $this->owner;
+    }
     public function setOwner(object|string|null $owner): void
     {
         if (is_object($owner)) {
@@ -130,7 +145,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
-    public function getCategoryId(): ?string { return $this->categoryId; }
+    public function getCategoryId(): ?string
+    {
+        return $this->categoryId;
+    }
     public function setCategoryId(?string $categoryId): void
     {
         $normalized = null === $categoryId ? null : trim($categoryId);
@@ -138,7 +156,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
-    public function getCatalogCode(): ?string { return $this->catalogCode; }
+    public function getCatalogCode(): ?string
+    {
+        return $this->catalogCode;
+    }
     public function setCatalogCode(?string $catalogCode): void
     {
         $normalized = null === $catalogCode ? null : strtolower(trim($catalogCode));
@@ -146,7 +167,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
-    public function getTitle(): string { return $this->title; }
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
     public function setTitle(string $title): void
     {
         $normalized = trim($title);
@@ -157,7 +181,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
-    public function getDescription(): ?string { return $this->description; }
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
     public function setDescription(?string $description): void
     {
         $normalized = null === $description ? null : trim($description);
@@ -165,7 +192,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
-    public function getAmountMinor(): ?int { return $this->amountMinor; }
+    public function getAmountMinor(): ?int
+    {
+        return $this->amountMinor;
+    }
     public function setAmountMinor(?int $amountMinor): void
     {
         if (null !== $amountMinor && $amountMinor < 0) {
@@ -175,7 +205,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
-    public function getCurrency(): string { return $this->currency; }
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
     public function setCurrency(string $currency): void
     {
         $normalized = strtoupper(trim($currency));
@@ -186,7 +219,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
-    public function getLocation(): ?string { return $this->location; }
+    public function getLocation(): ?string
+    {
+        return $this->location;
+    }
     public function setLocation(?string $location): void
     {
         $normalized = null === $location ? null : trim($location);
@@ -195,7 +231,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     }
 
     /** @return array<string, mixed>|null */
-    public function getLocationProfile(): ?array { return $this->locationProfile; }
+    public function getLocationProfile(): ?array
+    {
+        return $this->locationProfile;
+    }
 
     /** @param array<string, mixed>|null $profile */
     public function setLocationProfile(?array $profile): void
@@ -205,7 +244,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     }
 
     /** @return array<string, mixed>|null */
-    public function getFulfillmentProfile(): ?array { return $this->fulfillmentProfile; }
+    public function getFulfillmentProfile(): ?array
+    {
+        return $this->fulfillmentProfile;
+    }
 
     /** @param array<string, mixed>|null $profile */
     public function setFulfillmentProfile(?array $profile): void
@@ -215,7 +257,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     }
 
     /** @return array<string, mixed>|null */
-    public function getPricingProfile(): ?array { return $this->pricingProfile; }
+    public function getPricingProfile(): ?array
+    {
+        return $this->pricingProfile;
+    }
 
     /** @param array<string, mixed>|null $profile */
     public function setPricingProfile(?array $profile): void
@@ -225,7 +270,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     }
 
     /** @return array<string, mixed>|null */
-    public function getAvailabilityProfile(): ?array { return $this->availabilityProfile; }
+    public function getAvailabilityProfile(): ?array
+    {
+        return $this->availabilityProfile;
+    }
 
     /** @param array<string, mixed>|null $profile */
     public function setAvailabilityProfile(?array $profile): void
@@ -235,7 +283,10 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     }
 
     /** @return array<string, mixed>|null */
-    public function getSelectionProfile(): ?array { return $this->selectionProfile; }
+    public function getSelectionProfile(): ?array
+    {
+        return $this->selectionProfile;
+    }
 
     public function acceptResponse(RetailResponseEntity $response, ?RetailEntity $service = null): void
     {
@@ -436,5 +487,8 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         };
     }
 
-    public function __toString(): string { return $this->title; }
+    public function __toString(): string
+    {
+        return $this->title;
+    }
 }

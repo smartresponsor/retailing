@@ -9,9 +9,7 @@ use App\Retailing\Enum\Retail\RetailKind;
 
 final readonly class RetailKindVocabularyService
 {
-    public function __construct(private CatalogCategoryVocabularyServiceInterface $catalogVocabulary)
-    {
-    }
+    public function __construct(private CatalogCategoryVocabularyServiceInterface $catalogVocabulary) {}
 
     /** @return array<string, RetailKind> */
     public function choices(): array
@@ -24,8 +22,8 @@ final readonly class RetailKindVocabularyService
         }
 
         foreach ($categories as $category) {
-            $code = strtolower(trim($category['code'] ?? ''));
-            $label = trim($category['label'] ?? '');
+            $code = strtolower(trim($category['code']));
+            $label = trim($category['label']);
             $kind = 'product' === $code ? RetailKind::Goods : RetailKind::tryFrom($code);
             if (null === $kind || '' === $label) {
                 continue;

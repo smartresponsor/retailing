@@ -16,8 +16,7 @@ final readonly class RetailResponseAcceptanceService
         private EntityManagerInterface $entityManager,
         private RetailRepository $retailRepository,
         private RetailResponseRepository $responseRepository,
-    ) {
-    }
+    ) {}
 
     public function accept(RetailResponseEntity $response): RetailEntity
     {

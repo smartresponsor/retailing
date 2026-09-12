@@ -8,9 +8,7 @@ use App\Locating\ServiceInterface\Provider\Location\Runtime\Geo\LocationDistance
 
 final class RetailServiceAreaMatchService
 {
-    public function __construct(private readonly LocationDistanceServiceInterface $distanceService)
-    {
-    }
+    public function __construct(private readonly LocationDistanceServiceInterface $distanceService) {}
 
     /**
      * @param array<string, mixed>|null $taskProfile
@@ -75,7 +73,11 @@ final class RetailServiceAreaMatchService
         return ['status' => 'requires_geovalidation', 'distanceMeters' => null];
     }
 
-    /** @param array<string, mixed>|null $profile */
+    /**
+     * @param array<string, mixed>|null $profile
+     *
+     * @return array{latitude: float, longitude: float}|null
+     */
     private function coordinates(?array $profile): ?array
     {
         if (null === $profile) {

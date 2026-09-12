@@ -22,8 +22,7 @@ final class RetailNewService extends AbstractCrudService
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly RetailCandidateMatchService $candidateMatchService,
         private readonly RetailOrderIntentFactory $orderIntentFactory,
-    ) {
-    }
+    ) {}
 
     protected function afterDefault(CrudServiceContextDTO $context, CrudServiceResultDTO $result): CrudServiceResultDTO
     {
@@ -47,7 +46,7 @@ final class RetailNewService extends AbstractCrudService
         $placement = [];
 
         $placement['retailId'] = (string) $context->object->getId();
-        $placement['placementReference'] = 'retail:'.(string) $context->object->getId();
+        $placement['placementReference'] = 'retail:' . (string) $context->object->getId();
         // Keep the legacy downstream key without creating a separate tenant identity.
         $placement['tenantId'] = $ownerId;
         $placement['ownerType'] = $ownerType;
