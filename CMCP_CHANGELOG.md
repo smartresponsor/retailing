@@ -58,3 +58,39 @@
 - `composer validate --strict` passes. Full tracked PHP syntax validation passes.
 - PHPUnit cannot run because this component workspace has no installed `vendor/bin/phpunit`; Composer reports no installed dependencies. No Composer scripts are declared by Retailing.
 - Current Console MCP allowlist does not expose a targetable executable Gating command for the sibling `Gating` CLI, so executable Gating remains an explicit tooling limitation rather than a claimed pass.
+
+## engine-20260912081454-retailing-b47af5
+
+### Iteration 1 — RECONNAISSANCE_AND_BASELINE
+
+- Authoritative workspace: `D:\PhpstormProjects\www\Retailing`, inspected and mutated only through Console MCP.
+- Git baseline: clean `engine/retailing-846401-local-verify`, one commit ahead of `origin/master` (`751aac6`, `fix(retailing): align Cruding lifecycle contract`).
+- Market/maturity baseline: mature commerce/marketplace platforms separate catalog, order, fulfillment/shipping, vendor and marketplace concerns; Retailing should remain the listing/marketplace product boundary rather than absorb neighboring capabilities.
+- Runtime contour verified in `composer.json`: `objecting/object`, `cruding/crud`, `viewing/view`, and `interfacing/interface` are real dependencies with local path repositories for the required sibling packages.
+- Canonization consulted: root `AGENTS.md`, Canon003 DTO naming rule, and Canon021 Cruding ownership rule. Relevant mapping: Retailing remains under `App\\Retailing\\`; generic CRUD stays in Cruding; foreign Cruding lifecycle types must follow the current public Cruding contract rather than retain legacy namespaces.
+- Current Cruding contract verified directly: `App\\Cruding\\Dto\\CrudMutationLifecycleContextDTO` and `App\\Cruding\\ServiceInterface\\CrudMutationLifecycleSubscriberInterface`.
+- RC-critical workstream: verify and integrate the existing bounded compatibility commit that updates `RetailOwnershipSubscriber` from the obsolete Cruding lifecycle namespaces/types to the current contract.
+- Growth workstream (non-blocking): continue capability maturity through separately owned catalog, pricing, fulfillment, order and marketplace-response components/services; do not fold those responsibilities into this RC fix.
+- Planned gates: Composer strict validation, PHP syntax/static/test checks where locally available, exact diff review, branch/upstream cleanliness, and post-integration acceptance.
+
+### Iteration 2 — MATERIAL_IMPLEMENTATION
+
+- Adopted the already-local, not-yet-upstream bounded implementation commit `751aac6` as the RC fix for this task rather than creating a duplicate patch.
+- The implementation changes only `RetailOwnershipSubscriber`: obsolete `App\\Cruding\\Dto\\Crud\\CrudMutationLifecycleContext` and `App\\Cruding\\ServiceInterface\\Crud\\CrudMutationLifecycleSubscriberInterface` references are replaced by the current `CrudMutationLifecycleContextDTO` and root `CrudMutationLifecycleSubscriberInterface` public contract.
+- No sibling repository was mutated and no generic CRUD/runtime responsibility was pulled into Retailing.
+
+### Iteration 3 — VERIFICATION_AND_FIX
+
+- Compared the Retailing subscriber directly with the current Cruding interface; method signatures and imported lifecycle context type match exactly.
+- `composer validate --strict` passes.
+- `php -l src/Subscriber/Retail/RetailOwnershipSubscriber.php` passes with no syntax errors.
+- Composer confirms that no dependencies are installed and there is no `composer.lock`; therefore PHPUnit/PHPStan/Symfony container execution is not claimed. An unbounded dependency resolution/install was intentionally not introduced as part of this bounded compatibility RC.
+- Exact branch diff against `origin/master` remains one PHP file plus this task journal; no unrelated source changes were found.
+
+### Iteration 4 — DEBT_CLOSURE_AND_INTEGRATION
+
+- Committed the current-task journal as `52e4bfa` after the pre-existing bounded implementation commit `751aac6`.
+- Because the prior local verification branch tracked `origin/master`, created dedicated integration branch `engine/retailing-b47af5-rc` at the same verified HEAD instead of risking a protected-branch push.
+- Pushed the dedicated branch and opened PR #5, `Retailing RC: align Cruding lifecycle contract`, against `master`.
+- PR inspection reports `MERGEABLE`, non-draft, no conflicts, no pending/failed status checks, and a green safe-merge gate.
+- No additional in-scope source debt was identified; remaining work is integration plus post-merge acceptance, not speculative feature growth.
