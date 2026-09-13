@@ -1,0 +1,7 @@
+security:
+  providers:
+    retailing_standalone:
+      memory: ~
+  firewalls:
+    main:
+      security: false

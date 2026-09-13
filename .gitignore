@@ -1,6 +1,14 @@
 # Composer dependencies
 /vendor/
 
+# JavaScript dependencies and browser-test output
+/node_modules/
+/playwright-report/
+/test-results/
+
+# Generated framework reference output
+/config/reference.php
+
 # Runtime and cache output
 /var/
 /.php-cs-fixer.cache

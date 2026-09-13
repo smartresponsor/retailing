@@ -6,7 +6,10 @@
   "require": {
     "php": "^8.4",
     "cataloging/catalog": "dev-master",
+    "collectioning/collection": "dev-master",
     "cruding/crud": "dev-master",
+    "tabling/table": "dev-master",
+    "easycorp/easyadmin-bundle": "^5.0",
     "doctrine/doctrine-bundle": "^3.2",
     "doctrine/doctrine-migrations-bundle": "^4.0",
     "doctrine/orm": "^3.3",
@@ -26,7 +29,9 @@
     "doctrine/doctrine-fixtures-bundle": "^4.3",
     "friendsofphp/php-cs-fixer": "^3.95",
     "phpstan/phpstan": "^2.2",
-    "phpunit/phpunit": "^12.0"
+    "phpunit/phpunit": "^12.0",
+    "symfony/panther": "^2.3",
+    "symfony/test-pack": "^1.2"
   },
   "autoload": {
     "psr-4": {
@@ -42,6 +47,8 @@
     { "type": "path", "url": "../Administering", "options": { "symlink": true } },
     { "type": "path", "url": "../Cataloging", "options": { "symlink": true } },
     { "type": "path", "url": "../Cruding", "options": { "symlink": true } },
+    { "type": "path", "url": "../Collectioning", "options": { "symlink": true } },
+    { "type": "path", "url": "../Tabling", "options": { "symlink": true } },
     { "type": "path", "url": "../Interfacing", "options": { "symlink": true } },
     { "type": "path", "url": "../Locating", "options": { "symlink": true } },
     { "type": "path", "url": "../Navigating", "options": { "symlink": true } },
@@ -61,6 +68,11 @@
     "cs:fix": "php-cs-fixer fix",
     "phpstan": "phpstan analyse -c phpstan.neon",
     "test": "phpunit",
-    "test:coverage": "@php -d xdebug.mode=coverage vendor/bin/phpunit --coverage-text=var/coverage.txt --path-coverage"
+    "test:coverage": "@php -d xdebug.mode=coverage vendor/bin/phpunit --coverage-text=var/coverage.txt --path-coverage",
+    "schema:parity": [
+      "php bin/console doctrine:schema:validate --env=test",
+      "php bin/console doctrine:migrations:up-to-date --env=test"
+    ],
+    "gate": "@php .gating/bin/gating check --target=."
   }
 }
