@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Retailing\Form\Retail;
+namespace App\Retailing\Form;
 
 use App\Retailing\Entity\Retail\RetailEntity;
-use App\Retailing\Enum\Retail\RetailKind;
-use App\Retailing\Service\Retail\RetailCategoryVocabularyService;
-use App\Retailing\Service\Retail\RetailKindVocabularyService;
+use App\Retailing\Enum\RetailKind;
+use App\Retailing\Service\RetailCategoryVocabularyService;
+use App\Retailing\Service\RetailKindVocabularyService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;

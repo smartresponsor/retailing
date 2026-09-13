@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Retailing\Entity\Retail;
 
-use App\Retailing\Repository\Retail\RetailResponseRepository;
+use App\Retailing\Repository\RetailResponseRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RetailResponseRepository::class)]

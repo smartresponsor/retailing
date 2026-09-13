@@ -6,7 +6,7 @@ namespace App\Retailing\DataFixtures;
 
 use App\Retailing\Entity\Retail\RetailEntity;
 use App\Retailing\Entity\Retail\RetailResponseEntity;
-use App\Retailing\Repository\Retail\RetailResponseRepository;
+use App\Retailing\Repository\RetailResponseRepository;
 use App\Retailing\Service\Marketplace\RetailResponseAcceptanceService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;

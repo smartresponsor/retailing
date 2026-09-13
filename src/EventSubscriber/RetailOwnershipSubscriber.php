@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Retailing\Subscriber\Retail;
+namespace App\Retailing\EventSubscriber;
 
 use App\Cruding\DTO\CrudMutationLifecycleContextDTO;
 use App\Cruding\ServiceInterface\CrudMutationLifecycleSubscriberInterface;

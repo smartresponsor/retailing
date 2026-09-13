@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Retailing\DataFixtures;
 
 use App\Retailing\Entity\Retail\RetailEntity;
-use App\Retailing\Enum\Retail\RetailKind;
+use App\Retailing\Enum\RetailKind;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\ORM\EntityManagerInterface;

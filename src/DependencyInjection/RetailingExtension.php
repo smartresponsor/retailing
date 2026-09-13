@@ -16,14 +16,14 @@ final class RetailingExtension extends Extension
     {
         $loader = new YamlFileLoader($container, new FileLocator(dirname(__DIR__, 2) . '/config'));
         $loader->load('services.yaml');
-        $loader->load('services.bundle.yaml');
+        $loader->load('retail_services_bundle.yaml');
 
         $environment = $container->getParameter('kernel.environment');
         if (!is_string($environment)) {
             throw new \LogicException('The kernel.environment parameter must be a string.');
         }
         if (in_array($environment, ['dev', 'test'], true)) {
-            $loader->load('services.fixtures.yaml');
+            $loader->load('retail_services_fixtures.yaml');
         }
     }
 

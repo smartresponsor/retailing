@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Retailing\Value\Retail;
+namespace App\Retailing\ValueObject;
 
 use App\Retailing\Entity\Retail\RetailEntity;
 use App\Viewing\ValueInterface\View\ViewObjectPayloadInterface;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Retailing\Enum\Retail;
+namespace App\Retailing\Enum;
 
 enum RetailKind: string
 {

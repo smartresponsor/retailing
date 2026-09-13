@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Retailing\Repository\Retail;
+namespace App\Retailing\Repository;
 
 use App\Retailing\Entity\Retail\RetailEntity;
-use App\Retailing\Enum\Retail\RetailKind;
+use App\Retailing\Enum\RetailKind;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
