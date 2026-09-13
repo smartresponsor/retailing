@@ -117,3 +117,35 @@
 - Re-ran PHPStan: no errors. Re-ran PHPUnit: 4 tests / 8 assertions green. Re-ran PHP-CS-Fixer check: 0 files fixable.
 - RC validation then reported all executable validation commands green; the only temporary blocker was the expected uncommitted change state prior to this iteration's commit.
 - The `placeholder` warning in `RetailType` remains a scanner false positive caused by Symfony's legitimate `ChoiceType` `placeholder` option, not a TODO/stub marker.
+
+## engine-20260913-retailing-rc-continuation
+
+### Iteration 1 — RECONNAISSANCE_AND_BASELINE
+
+- Authoritative workspace: `D:\PhpstormProjects\www\Retailing`; current branch `engine/retailing-b47af5-rc` was clean and synchronized with its upstream at reconnaissance start.
+- Re-read the active Retailing Composer/runtime surface plus the mandatory dependency contour for Objecting, Cruding, Viewing, and Interfacing, and the Canonization/Gating contract sources.
+- Canonization rules consulted directly: Canon003, Canon007, Canon008, Canon010, Canon018, Canon019, Canon021, Canon023, Canon024, Canon025, Canon026, Canon029, Canon034, Canon039, and Canon040. Target mapping: `retailing/retail` => `App\\Retailing\\` plus `Retail*`; generic CRUD remains in Cruding; local development dependencies use symlinked path repositories; PHP/Symfony baseline is 8.4/8.1+; quality tooling and executable PHPUnit coverage evidence are mandatory.
+- Market/maturity baseline: mature commerce stacks separate product/catalog, pricing, inventory/order/fulfillment and channel/marketplace concerns. Retailing remains the marketplace listing/request/response and matching boundary; adjacent domain ownership must not be folded into this component merely for feature growth.
+- RC-critical workstream: verify the prior Cruding-contract/tooling repair and close factual test/coverage debt without changing Retailing production semantics unnecessarily. Growth workstream remains post-RC: richer marketplace ranking, commercial UX and additional integrations only after correctness/operability gates are green.
+- Initial executable gates: `composer validate --strict --check-lock`, PHP-CS-Fixer, PHPStan and PHPUnit were green; persistent coverage exposed a real Canon040 blocker at 1.08% lines, 0% methods and 80.95% branches, classifying the repository as `HIGH_TEST_DEBT`.
+- Material risk: coverage debt was substantially larger than the previous journal implied, so RC cannot be accepted from PHPUnit pass/fail alone.
+
+### Iteration 2 — MATERIAL_IMPLEMENTATION
+
+- Replaced the four-case enum-only test with a focused Retailing behavioral suite covering entity normalization/publication/selection invariants, response lifecycle, availability and service-area matching, pricing normalization, order-intent creation, Cataloging vocabulary adaptation/fallback, accepted-response commercial projection, and Viewing payload production.
+- Kept production PHP unchanged; test design follows public sibling contracts rather than reaching into neighboring implementation internals.
+- PHPUnit grew from 4 tests / 8 assertions to 24 tests / 128 assertions with no notices. PHPStan and PHP-CS-Fixer remain green.
+- Coverage improved materially to 45.67% lines, 37.14% methods, and 78.76% branches. Branch coverage now exceeds Canon040's 70% target, while line/method coverage remain below the 50% `HIGH_TEST_DEBT` boundary and require continuation.
+
+### RC canonicalization and standalone acceptance — 2026-09-13
+
+- Materialized the canonical Gating severity policy and executed the full local Gating contract. The first actionable run exposed technical-role placement, premature subject folders, silent fallback, standalone dependency baseline, YAML prefixing, and behavioral tooling debt; those hard failures were repaired rather than suppressed.
+- Canonicalized Retailing source topology without changing marketplace responsibility: Factory, Normalizer, EventSubscriber, Provider and ValueObject now live under their technical role roots; premature `Retail/` folders under Enum/Form/Repository/Service were flattened; service configuration files now use the `retail_` subject prefix.
+- Closed the Cataloging vocabulary silent-failure path: Cataloging metadata may fall back to the declared legacy tree, but failure of both sources is now observable instead of being converted into an empty successful result.
+- Completed the Canon022 standalone dependency baseline with Collectioning, Tabling and EasyAdmin; development uses sibling path repositories, while `composer.prod.json` uses the actual sibling Git remotes, including the repository's factual `tabling-.git` remote.
+- Added standalone bundle/runtime wiring for Cataloging, Locating, EasyAdmin and Security plus a minimal standalone security configuration. `cache:clear --env=test --no-warmup` is green, proving the Symfony container compiles in standalone mode.
+- Added Canon041 tooling: Symfony Test Pack, Panther, repository-local Playwright, Playwright configuration and an executable browser-harness smoke. `npm test` is green with 1 Playwright test.
+- Final PHP gates are green: Composer strict lock validation, PHP syntax on all changed/untracked PHP files, PHP-CS-Fixer, PHPStan, PHPUnit 33 tests / 177 assertions, and persistent Xdebug coverage execution.
+- Final Gating result: 58 rules, 0 failed, 3 warnings, 15 skipped. Canon011, Canon022, Canon024/025, Canon030 and Canon041 pass. Remaining warnings are non-blocking debt: Canon031 PHPDoc coverage, Canon040 PHP line/method coverage (54.4% lines, 50.4% methods; branch coverage 73.8% passes target), and Canon042 behavioral/UI coverage evidence because no reproducible application-surface denominator has yet been defined.
+- Security audits are green: Composer reports no advisories; npm audit reports 0 vulnerabilities.
+- Database-backed schema parity is not claimed as green: the standalone container compiles, but `doctrine:schema:validate`/migration currentness require an external PostgreSQL `DATABASE_URL`, which is not configured in this workspace. No fake SQLite substitution or fabricated migration/coverage evidence was introduced.
