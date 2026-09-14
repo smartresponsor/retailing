@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Retailing\Tests\Unit\Enum\Retail;
+namespace App\Retailing\Tests\Unit;
 
 use App\Cataloging\Entity\Catalog\CatalogCatalogEntity;
 use App\Cruding\DTO\CrudContextDTO;
 use App\Cruding\DTO\CrudMutationLifecycleContextDTO;
+use App\Cruding\DTO\Entrypoint\CrudServiceContextDTO;
+use App\Cruding\DTO\Entrypoint\CrudServiceResultDTO;
 use App\Cataloging\Entity\Catalog\CatalogCategoryEntity;
 use App\Cataloging\ServiceInterface\CatalogCategoryLookupServiceInterface;
 use App\Cataloging\ServiceInterface\CatalogCategoryVocabularyServiceInterface;
@@ -18,7 +20,15 @@ use App\Retailing\Entity\Retail\RetailResponseEntity;
 use App\Retailing\Enum\RetailKind;
 use App\Retailing\Form\RetailType;
 use App\Retailing\Service\Marketplace\RetailAvailabilityMatchService;
+use App\Retailing\Service\Marketplace\RetailCandidateMatchService;
+use App\Retailing\Service\Marketplace\RetailResponseAcceptanceService;
 use App\Retailing\Factory\RetailOrderIntentFactory;
+use App\Retailing\DataFixtures\RetailCustomerRequestFixtures;
+use App\Retailing\DataFixtures\RetailMarketplaceFixtures;
+use App\Retailing\DataFixtures\RetailResponseFixtures;
+use App\Retailing\Kernel;
+use App\Retailing\RetailingBundle;
+use App\Retailing\Service\Http\Retail\RetailNewService;
 use App\Retailing\Service\Marketplace\RetailServiceAreaMatchService;
 use App\Retailing\Normalizer\RetailPricingProfileNormalizer;
 use App\Retailing\Service\RetailCategoryVocabularyService;
@@ -26,12 +36,19 @@ use App\Retailing\Service\RetailKindVocabularyService;
 use App\Retailing\Service\RetailService;
 use App\Retailing\Repository\RetailRepository;
 use App\Retailing\EventSubscriber\RetailOwnershipSubscriber;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use App\Retailing\ValueObject\RetailViewPayload;
 use App\Retailing\Provider\RetailViewProvider;
@@ -880,6 +897,395 @@ final class RetailingBehaviorTest extends TestCase
 
         $this->expectException(\LogicException::class);
         (new RetailingExtension())->load([], $container);
+    }
+
+    public function testOrderIntentRejectsInvalidParticipantsAndCommercialTerms(): void
+    {
+        $factory = new RetailOrderIntentFactory();
+        $task = $this->completeListing(RetailKind::Task, 'access', 'customer-1');
+        $service = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-1');
+        $this->setId($service, 701);
+
+        foreach ([
+            fn() => $factory->forCandidate($this->completeListing(RetailKind::Goods, 'access', 'customer-1'), $service),
+            fn() => $factory->forCandidate($task, $this->completeListing(RetailKind::Task, 'vendor', 'vendor-1')),
+        ] as $operation) {
+            try {
+                $operation();
+                self::fail('Invalid order-intent participant accepted.');
+            } catch (\InvalidArgumentException) {
+                self::addToAssertionCount(1);
+            }
+        }
+
+        $missingCustomer = $this->completeListing(RetailKind::Task, 'access', 'customer-1');
+        $missingCustomer->setOwner(null);
+        try {
+            $factory->forCandidate($missingCustomer, $service);
+            self::fail('Missing customer identity accepted.');
+        } catch (\DomainException) {
+            self::addToAssertionCount(1);
+        }
+
+        $eurService = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-1');
+        $eurService->setCurrency('EUR');
+        try {
+            $factory->forCandidate($task, $eurService);
+            self::fail('Currency mismatch accepted.');
+        } catch (\DomainException) {
+            self::addToAssertionCount(1);
+        }
+
+        $service->setPricingProfile(['mode' => 'quote']);
+        $service->setAmountMinor(null);
+        self::assertSame(['status' => 'agreed_price_required', 'payload' => null], $factory->forCandidate($task, $service));
+
+        try {
+            $factory->forCandidate($task, $service, -1);
+            self::fail('Negative agreed amount accepted.');
+        } catch (\InvalidArgumentException) {
+            self::addToAssertionCount(1);
+        }
+
+        $selection = new \ReflectionProperty($task, 'selectionProfile');
+        $selection->setValue($task, [
+            'serviceId' => '701',
+            'vendorId' => 'vendor-1',
+            'agreedAmountMinor' => 4321,
+            'currency' => 'USD',
+        ]);
+        $ready = $factory->forCandidate($task, $service);
+        self::assertSame('ready', $ready['status']);
+        self::assertSame('43.21', $ready['payload']['items'][0]['price'] ?? null);
+
+        foreach ([
+            ['serviceId' => '999', 'vendorId' => 'vendor-1', 'agreedAmountMinor' => 100, 'currency' => 'USD'],
+            ['serviceId' => '701', 'vendorId' => 'other-vendor', 'agreedAmountMinor' => 100, 'currency' => 'USD'],
+            ['serviceId' => '701', 'vendorId' => 'vendor-1', 'agreedAmountMinor' => 100, 'currency' => 'EUR'],
+        ] as $invalidSelection) {
+            $selection->setValue($task, $invalidSelection);
+            self::assertSame(
+                ['status' => 'agreed_price_required', 'payload' => null],
+                $factory->forCandidate($task, $service),
+            );
+        }
+    }
+
+    public function testFixtureGuardsGroupsAndDeterministicProfiles(): void
+    {
+        $objectManager = $this->createStub(ObjectManager::class);
+        $customer = new RetailCustomerRequestFixtures();
+        $marketplace = new RetailMarketplaceFixtures();
+
+        self::assertSame(['retailing_customer_requests'], RetailCustomerRequestFixtures::getGroups());
+        self::assertSame(['retailing_marketplace'], RetailMarketplaceFixtures::getGroups());
+        $customer->load($objectManager);
+        $marketplace->load($objectManager);
+        self::addToAssertionCount(2);
+
+        $customerAvailability = new \ReflectionMethod($customer, 'availability');
+        self::assertSame('10:00', $customerAvailability->invoke($customer, 'emily.customer@smartresponsor.local')['preferredWindows']['saturday'][0]['start']);
+        self::assertArrayHasKey('thursday', $customerAvailability->invoke($customer, 'james.customer@smartresponsor.local')['preferredWindows']);
+        self::assertArrayHasKey('tuesday', $customerAvailability->invoke($customer, 'sophia.customer@smartresponsor.local')['preferredWindows']);
+        self::assertSame('16:00', $customerAvailability->invoke($customer, 'other@example.test')['preferredWindows']['saturday'][0]['end']);
+
+        $availability = new \ReflectionMethod($marketplace, 'availability');
+        self::assertSame(24, $availability->invoke($marketplace, 'Katy Home Care')['minimumLeadHours']);
+        self::assertSame(4, $availability->invoke($marketplace, 'OneTasker Houston')['minimumLeadHours']);
+
+        $serviceArea = new \ReflectionMethod($marketplace, 'serviceArea');
+        self::assertSame('radius', $serviceArea->invoke($marketplace, 'Katy Home Care')['mode']);
+        self::assertContains('77024', $serviceArea->invoke($marketplace, 'Bayou Assembly & Mounting')['postalCodes']);
+        self::assertContains('77493', $serviceArea->invoke($marketplace, 'OneTasker Houston')['postalCodes']);
+
+        $description = new \ReflectionMethod($marketplace, 'description');
+        self::assertStringContainsString('TV Mounting by OneTasker Houston', $description->invoke($marketplace, 'OneTasker Houston', 'TV Mounting'));
+
+        $acceptance = (new \ReflectionClass(RetailResponseAcceptanceService::class))->newInstanceWithoutConstructor();
+        $responses = new RetailResponseFixtures($acceptance);
+        self::assertSame(['retailing_responses'], RetailResponseFixtures::getGroups());
+        $this->expectException(\RuntimeException::class);
+        $responses->load($objectManager);
+    }
+
+    public function testCustomerRequestFixturesLoadPublishedTasksWithoutDatabase(): void
+    {
+        $connection = $this->createStub(Connection::class);
+        $connection->method('fetchOne')->willReturnOnConsecutiveCalls(
+            11,
+            'cat-1',
+            12,
+            'cat-2',
+            13,
+            'cat-3',
+            14,
+            'cat-4',
+        );
+        $repository = $this->createStub(EntityRepository::class);
+        $repository->method('findOneBy')->willReturn(null);
+        $persisted = [];
+        $manager = $this->createStub(EntityManagerInterface::class);
+        $manager->method('getConnection')->willReturn($connection);
+        $manager->method('getRepository')->willReturn($repository);
+        $manager->method('persist')->willReturnCallback(static function (object $entity) use (&$persisted): void {
+            $persisted[] = $entity;
+        });
+
+        (new RetailCustomerRequestFixtures())->load($manager);
+
+        self::assertCount(4, $persisted);
+        foreach ($persisted as $entity) {
+            self::assertInstanceOf(RetailEntity::class, $entity);
+            self::assertSame(RetailKind::Task, $entity->getKind());
+            self::assertSame('published', $entity->getObjectStatus());
+            self::assertSame('access', $entity->getOwnerType());
+        }
+    }
+
+    public function testMarketplaceFixturesLoadPublishedServicesWithoutDatabase(): void
+    {
+        $connection = $this->createStub(Connection::class);
+        $connection->method('fetchOne')->willReturnOnConsecutiveCalls(
+            101,
+            'cat-1',
+            'cat-2',
+            'cat-3',
+            'cat-4',
+            'cat-5',
+            'cat-6',
+            'cat-7',
+            'cat-8',
+            false,
+            false,
+        );
+        $repository = $this->createStub(EntityRepository::class);
+        $repository->method('findOneBy')->willReturn(null);
+        $persisted = [];
+        $manager = $this->createStub(EntityManagerInterface::class);
+        $manager->method('getConnection')->willReturn($connection);
+        $manager->method('getRepository')->willReturn($repository);
+        $manager->method('persist')->willReturnCallback(static function (object $entity) use (&$persisted): void {
+            $persisted[] = $entity;
+        });
+
+        (new RetailMarketplaceFixtures())->load($manager);
+
+        self::assertCount(8, $persisted);
+        self::assertContainsOnlyInstancesOf(RetailEntity::class, $persisted);
+        /** @var list<RetailEntity> $persisted */
+        self::assertSame('TV Mounting', $persisted[0]->getTitle());
+        self::assertSame(RetailKind::Service, $persisted[0]->getKind());
+        self::assertSame('published', $persisted[0]->getObjectStatus());
+        self::assertSame('vendor', $persisted[0]->getOwnerType());
+        self::assertArrayHasKey('serviceCallAmountMinor', $persisted[1]->getPricingProfile() ?? []);
+    }
+
+    public function testResponseFixturesFailFastWhenRequiredCustomerIsMissing(): void
+    {
+        $connection = $this->createStub(Connection::class);
+        $connection->method('fetchOne')->willReturn(false);
+        $repository = $this->createStub(EntityRepository::class);
+        $manager = $this->createStub(EntityManagerInterface::class);
+        $manager->method('getConnection')->willReturn($connection);
+        $manager->method('getRepository')->willReturn($repository);
+        $acceptance = (new \ReflectionClass(RetailResponseAcceptanceService::class))->newInstanceWithoutConstructor();
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Marketplace response fixture customer is missing');
+        (new RetailResponseFixtures($acceptance))->load($manager);
+    }
+
+    public function testResponseAcceptanceRejectsInvalidLifecycleBeforePersistenceAccess(): void
+    {
+        $service = (new \ReflectionClass(RetailResponseAcceptanceService::class))->newInstanceWithoutConstructor();
+        $task = $this->completeListing(RetailKind::Task, 'access', 'customer-1');
+        $draft = new RetailResponseEntity($task, 'vendor-1');
+
+        try {
+            $service->accept($draft);
+            self::fail('Draft response accepted.');
+        } catch (\DomainException) {
+            self::addToAssertionCount(1);
+        }
+
+        $draft->setPricingProfile(['model' => 'quote', 'amountMinor' => 100]);
+        $draft->submit();
+        try {
+            $service->accept($draft);
+            self::fail('Transient submitted response accepted.');
+        } catch (\DomainException) {
+            self::addToAssertionCount(1);
+        }
+
+        $other = new RetailResponseEntity($task, 'vendor-2');
+        $this->expectException(\DomainException::class);
+        $service->synchronizeAccepted($other);
+    }
+
+    public function testAvailabilityMatcherCoversMalformedAndMissingWindows(): void
+    {
+        $matcher = new RetailAvailabilityMatchService();
+
+        self::assertNull($matcher->match(
+            ['preferredWindows' => [0 => [['start' => '09:00', 'end' => '10:00']], 'monday' => 'invalid']],
+            ['weeklyWindows' => ['tuesday' => [['start' => '09:00', 'end' => '10:00']]]],
+        ));
+        self::assertNull($matcher->match(
+            ['preferredWindows' => ['monday' => ['invalid', ['start' => '09:00', 'end' => '10:00']]]],
+            ['weeklyWindows' => ['monday' => ['invalid']]],
+        ));
+        self::assertNull($matcher->match(
+            ['preferredWindows' => ['monday' => [['start' => '10:00', 'end' => '09:00']]]],
+            ['weeklyWindows' => ['monday' => [['start' => '08:00', 'end' => '11:00']]]],
+        ));
+    }
+
+    public function testServiceAreaMatcherCoversValidationAndDistanceBoundaries(): void
+    {
+        $distance = $this->createStub(LocationDistanceServiceInterface::class);
+        $distance->method('meters')->willReturnOnConsecutiveCalls(40000.0, 1000.0);
+        $matcher = new RetailServiceAreaMatchService($distance);
+
+        self::assertSame(['status' => 'requires_geovalidation', 'distanceMeters' => null], $matcher->match(null, ['mode' => 'postal_codes', 'postalCodes' => ['77002']]));
+        self::assertSame(['status' => 'requires_geovalidation', 'distanceMeters' => null], $matcher->match(['postalCode' => []], ['mode' => 'postal_codes', 'postalCodes' => ['77002']]));
+        self::assertSame(['status' => 'requires_geovalidation', 'distanceMeters' => null], $matcher->match(null, ['mode' => 'radius', 'origin' => ['latitude' => 29.7, 'longitude' => -95.3], 'radiusMiles' => 10]));
+        self::assertSame(['status' => 'requires_geovalidation', 'distanceMeters' => null], $matcher->match(['postalCode' => '77002'], ['mode' => 'postal_codes', 'postalCodes' => 'invalid']));
+        self::assertSame(['status' => 'requires_geovalidation', 'distanceMeters' => null], $matcher->match(
+            ['geoPoint' => ['lat' => 91, 'lng' => -95]],
+            ['mode' => 'radius', 'origin' => ['lat' => 29.7, 'lng' => -95.3], 'radiusMiles' => 10],
+        ));
+        self::assertSame(['status' => 'requires_geovalidation', 'distanceMeters' => null], $matcher->match(
+            ['geoPoint' => ['lat' => 'invalid', 'lng' => -95]],
+            ['mode' => 'radius', 'origin' => ['lat' => 29.7, 'lng' => -95.3], 'radiusMiles' => 10],
+        ));
+        self::assertNull($matcher->match(
+            ['geoPoint' => ['lat' => 29.7, 'lng' => -95.3]],
+            ['mode' => 'radius', 'origin' => ['lat' => 29.8, 'lng' => -95.4], 'radiusMiles' => 10],
+        ));
+        self::assertSame(['status' => 'exact', 'distanceMeters' => 1000.0], $matcher->match(
+            ['geoPoint' => ['lat' => '29.7', 'lon' => '-95.3']],
+            ['mode' => 'radius', 'origin' => ['latitude' => 29.8, 'longitude' => -95.4], 'radiusMiles' => 10],
+        ));
+    }
+
+    public function testRetailNewPlacementHandoffForVendorAndActorFallback(): void
+    {
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
+        $urlGenerator->method('generate')->willReturn('/crud/fulfillment/new');
+        $candidateMatcher = (new \ReflectionClass(RetailCandidateMatchService::class))->newInstanceWithoutConstructor();
+        $service = new RetailNewService($urlGenerator, $candidateMatcher, new RetailOrderIntentFactory());
+        $afterDefault = new \ReflectionMethod($service, 'afterDefault');
+
+        $vendor = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-77');
+        $this->setId($vendor, 77);
+        $request = Request::create('/retail/new', 'POST');
+        $request->setSession(new Session(new MockArraySessionStorage()));
+        $context = new CrudServiceContextDTO(
+            $request,
+            new CrudContextDTO('front', 'create', 'retail', RetailEntity::class, 'id', null, null),
+            $vendor,
+        );
+        $result = CrudServiceResultDTO::response(new RedirectResponse('/original'));
+        $returned = $afterDefault->invoke($service, $context, $result);
+        self::assertInstanceOf(RedirectResponse::class, $returned->payload());
+        self::assertSame('/crud/fulfillment/new', $returned->payload()->getTargetUrl());
+        $placement = $request->getSession()->get('retail_placement');
+        self::assertSame('77', $placement['retailId'] ?? null);
+        self::assertSame('vendor-77', $placement['vendorId'] ?? null);
+        self::assertSame('vendor-77', $placement['tenantId'] ?? null);
+
+        $goods = $this->completeListing(RetailKind::Goods, 'access', 'temporary');
+        $goods->setOwner(null);
+        $this->setId($goods, 88);
+        $fallbackRequest = Request::create('/retail/new', 'POST');
+        $fallbackRequest->attributes->set('_crud_actor_identity_value', 515);
+        $fallbackRequest->setSession(new Session(new MockArraySessionStorage()));
+        $fallbackContext = new CrudServiceContextDTO(
+            $fallbackRequest,
+            new CrudContextDTO('front', 'create', 'retail', RetailEntity::class, 'id', null, null),
+            $goods,
+        );
+        $afterDefault->invoke($service, $fallbackContext, $result);
+        self::assertSame('515', $fallbackRequest->getSession()->get('retail_placement')['ownerId'] ?? null);
+
+        $userIdGoods = $this->completeListing(RetailKind::Goods, 'access', 'temporary');
+        $userIdGoods->setOwner(null);
+        $this->setId($userIdGoods, 89);
+        $userIdRequest = Request::create('/retail/new', 'POST');
+        $userIdRequest->attributes->set('_crud_actor_user_id', 616);
+        $userIdRequest->setSession(new Session(new MockArraySessionStorage()));
+        $userIdContext = new CrudServiceContextDTO(
+            $userIdRequest,
+            new CrudContextDTO('front', 'create', 'retail', RetailEntity::class, 'id', null, null),
+            $userIdGoods,
+        );
+        $afterDefault->invoke($service, $userIdContext, $result);
+        self::assertSame('616', $userIdRequest->getSession()->get('retail_placement')['ownerId'] ?? null);
+
+        $getRequest = Request::create('/retail/new', 'GET');
+        $getContext = new CrudServiceContextDTO(
+            $getRequest,
+            new CrudContextDTO('front', 'create', 'retail', RetailEntity::class, 'id', null, null),
+            $goods,
+        );
+        self::assertSame($result, $afterDefault->invoke($service, $getContext, $result));
+    }
+
+    public function testRetailNewGuardPathsAndPublishedTaskWithoutCategory(): void
+    {
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
+        $urlGenerator->method('generate')->willReturn('/crud/fulfillment/new');
+        $distance = $this->createStub(LocationDistanceServiceInterface::class);
+        $candidateMatcher = new RetailCandidateMatchService(
+            (new \ReflectionClass(RetailRepository::class))->newInstanceWithoutConstructor(),
+            new RetailServiceAreaMatchService($distance),
+            new RetailAvailabilityMatchService(),
+        );
+        $service = new RetailNewService($urlGenerator, $candidateMatcher, new RetailOrderIntentFactory());
+        $afterDefault = new \ReflectionMethod($service, 'afterDefault');
+        $crudContext = new CrudContextDTO('front', 'create', 'retail', RetailEntity::class, 'id', null, null);
+
+        $post = Request::create('/retail/new', 'POST');
+        $plainResult = CrudServiceResultDTO::continueDefault();
+        self::assertSame($plainResult, $afterDefault->invoke($service, new CrudServiceContextDTO($post, $crudContext, new RetailEntity()), $plainResult));
+
+        $redirect = CrudServiceResultDTO::response(new RedirectResponse('/original'));
+        self::assertSame($redirect, $afterDefault->invoke($service, new CrudServiceContextDTO($post, $crudContext, new \stdClass()), $redirect));
+
+        $draft = $this->completeListing(RetailKind::Goods, 'access', 'owner-1');
+        $postWithSession = Request::create('/retail/new', 'POST');
+        $postWithSession->setSession(new Session(new MockArraySessionStorage()));
+        self::assertSame($redirect, $afterDefault->invoke($service, new CrudServiceContextDTO($postWithSession, $crudContext, $draft), $redirect));
+
+        $this->setId($draft, 22);
+        $postWithoutSession = Request::create('/retail/new', 'POST');
+        self::assertSame($redirect, $afterDefault->invoke($service, new CrudServiceContextDTO($postWithoutSession, $crudContext, $draft), $redirect));
+
+        $draft->setOwner(null);
+        $noOwnerRequest = Request::create('/retail/new', 'POST');
+        $noOwnerRequest->setSession(new Session(new MockArraySessionStorage()));
+        self::assertSame($redirect, $afterDefault->invoke($service, new CrudServiceContextDTO($noOwnerRequest, $crudContext, $draft), $redirect));
+
+        $task = $this->completeListing(RetailKind::Task, 'access', 'customer-22');
+        $task->publish();
+        $task->setCategoryId(null);
+        $this->setId($task, 23);
+        $taskRequest = Request::create('/retail/new', 'POST');
+        $taskRequest->setSession(new Session(new MockArraySessionStorage()));
+        $taskResult = $afterDefault->invoke($service, new CrudServiceContextDTO($taskRequest, $crudContext, $task), $redirect);
+        self::assertInstanceOf(RedirectResponse::class, $taskResult->payload());
+        self::assertSame([], $taskRequest->getSession()->get('retail_placement')['candidateServices'] ?? null);
+
+        $invalidTask = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-1');
+        $this->expectException(\InvalidArgumentException::class);
+        $candidateMatcher->matchForTask($invalidTask);
+    }
+
+    public function testStandaloneKernelAndBundleSurfaces(): void
+    {
+        $kernel = new Kernel('test', false);
+        self::assertSame(dirname(__DIR__, 2), $kernel->getProjectDir());
+        self::assertInstanceOf(RetailingBundle::class, new RetailingBundle());
     }
 
     private function completeListing(RetailKind $kind, string $ownerType, string $owner): RetailEntity

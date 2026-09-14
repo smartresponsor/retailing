@@ -149,3 +149,18 @@
 - Final Gating result: 58 rules, 0 failed, 3 warnings, 15 skipped. Canon011, Canon022, Canon024/025, Canon030 and Canon041 pass. Remaining warnings are non-blocking debt: Canon031 PHPDoc coverage, Canon040 PHP line/method coverage (54.4% lines, 50.4% methods; branch coverage 73.8% passes target), and Canon042 behavioral/UI coverage evidence because no reproducible application-surface denominator has yet been defined.
 - Security audits are green: Composer reports no advisories; npm audit reports 0 vulnerabilities.
 - Database-backed schema parity is not claimed as green: the standalone container compiles, but `doctrine:schema:validate`/migration currentness require an external PostgreSQL `DATABASE_URL`, which is not configured in this workspace. No fake SQLite substitution or fabricated migration/coverage evidence was introduced.
+
+### Debt hardening baseline — 2026-09-13
+
+- Started from merged `origin/master` (`c4d9f06`) on dedicated branch `engine/retailing-debt-hardening-20260913` with a clean worktree.
+- Current Canon040 evidence: 54.43% lines, 50.35% methods, 73.79% branches. Domain entities and vocabulary are already well covered; the aggregate deficit is concentrated in previously unexecuted infrastructure/fixture/entrypoint surfaces.
+- Selected next work: raise meaningful coverage through fixture guards/helpers, order-intent edge contracts, RetailNew placement/session handoff, kernel/bundle runtime surfaces, and remaining matching branches; do not game source filtering or fabricate Canon042 counters.
+- Moved the broad behavioral suite from the obsolete `tests/Unit/Enum/Retail/` subject path to `tests/Unit/` so test topology reflects its actual cross-component behavioral scope before adding a dedicated debt-coverage suite.
+
+### Debt hardening acceptance — 2026-09-13
+
+- Expanded the behavioral suite through real previously unexecuted contracts: deterministic fixture loaders and guards, RetailNew session/identity handoff paths, order-intent selection/failure branches, marketplace availability/service-area validation, response-acceptance lifecycle guards, and standalone kernel/bundle surfaces. No production source filtering or production behavior was changed to raise coverage.
+- PHPUnit is green at 44 tests / 262 assertions; PHPStan reports 0 errors; PHP-CS-Fixer check is green; changed PHP syntax lint is green; Composer strict lock validation is green; the repository-local Playwright smoke remains green at 1/1.
+- Canon040 coverage improved from 54.43% lines / 50.35% methods / 73.79% branches to 80.08% lines (812/1014) / 58.16% methods (82/141) / 80.28% branches (859/1070). Line and branch targets are now met; method/path completeness remains the explicit residual test debt rather than being inflated with artificial assertions.
+- Final Gating result remains 58 rules, 0 failed, 3 warnings, 15 skipped. The warnings are Canon031 PHPDoc coverage, Canon040 method coverage, and Canon042 behavioral/UI coverage evidence. Canon042 counters were not fabricated because a reproducible application-surface denominator is still not defined.
+- Retailing owns nine tracked Doctrine migrations. Database-backed schema/migration parity remains a separate runtime acceptance step requiring the canonical PostgreSQL `DATABASE_URL`; the `data` connection was not replaced with SQLite for test convenience.
