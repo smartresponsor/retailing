@@ -8,9 +8,9 @@ use App\Cruding\DTO\Entrypoint\CrudServiceContextDTO;
 use App\Cruding\DTO\Entrypoint\CrudServiceResultDTO;
 use App\Cruding\Service\CrudAbstractService;
 use App\Retailing\Entity\Retail\RetailEntity;
-use App\Retailing\Enum\Retail\RetailKind;
+use App\Retailing\Enum\RetailKind;
 use App\Retailing\Service\Marketplace\RetailCandidateMatchService;
-use App\Retailing\Service\Marketplace\RetailOrderIntentFactory;
+use App\Retailing\Factory\RetailOrderIntentFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 

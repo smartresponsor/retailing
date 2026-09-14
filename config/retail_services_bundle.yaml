@@ -3,10 +3,10 @@ services:
         autowire: true
         autoconfigure: true
 
-    App\Retailing\Form\Retail\RetailType: ~
-    App\Retailing\Service\Pricing\RetailPricingProfileNormalizer: ~
+    App\Retailing\Form\RetailType: ~
+    App\Retailing\Normalizer\RetailPricingProfileNormalizer: ~
 
-    App\Retailing\Subscriber\Retail\RetailOwnershipSubscriber:
+    App\Retailing\EventSubscriber\RetailOwnershipSubscriber:
         tags: ['cruding.mutation_lifecycle_subscriber']
 
     App\Retailing\Service\Http\Retail\RetailNewService:

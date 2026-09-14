@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "18feeb538751edbb72117e47994611e1",
+    "content-hash": "49d8486d2ab9763ddab6b87f467a6111",
     "packages": [
         {
             "name": "administering/administration",
@@ -1838,6 +1838,73 @@
             }
         },
         {
+            "name": "collectioning/collection",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../Collectioning",
+                "reference": "9fc56c8626ae5d2dd751cbf45fa28c8869095a7f"
+            },
+            "require": {
+                "doctrine/doctrine-bundle": "^3.2",
+                "doctrine/orm": "^3.0",
+                "php": "^8.4",
+                "symfony/dependency-injection": "^8.1",
+                "symfony/framework-bundle": "^8.1",
+                "symfony/http-foundation": "^8.1",
+                "symfony/http-kernel": "^8.1",
+                "symfony/mercure": "^0.8.0 || ^0.9.0",
+                "symfony/yaml": "^8.1"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.95",
+                "phpstan/phpstan": "^2.2",
+                "phpunit/phpunit": "^13.3"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "symfony": {
+                    "bundle": "App\\Collectioning\\CollectioningBundle"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "App\\Collectioning\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "App\\Collectioning\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "phpunit tests"
+                ],
+                "test:coverage": [
+                    "@php -r \"if (!is_dir('var/coverage')) { mkdir('var/coverage', 0777, true); }\"",
+                    "@php -d xdebug.mode=coverage vendor/bin/phpunit --branch-coverage --coverage-text=var/coverage/summary.txt"
+                ],
+                "phpstan": [
+                    "phpstan analyse -c phpstan.neon"
+                ],
+                "cs:check": [
+                    "php-cs-fixer fix --dry-run --diff"
+                ],
+                "cs:fix": [
+                    "php-cs-fixer fix"
+                ]
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Symfony collection-query primitive for filtering, sorting, pagination, projection, counts and realtime collection invalidation.",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
             "name": "composer/semver",
             "version": "3.4.4",
             "source": {
@@ -1920,10 +1987,12 @@
             "dist": {
                 "type": "path",
                 "url": "../Cruding",
-                "reference": "f85c95edac7b21edbc9b7467d3f926a0416356a3"
+                "reference": "bc8c92fcea3c83fa6521d61b738641b5686d0487"
             },
             "require": {
+                "collectioning/collection": "dev-main || dev-master",
                 "doctrine/doctrine-bundle": "^3.2",
+                "doctrine/orm": "^3.0",
                 "php": "^8.4",
                 "symfony/config": "^8.1",
                 "symfony/dependency-injection": "^8.1",
@@ -1933,13 +2002,17 @@
                 "symfony/http-kernel": "^8.1",
                 "symfony/routing": "^8.1",
                 "symfony/security-bundle": "^8.1",
+                "symfony/serializer": "^8.1",
                 "symfony/twig-bundle": "^8.1",
                 "symfony/validator": "^8.1",
-                "symfony/yaml": "^8.1"
+                "symfony/yaml": "^8.1",
+                "tabling/table": "dev-backend-table-actions || dev-backend-table-metadata || dev-initial-platform-primitive || dev-main || dev-master"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.95",
-                "phpunit/phpunit": "^12.0"
+                "phpstan/phpstan": "^2.0",
+                "phpunit/phpunit": "^12.0",
+                "symfony/dotenv": "^8.1"
             },
             "type": "symfony-bundle",
             "extra": {
@@ -1961,6 +2034,19 @@
             "scripts": {
                 "test": [
                     "phpunit"
+                ],
+                "test:coverage": [
+                    "@php -r \"if (!is_dir('var/coverage')) { mkdir('var/coverage', 0777, true); }\"",
+                    "@php -d xdebug.mode=coverage vendor/bin/phpunit --path-coverage --coverage-text=var/coverage/summary.txt"
+                ],
+                "cs:check": [
+                    "@php vendor/bin/php-cs-fixer fix --dry-run --diff"
+                ],
+                "cs:fix": [
+                    "@php vendor/bin/php-cs-fixer fix"
+                ],
+                "phpstan": [
+                    "@php vendor/bin/phpstan analyse -c phpstan.neon --memory-limit=1G"
                 ],
                 "canon:cruding": [
                     "php tools/cruding/interfacing-provider-rendering-guard.php"
@@ -4156,16 +4242,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v5.8.0",
+            "version": "v5.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "044a6a392ff8ad0d61f14370a5fbbd0a0107152f"
+                "reference": "9e33da9553fe7786f0962b35f4e4ecf01be89def"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/044a6a392ff8ad0d61f14370a5fbbd0a0107152f",
-                "reference": "044a6a392ff8ad0d61f14370a5fbbd0a0107152f",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/9e33da9553fe7786f0962b35f4e4ecf01be89def",
+                "reference": "9e33da9553fe7786f0962b35f4e4ecf01be89def",
                 "shasum": ""
             },
             "require": {
@@ -4207,9 +4293,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v5.8.0"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v5.9.0"
             },
-            "time": "2026-07-04T14:30:18+00:00"
+            "time": "2026-09-13T18:51:52+00:00"
         },
         {
             "name": "objecting/object",
@@ -4217,16 +4303,16 @@
             "dist": {
                 "type": "path",
                 "url": "../Objecting",
-                "reference": "afc3e25cb7d17cf6b6a5b985b2af0fe8a05c7943"
+                "reference": "a0433d1921c132732709ba3306d181a80debadad"
             },
             "require": {
                 "doctrine/orm": "^3.3",
                 "php": "^8.4",
-                "symfony/config": "^8.0",
-                "symfony/dependency-injection": "^8.0",
-                "symfony/http-kernel": "^8.0",
-                "symfony/uid": "^8.0",
-                "symfony/yaml": "^8.0"
+                "symfony/config": "^8.1",
+                "symfony/dependency-injection": "^8.1",
+                "symfony/http-kernel": "^8.1",
+                "symfony/uid": "^8.1",
+                "symfony/yaml": "^8.1"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": ">=3.95 <4.0",
@@ -4236,7 +4322,7 @@
             "type": "library",
             "extra": {
                 "symfony": {
-                    "require": "^8.0"
+                    "require": "^8.1"
                 }
             },
             "autoload": {
@@ -4307,6 +4393,10 @@
                 ],
                 "test": [
                     "phpunit --testdox"
+                ],
+                "test:coverage": [
+                    "@php -r \"if (!is_dir('var/coverage')) { mkdir('var/coverage', 0777, true); }\"",
+                    "@php -d xdebug.mode=coverage vendor/bin/phpunit --path-coverage --coverage-text=var/coverage/summary.txt"
                 ],
                 "test:backend-adoption": [
                     "@php tools/test/objecting_backend_adoption_manifest_check.php"
@@ -7074,6 +7164,93 @@
                 }
             ],
             "time": "2026-08-30T20:10:55+00:00"
+        },
+        {
+            "name": "symfony/mercure",
+            "version": "v0.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/mercure.git",
+                "reference": "920f08c73793f37e94981e5d9fc1a84351ec8c6c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/mercure/zipball/920f08c73793f37e94981e5d9fc1a84351ec8c6c",
+                "reference": "920f08c73793f37e94981e5d9fc1a84351ec8c6c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "symfony/deprecation-contracts": "^2.0|^3.0",
+                "symfony/http-client": "^6.4|^7.3|^8.0",
+                "symfony/http-foundation": "^6.4|^7.3|^8.0",
+                "symfony/web-link": "^6.4|^7.3|^8.0"
+            },
+            "require-dev": {
+                "lcobucci/jwt": "^3.4|^4.0|^5.0",
+                "symfony/event-dispatcher": "^6.4|^7.3|^8.0",
+                "symfony/http-kernel": "^6.4|^7.3|^8.0",
+                "symfony/phpunit-bridge": "^7.3.4|^8.0",
+                "symfony/stopwatch": "^6.4|^7.3|^8.0",
+                "twig/twig": "^2.0|^3.0|^4.0",
+                "web-token/jwt-library": "^4.1"
+            },
+            "suggest": {
+                "symfony/stopwatch": "Integration with the profiler performances",
+                "web-token/jwt-library": "To build Mercure protocol 1.0-compatible JSON Web Tokens with WebTokenFactory"
+            },
+            "type": "library",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/dunglas/mercure",
+                    "name": "dunglas/mercure"
+                },
+                "branch-alias": {
+                    "dev-main": "0.8.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Mercure\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kévin Dunglas",
+                    "email": "dunglas@gmail.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Mercure Component",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "mercure",
+                "push",
+                "sse",
+                "updates"
+            ],
+            "support": {
+                "issues": "https://github.com/symfony/mercure/issues",
+                "source": "https://github.com/symfony/mercure/tree/v0.8.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/dunglas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/mercure",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-08-11T07:23:36+00:00"
         },
         {
             "name": "symfony/messenger",
@@ -10770,6 +10947,61 @@
             "time": "2026-08-30T01:03:44+00:00"
         },
         {
+            "name": "tabling/table",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../Tabling",
+                "reference": "8f955eb727015eab889719900644fc92b4dc68c8"
+            },
+            "require": {
+                "collectioning/collection": "dev-main || dev-master",
+                "php": "^8.4",
+                "symfony/dependency-injection": "^8.1",
+                "symfony/framework-bundle": "^8.1",
+                "symfony/http-kernel": "^8.1",
+                "symfony/security-bundle": "^8.1"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.95",
+                "phpstan/phpstan": "^2.2",
+                "phpunit/phpunit": "^13.3"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "symfony": {
+                    "bundle": "App\\Tabling\\TablingBundle"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "App\\Tabling\\": "src/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "phpunit tests"
+                ],
+                "phpstan": [
+                    "phpstan analyse src tests --level=8"
+                ],
+                "cs:check": [
+                    "php-cs-fixer fix --dry-run --diff"
+                ],
+                "cs:fix": [
+                    "php-cs-fixer fix"
+                ]
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Symfony backend table-definition primitive for provider-neutral columns, filters, actions and security.",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
             "name": "twig/extra-bundle",
             "version": "v3.24.0",
             "source": {
@@ -12195,6 +12427,72 @@
                 "source": "https://github.com/phar-io/version/tree/3.2.1"
             },
             "time": "2022-02-21T01:04:05+00:00"
+        },
+        {
+            "name": "php-webdriver/webdriver",
+            "version": "1.16.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-webdriver/php-webdriver.git",
+                "reference": "ac0662863aa120b4f645869f584013e4c4dba46a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-webdriver/php-webdriver/zipball/ac0662863aa120b4f645869f584013e4c4dba46a",
+                "reference": "ac0662863aa120b4f645869f584013e4c4dba46a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-zip": "*",
+                "php": "^7.3 || ^8.0",
+                "symfony/polyfill-mbstring": "^1.12",
+                "symfony/process": "^5.0 || ^6.0 || ^7.0 || ^8.0"
+            },
+            "replace": {
+                "facebook/webdriver": "*"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2.20.0",
+                "ondram/ci-detector": "^4.0",
+                "php-coveralls/php-coveralls": "^2.4",
+                "php-mock/php-mock-phpunit": "^2.0",
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpunit/phpunit": "^9.3",
+                "squizlabs/php_codesniffer": "^3.5",
+                "symfony/var-dumper": "^5.0 || ^6.0 || ^7.0 || ^8.0"
+            },
+            "suggest": {
+                "ext-simplexml": "For Firefox profile creation"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "lib/Exception/TimeoutException.php"
+                ],
+                "psr-4": {
+                    "Facebook\\WebDriver\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A PHP client for Selenium WebDriver. Previously facebook/webdriver.",
+            "homepage": "https://github.com/php-webdriver/php-webdriver",
+            "keywords": [
+                "Chromedriver",
+                "geckodriver",
+                "php",
+                "selenium",
+                "webdriver"
+            ],
+            "support": {
+                "issues": "https://github.com/php-webdriver/php-webdriver/issues",
+                "source": "https://github.com/php-webdriver/php-webdriver/tree/1.16.0"
+            },
+            "time": "2025-12-28T23:57:40+00:00"
         },
         {
             "name": "phpstan/phpstan",
@@ -14195,6 +14493,306 @@
             "time": "2024-10-20T05:08:20+00:00"
         },
         {
+            "name": "symfony/browser-kit",
+            "version": "v8.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/browser-kit.git",
+                "reference": "f6766c9fb232e72897d6d55cf8f6aec38db2dbbf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/browser-kit/zipball/f6766c9fb232e72897d6d55cf8f6aec38db2dbbf",
+                "reference": "f6766c9fb232e72897d6d55cf8f6aec38db2dbbf",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.4.1",
+                "symfony/dom-crawler": "^7.4|^8.0"
+            },
+            "require-dev": {
+                "symfony/css-selector": "^7.4|^8.0",
+                "symfony/http-client": "^7.4|^8.0",
+                "symfony/mime": "^7.4|^8.0",
+                "symfony/process": "^7.4|^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\BrowserKit\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Simulates the behavior of a web browser, allowing you to make requests, click on links and submit forms programmatically",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/browser-kit/tree/v8.1.5"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-08-21T17:47:34+00:00"
+        },
+        {
+            "name": "symfony/css-selector",
+            "version": "v8.1.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/css-selector.git",
+                "reference": "08e2905152a39cf3fd1745d83f8c483e258887d9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/08e2905152a39cf3fd1745d83f8c483e258887d9",
+                "reference": "08e2905152a39cf3fd1745d83f8c483e258887d9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.4.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\CssSelector\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Jean-François Simon",
+                    "email": "jeanfrancois.simon@sensiolabs.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Converts CSS selectors to XPath expressions",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/css-selector/tree/v8.1.6"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-08-23T10:06:25+00:00"
+        },
+        {
+            "name": "symfony/dom-crawler",
+            "version": "v8.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/dom-crawler.git",
+                "reference": "94f70e1b2e5b7b8f8618871fd9eaad3e39e9f03d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/94f70e1b2e5b7b8f8618871fd9eaad3e39e9f03d",
+                "reference": "94f70e1b2e5b7b8f8618871fd9eaad3e39e9f03d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.4.1",
+                "symfony/polyfill-ctype": "^1.8",
+                "symfony/polyfill-mbstring": "^1.0"
+            },
+            "require-dev": {
+                "symfony/css-selector": "^7.4|^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\DomCrawler\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Eases DOM navigation for HTML and XML documents",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/dom-crawler/tree/v8.1.5"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-08-21T17:47:34+00:00"
+        },
+        {
+            "name": "symfony/panther",
+            "version": "v2.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/panther.git",
+                "reference": "2d810395942e71aea2f7ea8e8b5f82326bb4b8b4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/panther/zipball/2d810395942e71aea2f7ea8e8b5f82326bb4b8b4",
+                "reference": "2d810395942e71aea2f7ea8e8b5f82326bb4b8b4",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-libxml": "*",
+                "php": ">=8.1",
+                "php-webdriver/webdriver": "^1.8.2",
+                "symfony/browser-kit": "^6.4 || ^7.3 || ^8.0",
+                "symfony/dependency-injection": "^6.4 || ^7.3 || ^8.0",
+                "symfony/deprecation-contracts": "^2.4 || ^3",
+                "symfony/dom-crawler": "^6.4 || ^7.3 || ^8.0",
+                "symfony/http-client": "^6.4 || ^7.0 || ^8.0",
+                "symfony/http-kernel": "^6.4 || ^7.3 || ^8.0",
+                "symfony/process": "^6.4 || ^7.3 || ^8.0"
+            },
+            "require-dev": {
+                "symfony/css-selector": "^6.4 || ^7.3 || ^8.0",
+                "symfony/framework-bundle": "^6.4 || ^7.3 || ^8.0",
+                "symfony/mime": "^6.4 || ^7.3 || ^8.0",
+                "symfony/phpunit-bridge": ">=7.3.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Panther\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kévin Dunglas",
+                    "email": "kevin@dunglas.dev",
+                    "homepage": "https://dunglas.dev"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "A browser testing and web scraping library for PHP and Symfony.",
+            "homepage": "https://symfony.com/packages/Panther",
+            "keywords": [
+                "e2e",
+                "scraping",
+                "selenium",
+                "symfony",
+                "testing",
+                "webdriver"
+            ],
+            "support": {
+                "issues": "https://github.com/symfony/panther/issues",
+                "source": "https://github.com/symfony/panther/tree/v2.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://www.panthera.org/donate",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/dunglas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/panther",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-01-08T05:29:21+00:00"
+        },
+        {
             "name": "symfony/polyfill-php80",
             "version": "v1.37.0",
             "source": {
@@ -14359,6 +14957,59 @@
             "time": "2026-05-26T12:45:58+00:00"
         },
         {
+            "name": "symfony/test-pack",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/test-pack.git",
+                "reference": "88285bd1b12ec408c09fd6abac0ba290ff81fd04"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/test-pack/zipball/88285bd1b12ec408c09fd6abac0ba290ff81fd04",
+                "reference": "88285bd1b12ec408c09fd6abac0ba290ff81fd04",
+                "shasum": ""
+            },
+            "require": {
+                "phpunit/phpunit": "*",
+                "symfony/browser-kit": "*",
+                "symfony/css-selector": "*"
+            },
+            "conflict": {
+                "phpunit/phpunit": "<11.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*",
+                "symfony/browser-kit": "*",
+                "symfony/css-selector": "*"
+            },
+            "type": "symfony-pack",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A pack for functional and end-to-end testing within a Symfony app",
+            "support": {
+                "issues": "https://github.com/symfony/test-pack/issues",
+                "source": "https://github.com/symfony/test-pack/tree/v1.2.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2025-05-20T15:03:19+00:00"
+        },
+        {
             "name": "theseer/tokenizer",
             "version": "2.0.1",
             "source": {
@@ -14413,10 +15064,12 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "cataloging/catalog": 20,
+        "collectioning/collection": 20,
         "cruding/crud": 20,
         "interfacing/interface": 20,
         "locating/location": 20,
         "objecting/object": 20,
+        "tabling/table": 20,
         "viewing/view": 20
     },
     "prefer-stable": true,

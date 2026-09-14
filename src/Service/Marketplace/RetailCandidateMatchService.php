@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Retailing\Service\Marketplace;
 
 use App\Retailing\Entity\Retail\RetailEntity;
-use App\Retailing\Enum\Retail\RetailKind;
-use App\Retailing\Repository\Retail\RetailRepository;
+use App\Retailing\Enum\RetailKind;
+use App\Retailing\Repository\RetailRepository;
 
 final class RetailCandidateMatchService
 {

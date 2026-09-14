@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Retailing\Repository\Retail;
+namespace App\Retailing\Repository;
 
 use App\Retailing\Entity\Retail\RetailResponseEntity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

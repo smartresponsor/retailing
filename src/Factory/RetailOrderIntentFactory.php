@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Retailing\Service\Marketplace;
+namespace App\Retailing\Factory;
 
 use App\Retailing\Entity\Retail\RetailEntity;
-use App\Retailing\Enum\Retail\RetailKind;
+use App\Retailing\Enum\RetailKind;
 
 final class RetailOrderIntentFactory
 {

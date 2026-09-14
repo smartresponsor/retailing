@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Retailing\Service\Retail;
+namespace App\Retailing\Service;
 
 use App\Cataloging\ServiceInterface\CatalogCategoryLookupServiceInterface;
 use App\Cataloging\ServiceInterface\CatalogCatalogTreeReadServiceInterface;
-use App\Retailing\Enum\Retail\RetailKind;
+use App\Retailing\Enum\RetailKind;
 
 final readonly class RetailCategoryVocabularyService
 {
@@ -44,6 +44,7 @@ final readonly class RetailCategoryVocabularyService
                 }
             }
         } catch (\Throwable) {
+            return $this->legacyChoices($kind->catalogCode());
         }
 
         return $this->legacyChoices($kind->catalogCode());
@@ -99,11 +100,7 @@ final readonly class RetailCategoryVocabularyService
     /** @return array<string, string> */
     private function legacyChoices(string $catalogCode): array
     {
-        try {
-            $tree = $this->legacyCatalogTree->byCode($catalogCode);
-        } catch (\Throwable) {
-            return [];
-        }
+        $tree = $this->legacyCatalogTree->byCode($catalogCode);
         $nodes = $tree['nodes'] ?? null;
 
         return is_array($nodes) ? $this->flattenLegacyNodes($nodes) : [];

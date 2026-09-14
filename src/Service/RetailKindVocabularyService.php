@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Retailing\Service\Retail;
+namespace App\Retailing\Service;
 
 use App\Cataloging\ServiceInterface\CatalogCategoryVocabularyServiceInterface;
-use App\Retailing\Enum\Retail\RetailKind;
+use App\Retailing\Enum\RetailKind;
 
 final readonly class RetailKindVocabularyService
 {

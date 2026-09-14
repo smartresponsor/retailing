@@ -6,8 +6,8 @@ namespace App\Retailing\Service\Marketplace;
 
 use App\Retailing\Entity\Retail\RetailEntity;
 use App\Retailing\Entity\Retail\RetailResponseEntity;
-use App\Retailing\Repository\Retail\RetailRepository;
-use App\Retailing\Repository\Retail\RetailResponseRepository;
+use App\Retailing\Repository\RetailRepository;
+use App\Retailing\Repository\RetailResponseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class RetailResponseAcceptanceService

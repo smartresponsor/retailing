@@ -1,0 +1,48 @@
+{
+  "name": "retailing/retail",
+  "description": "Retail marketplace product component",
+  "type": "symfony-bundle",
+  "license": "proprietary",
+  "repositories": [
+    { "type": "vcs", "url": "git@github.com:smartresponsor/cataloging.git", "no-api": true },
+    { "type": "vcs", "url": "git@github.com:smartresponsor/collectioning.git", "no-api": true },
+    { "type": "vcs", "url": "git@github.com:smartresponsor/cruding.git", "no-api": true },
+    { "type": "vcs", "url": "git@github.com:smartresponsor/interfacing.git", "no-api": true },
+    { "type": "vcs", "url": "git@github.com:smartresponsor/locating.git", "no-api": true },
+    { "type": "vcs", "url": "git@github.com:smartresponsor/objecting.git", "no-api": true },
+    { "type": "vcs", "url": "git@github.com:smartresponsor/tabling-.git", "no-api": true },
+    { "type": "vcs", "url": "git@github.com:smartresponsor/viewing.git", "no-api": true }
+  ],
+  "require": {
+    "php": "^8.4",
+    "cataloging/catalog": "dev-master",
+    "collectioning/collection": "dev-master",
+    "cruding/crud": "dev-master",
+    "tabling/table": "dev-master",
+    "easycorp/easyadmin-bundle": "^5.0",
+    "doctrine/doctrine-bundle": "^3.2",
+    "doctrine/doctrine-migrations-bundle": "^4.0",
+    "doctrine/orm": "^3.3",
+    "interfacing/interface": "dev-master",
+    "locating/location": "dev-master",
+    "objecting/object": "dev-master",
+    "symfony/dependency-injection": "^8.1",
+    "symfony/form": "^8.1",
+    "symfony/framework-bundle": "^8.1",
+    "symfony/http-kernel": "^8.1",
+    "symfony/options-resolver": "^8.1",
+    "symfony/twig-bundle": "^8.1",
+    "symfony/validator": "^8.1",
+    "viewing/view": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\Retailing\\": "src/"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "sort-packages": true
+  }
+}

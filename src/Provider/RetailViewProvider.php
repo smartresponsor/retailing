@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Retailing\View\Retail;
+namespace App\Retailing\Provider;
 
 use App\Retailing\Entity\Retail\RetailEntity;
-use App\Retailing\Value\Retail\RetailViewPayload;
+use App\Retailing\ValueObject\RetailViewPayload;
 use App\Viewing\Value\View\ViewPayload;
 
 final readonly class RetailViewProvider

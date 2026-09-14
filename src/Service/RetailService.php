@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Retailing\Service\Retail;
+namespace App\Retailing\Service;
 
 use App\Retailing\Entity\Retail\RetailEntity;
-use App\Retailing\Repository\Retail\RetailRepository;
+use App\Retailing\Repository\RetailRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class RetailService

@@ -10,8 +10,8 @@ use App\Objecting\EntityInterface\ObjectStatefulInterface;
 use App\Objecting\EntityTrait\Embeddable\ObjectAuditEmbeddableTrait;
 use App\Objecting\EntityTrait\Embeddable\ObjectCodeEmbeddableTrait;
 use App\Objecting\EntityTrait\Embeddable\ObjectStateEmbeddableTrait;
-use App\Retailing\Enum\Retail\RetailKind;
-use App\Retailing\Repository\Retail\RetailRepository;
+use App\Retailing\Enum\RetailKind;
+use App\Retailing\Repository\RetailRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RetailRepository::class)]

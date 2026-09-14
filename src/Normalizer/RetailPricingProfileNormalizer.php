@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Retailing\Service\Pricing;
+namespace App\Retailing\Normalizer;
 
 final class RetailPricingProfileNormalizer
 {
