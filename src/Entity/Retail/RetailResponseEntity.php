@@ -12,6 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(name: 'idx_retail_response_retail_status', columns: ['retail_id', 'status'])]
 #[ORM\Index(name: 'idx_retail_response_vendor_status', columns: ['vendor_id', 'status'])]
 #[ORM\UniqueConstraint(name: 'uniq_retail_response_retail_vendor', columns: ['retail_id', 'vendor_id'])]
+/**
+ * Represents one vendor's commercial response and lifecycle for a customer task or project request.
+ */
 final class RetailResponseEntity
 {
     private const DRAFT = 'draft';
@@ -220,6 +223,9 @@ final class RetailResponseEntity
         $this->touch();
     }
 
+    /**
+     * Moves a priced draft response into the submitted state and records submission time.
+     */
     public function submit(): void
     {
         if (self::DRAFT !== $this->status || null === $this->pricingProfile) {
@@ -230,6 +236,9 @@ final class RetailResponseEntity
         $this->touch();
     }
 
+    /**
+     * Withdraws a response while it is still draft or submitted and therefore customer-unaccepted.
+     */
     public function withdraw(): void
     {
         if (!in_array($this->status, [self::DRAFT, self::SUBMITTED], true)) {
@@ -239,6 +248,9 @@ final class RetailResponseEntity
         $this->touch();
     }
 
+    /**
+     * Rejects a submitted response when another commercial outcome wins or the customer declines it.
+     */
     public function reject(): void
     {
         if (self::SUBMITTED !== $this->status) {
@@ -248,6 +260,9 @@ final class RetailResponseEntity
         $this->touch();
     }
 
+    /**
+     * Marks a submitted response as accepted and records the commercial acceptance timestamp.
+     */
     public function accept(): void
     {
         if (self::SUBMITTED !== $this->status) {

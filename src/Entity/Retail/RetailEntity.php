@@ -18,6 +18,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'retail')]
 #[ORM\Index(name: 'idx_retail_owner_scope_kind', columns: ['owner_type', 'owner_id', 'kind'])]
 #[ORM\Index(name: 'idx_retail_category_kind', columns: ['category_id', 'kind'])]
+/**
+ * Persists a customer request or vendor offering together with commercial and fulfillment profiles.
+ */
 final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface, ObjectStatefulInterface
 {
     use ObjectAuditEmbeddableTrait;
@@ -288,6 +291,9 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         return $this->selectionProfile;
     }
 
+    /**
+     * Accepts a submitted vendor response after validating request, service, pricing, and ownership invariants.
+     */
     public function acceptResponse(RetailResponseEntity $response, ?RetailEntity $service = null): void
     {
         if ('submitted' !== $response->getStatus()) {
@@ -302,6 +308,9 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->projectAcceptedResponse($response, $service);
     }
 
+    /**
+     * Rebuilds the customer selection projection from a response that is already accepted.
+     */
     public function synchronizeAcceptedResponse(RetailResponseEntity $response, ?RetailEntity $service = null): void
     {
         if ('accepted' !== $response->getStatus()) {
@@ -423,6 +432,9 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
+    /**
+     * Selects a published vendor service directly for a customer task at an agreed amount.
+     */
     public function selectServiceCandidate(RetailEntity $service, int $agreedAmountMinor): void
     {
         if (RetailKind::Task !== $this->kind || 'access' !== $this->ownerType || 'published' !== $this->getObjectStatus()) {
@@ -458,6 +470,9 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
+    /**
+     * Publishes a complete listing only after required ownership and commercial profiles are present.
+     */
     public function publish(): void
     {
         if (

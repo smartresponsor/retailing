@@ -8,8 +8,14 @@ use App\Retailing\Entity\Retail\RetailEntity;
 use App\Retailing\ValueObject\RetailViewPayload;
 use App\Viewing\Value\View\ViewPayload;
 
+/**
+ * Adapts RetailEntity into the neutral Viewing payload consumed by the platform presentation boundary.
+ */
 final readonly class RetailViewProvider
 {
+    /**
+     * Produces a Retailing-scoped view payload without rendering templates inside this component.
+     */
     public function provide(RetailEntity $retail): ViewPayload
     {
         $payload = new RetailViewPayload($retail);

@@ -9,15 +9,24 @@ use App\Cruding\ServiceInterface\CrudMutationLifecycleSubscriberInterface;
 use App\Retailing\Entity\Retail\RetailEntity;
 use Symfony\Bundle\SecurityBundle\Security;
 
+/**
+ * Assigns authenticated platform identity to new listings through Cruding lifecycle hooks.
+ */
 final readonly class RetailOwnershipSubscriber implements CrudMutationLifecycleSubscriberInterface
 {
     public function __construct(private Security $security) {}
 
+    /**
+     * Restricts this lifecycle subscriber to Retailing entity mutations.
+     */
     public function supports(CrudMutationLifecycleContextDTO $context): bool
     {
         return $context->object instanceof RetailEntity;
     }
 
+    /**
+     * Applies the authenticated owner identifier before a new listing is persisted.
+     */
     public function before(CrudMutationLifecycleContextDTO $context): void
     {
         if (!$context->object instanceof RetailEntity || 'create' !== $context->operation) {
@@ -34,5 +43,8 @@ final readonly class RetailOwnershipSubscriber implements CrudMutationLifecycleS
         $context->object->setOwner((string) $actorId);
     }
 
+    /**
+     * Completes the lifecycle contract without post-persistence ownership mutation.
+     */
     public function after(CrudMutationLifecycleContextDTO $context): void {}
 }
