@@ -9,7 +9,10 @@ use App\Retailing\Enum\RetailKind;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/** @extends ServiceEntityRepository<RetailEntity> */
+/**
+ * Provides persisted retail listing queries used by publication and marketplace matching flows.
+ * @extends ServiceEntityRepository<RetailEntity>
+ */
 final class RetailRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -17,7 +20,10 @@ final class RetailRepository extends ServiceEntityRepository
         parent::__construct($registry, RetailEntity::class);
     }
 
-    /** @return list<RetailEntity> */
+    /**
+     * Returns published listings for one catalog category, newest first.
+     * @return list<RetailEntity>
+     */
     public function findPublishedByCategory(string $categoryId): array
     {
         return $this->createQueryBuilder('retail')
@@ -30,7 +36,10 @@ final class RetailRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** @return list<RetailEntity> */
+    /**
+     * Returns published vendor service offerings eligible for category-level marketplace matching.
+     * @return list<RetailEntity>
+     */
     public function findPublishedVendorServicesByCategory(string $categoryId): array
     {
         return $this->createQueryBuilder('retail')

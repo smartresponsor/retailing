@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "49d8486d2ab9763ddab6b87f467a6111",
+    "content-hash": "125d49a414b8c70074f6f768229927d8",
     "packages": [
         {
             "name": "administering/administration",
@@ -1987,10 +1987,10 @@
             "dist": {
                 "type": "path",
                 "url": "../Cruding",
-                "reference": "bc8c92fcea3c83fa6521d61b738641b5686d0487"
+                "reference": "0c2a0fb0f5f006dc94b3ff294607e60d3244c91c"
             },
             "require": {
-                "collectioning/collection": "dev-main || dev-master",
+                "collectioning/collection": "dev-master",
                 "doctrine/doctrine-bundle": "^3.2",
                 "doctrine/orm": "^3.0",
                 "php": "^8.4",
@@ -2006,7 +2006,7 @@
                 "symfony/twig-bundle": "^8.1",
                 "symfony/validator": "^8.1",
                 "symfony/yaml": "^8.1",
-                "tabling/table": "dev-backend-table-actions || dev-backend-table-metadata || dev-initial-platform-primitive || dev-main || dev-master"
+                "tabling/table": "dev-master"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.95",
@@ -10952,7 +10952,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Tabling",
-                "reference": "8f955eb727015eab889719900644fc92b4dc68c8"
+                "reference": "bc26adf0a9f7a2dbe88b7929ec44338493f47ce4"
             },
             "require": {
                 "collectioning/collection": "dev-main || dev-master",

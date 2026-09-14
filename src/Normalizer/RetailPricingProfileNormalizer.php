@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace App\Retailing\Normalizer;
 
+/**
+ * Normalizes and validates pricing-profile input against the pricing models allowed by each retail kind.
+ */
 final class RetailPricingProfileNormalizer
 {
     /**
+     * Produces a canonical versioned pricing profile with normalized currency and non-negative amounts.
+     *
      * @param array<string, mixed> $input
      *
      * @return array<string, int|string>

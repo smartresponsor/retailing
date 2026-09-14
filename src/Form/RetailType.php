@@ -19,6 +19,9 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Builds the Retailing form and validates kind-to-category vocabulary consistency after submission.
+ */
 final class RetailType extends AbstractType
 {
     public function __construct(
@@ -26,7 +29,10 @@ final class RetailType extends AbstractType
         private readonly RetailCategoryVocabularyService $categoryVocabulary,
     ) {}
 
-    /** @param array<string, mixed> $options */
+    /**
+     * Defines editable listing fields and enforces category compatibility with the selected kind.
+     * @param array<string, mixed> $options
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -72,6 +78,9 @@ final class RetailType extends AbstractType
         });
     }
 
+    /**
+     * Binds the form to RetailEntity and enables Symfony CSRF protection.
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

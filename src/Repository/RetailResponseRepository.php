@@ -8,7 +8,10 @@ use App\Retailing\Entity\Retail\RetailResponseEntity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/** @extends ServiceEntityRepository<RetailResponseEntity> */
+/**
+ * Provides lifecycle-aware lookup operations for vendor responses to customer requests.
+ * @extends ServiceEntityRepository<RetailResponseEntity>
+ */
 final class RetailResponseRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -16,7 +19,10 @@ final class RetailResponseRepository extends ServiceEntityRepository
         parent::__construct($registry, RetailResponseEntity::class);
     }
 
-    /** @return list<RetailResponseEntity> */
+    /**
+     * Returns submitted responses that remain candidates for a specific customer request.
+     * @return list<RetailResponseEntity>
+     */
     public function findSubmittedForRetail(int $retailId): array
     {
         return $this->createQueryBuilder('response')
@@ -29,6 +35,9 @@ final class RetailResponseRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Finds the already accepted response for a request, if commercial selection has occurred.
+     */
     public function findAcceptedForRetail(int $retailId): ?RetailResponseEntity
     {
         return $this->findOneBy([
@@ -37,6 +46,9 @@ final class RetailResponseRepository extends ServiceEntityRepository
         ]);
     }
 
+    /**
+     * Finds the unique response submitted by one vendor for one customer request.
+     */
     public function findForRetailAndVendor(int $retailId, string $vendorId): ?RetailResponseEntity
     {
         return $this->findOneBy([

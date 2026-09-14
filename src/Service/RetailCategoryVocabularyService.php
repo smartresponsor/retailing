@@ -8,6 +8,9 @@ use App\Cataloging\ServiceInterface\CatalogCategoryLookupServiceInterface;
 use App\Cataloging\ServiceInterface\CatalogCatalogTreeReadServiceInterface;
 use App\Retailing\Enum\RetailKind;
 
+/**
+ * Resolves selectable Retailing categories from Cataloging with a guarded legacy-tree fallback.
+ */
 final readonly class RetailCategoryVocabularyService
 {
     public function __construct(
@@ -15,7 +18,10 @@ final readonly class RetailCategoryVocabularyService
         private CatalogCatalogTreeReadServiceInterface $legacyCatalogTree,
     ) {}
 
-    /** @return array<string, array<string, string>> */
+    /**
+     * Groups available category choices by retail kind for form presentation.
+     * @return array<string, array<string, string>>
+     */
     public function choices(): array
     {
         $choices = [];
@@ -29,7 +35,10 @@ final readonly class RetailCategoryVocabularyService
         return $choices;
     }
 
-    /** @return array<string, string> */
+    /**
+     * Resolves category labels and identifiers for one listing kind from the canonical catalog vocabulary.
+     * @return array<string, string>
+     */
     public function choicesForKind(RetailKind $kind): array
     {
         try {
@@ -50,6 +59,9 @@ final readonly class RetailCategoryVocabularyService
         return $this->legacyChoices($kind->catalogCode());
     }
 
+    /**
+     * Verifies that a category identifier belongs to the vocabulary allowed for the selected kind.
+     */
     public function contains(RetailKind $kind, string $categoryId): bool
     {
         return in_array(trim($categoryId), array_values($this->choicesForKind($kind)), true);

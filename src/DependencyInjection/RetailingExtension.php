@@ -9,9 +9,15 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
+/**
+ * Loads Retailing services while limiting fixture registration to development and test environments.
+ */
 final class RetailingExtension extends Extension
 {
-    /** @param array<int, array<string, mixed>> $configs */
+    /**
+     * Registers the component service graph and environment-specific fixture services.
+     * @param array<int, array<string, mixed>> $configs
+     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new YamlFileLoader($container, new FileLocator(dirname(__DIR__, 2) . '/config'));

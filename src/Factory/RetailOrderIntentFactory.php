@@ -7,9 +7,14 @@ namespace App\Retailing\Factory;
 use App\Retailing\Entity\Retail\RetailEntity;
 use App\Retailing\Enum\RetailKind;
 
+/**
+ * Converts a matched customer task and vendor service into a neutral Ordering intent payload.
+ */
 final class RetailOrderIntentFactory
 {
     /**
+     * Builds an order-ready payload when commercial price is known, otherwise requests price agreement.
+     *
      * @return array{status:'ready'|'agreed_price_required', payload:?array{customerId:string,vendorId:string,currency:string,items:list<array{sku:string,qty:int,price:string}>}}
      */
     public function forCandidate(RetailEntity $task, RetailEntity $service, ?int $agreedAmountMinor = null): array

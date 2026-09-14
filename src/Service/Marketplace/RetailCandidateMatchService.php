@@ -8,6 +8,9 @@ use App\Retailing\Entity\Retail\RetailEntity;
 use App\Retailing\Enum\RetailKind;
 use App\Retailing\Repository\RetailRepository;
 
+/**
+ * Ranks published vendor services for a customer task using area, availability, budget, and distance evidence.
+ */
 final class RetailCandidateMatchService
 {
     public function __construct(
@@ -17,6 +20,8 @@ final class RetailCandidateMatchService
     ) {}
 
     /**
+     * Returns compatible services ordered from strongest operational and commercial match to weakest.
+     *
      * @return list<array{service: RetailEntity, serviceAreaStatus: 'exact'|'requires_geovalidation', distanceMeters: ?float, availabilityStatus: 'compatible'|'requires_scheduling', budgetStatus: 'within_budget'|'over_budget'|'unknown'}>
      */
     public function matchForTask(RetailEntity $task): array

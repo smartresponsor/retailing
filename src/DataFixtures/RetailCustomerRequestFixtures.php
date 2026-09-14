@@ -11,6 +11,9 @@ use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 
+/**
+ * Seeds published customer marketplace requests with realistic budgets, locations, and availability windows.
+ */
 final class RetailCustomerRequestFixtures extends Fixture implements FixtureGroupInterface
 {
     private const REQUESTS = [
@@ -25,6 +28,9 @@ final class RetailCustomerRequestFixtures extends Fixture implements FixtureGrou
         return ['retailing_customer_requests'];
     }
 
+    /**
+     * Creates or refreshes access-owned task listings used by marketplace integration scenarios.
+     */
     public function load(ObjectManager $manager): void
     {
         if (!$manager instanceof EntityManagerInterface) {

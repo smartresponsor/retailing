@@ -13,6 +13,9 @@ use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 
+/**
+ * Seeds vendor responses and accepted selections against the marketplace request fixture set.
+ */
 final class RetailResponseFixtures extends Fixture implements FixtureGroupInterface
 {
     private const RESPONSES = [
@@ -29,6 +32,9 @@ final class RetailResponseFixtures extends Fixture implements FixtureGroupInterf
         return ['retailing_responses'];
     }
 
+    /**
+     * Materializes response lifecycle states and accepted commercial selections for fixture requests.
+     */
     public function load(ObjectManager $manager): void
     {
         if (!$manager instanceof EntityManagerInterface) {
