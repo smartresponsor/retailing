@@ -192,3 +192,10 @@
 - Canon042 remains a non-blocking evidence warning. The normative rule and executable implementation were re-read: explicit reproducible functional/behavioral/UI/critical denominators are required. The current Playwright test proves only the browser harness, while actual presentation belongs to Viewing/Interfacing; no empty-inventory or fabricated 100% evidence file was generated.
 - `composer schema:parity` was executed and is externally blocked because canonical PostgreSQL `DATABASE_URL` is absent. The data connection was not substituted with SQLite merely to obtain a green check.
 - RC-critical repository defects found in this run are closed. Residual items are explicit evidence/infrastructure tails: Canon040 method/path completeness, a genuine Canon042 repository-owned application-surface evidence producer, and PostgreSQL-backed schema parity when the canonical database environment is available.
+
+### Git integration
+
+- Created signed commit `87feabc` (`chore(retailing): harden RC canon and runtime gates`) from the verified clean diff.
+- The historical local branch tracked `origin/master`; the push guard correctly refused to repoint it. Created dedicated integration branch `engine/retailing-rc-hardening-20260914` at the same verified HEAD and pushed it with its own upstream instead of risking a protected-master push.
+- Opened PR #9, `Retailing RC canon and runtime hardening`, against `master`. GitHub reports the exact head as mergeable with no conflicts and no registered status-check contexts.
+- PR #9 is intentionally left open rather than merged: GitHub merge safety is green, but full RC acceptance still has a factual external PostgreSQL schema-parity blocker (`DATABASE_URL` absent). No merge is claimed until that runtime gate can be executed against the canonical data connection.
