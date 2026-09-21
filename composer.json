@@ -16,6 +16,7 @@
     "interfacing/interface": "dev-master",
     "locating/location": "dev-master",
     "objecting/object": "dev-master",
+    "pricing/price": "dev-master",
     "symfony/dependency-injection": "^8.1",
     "symfony/form": "^8.1",
     "symfony/framework-bundle": "^8.1",
@@ -53,12 +54,15 @@
     { "type": "path", "url": "../Locating", "options": { "symlink": true, "versions": { "locating/location": "dev-master" } } },
     { "type": "path", "url": "../Navigating", "options": { "symlink": true, "versions": { "navigating/navigation": "dev-master" } } },
     { "type": "path", "url": "../Objecting", "options": { "symlink": true, "versions": { "objecting/object": "dev-master" } } },
+    { "type": "path", "url": "../Pricing", "options": { "symlink": true, "versions": { "pricing/price": "dev-master" } } },
+    { "type": "path", "url": "../Currencing", "options": { "symlink": true, "versions": { "currencing/currency": "dev-master" } } },
     { "type": "path", "url": "../Viewing", "options": { "symlink": true, "versions": { "viewing/view": "dev-master" } } }
   ],
   "minimum-stability": "dev",
   "prefer-stable": true,
   "config": {
     "allow-plugins": {
+      "symfony/flex": true,
       "symfony/runtime": true
     },
     "sort-packages": true

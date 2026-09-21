@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Retailing\Factory;
 
+use App\Pricing\DTO\PriceQuoteDTO;
 use App\Retailing\Entity\Retail\RetailEntity;
 use App\Retailing\Enum\RetailKind;
 
@@ -17,8 +18,12 @@ final class RetailOrderIntentFactory
      *
      * @return array{status:'ready'|'agreed_price_required', payload:?array{customerId:string,vendorId:string,currency:string,items:list<array{sku:string,qty:int,price:string}>}}
      */
-    public function forCandidate(RetailEntity $task, RetailEntity $service, ?int $agreedAmountMinor = null): array
-    {
+    public function forCandidate(
+        RetailEntity $task,
+        RetailEntity $service,
+        ?int $agreedAmountMinor = null,
+        ?PriceQuoteDTO $priceQuote = null,
+    ): array {
         if (RetailKind::Task !== $task->getKind() || 'access' !== $task->getOwnerType()) {
             throw new \InvalidArgumentException('Order intent requires an access-owned customer task.');
         }
@@ -37,7 +42,9 @@ final class RetailOrderIntentFactory
 
         $pricingProfile = $service->getPricingProfile() ?? [];
         $pricingMode = is_string($pricingProfile['mode'] ?? null) ? strtolower(trim($pricingProfile['mode'])) : '';
-        $amountMinor = $agreedAmountMinor ?? $this->selectedAmount($task, $service);
+        $amountMinor = $agreedAmountMinor
+            ?? $this->quotedAmount($service, $priceQuote)
+            ?? $this->selectedAmount($task, $service);
         if (null === $amountMinor && 'fixed' === $pricingMode) {
             $amountMinor = $service->getAmountMinor();
         }
@@ -62,6 +69,23 @@ final class RetailOrderIntentFactory
                 ]],
             ],
         ];
+    }
+
+    private function quotedAmount(RetailEntity $service, ?PriceQuoteDTO $priceQuote): ?int
+    {
+        if (null === $priceQuote) {
+            return null;
+        }
+
+        $expectedReference = 'retail:' . $service->getId();
+        if ($priceQuote->priceableReference() !== $expectedReference) {
+            throw new \DomainException('Pricing quote does not belong to the selected retail service.');
+        }
+        if ($priceQuote->currency->currencyCode !== $service->getCurrency()) {
+            throw new \DomainException('Pricing quote currency must match the selected retail service.');
+        }
+
+        return $priceQuote->amountMinor();
     }
 
     private function selectedAmount(RetailEntity $task, RetailEntity $service): ?int
