@@ -10,7 +10,6 @@ use App\Retailing\Repository\RetailResponseRepository;
 use App\Retailing\Service\Marketplace\RetailResponseAcceptanceService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 
 /**
@@ -37,8 +36,8 @@ final class RetailResponseFixtures extends Fixture implements FixtureGroupInterf
      */
     public function load(ObjectManager $manager): void
     {
-        if (!$manager instanceof EntityManagerInterface) {
-            throw new \RuntimeException('Doctrine entity manager is required to load retail response fixtures.');
+        if (!method_exists($manager, 'getConnection')) {
+            throw new \RuntimeException('Doctrine connection-capable object manager is required to load retail response fixtures.');
         }
 
         /** @var RetailResponseRepository $responseRepository */

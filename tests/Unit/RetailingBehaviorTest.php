@@ -12,6 +12,7 @@ use App\Cruding\DTO\Entrypoint\CrudServiceResultDTO;
 use App\Cataloging\Entity\Catalog\CatalogCategoryEntity;
 use App\Cataloging\ServiceInterface\CatalogCategoryLookupServiceInterface;
 use App\Cataloging\ServiceInterface\CatalogCategoryVocabularyServiceInterface;
+use App\Cataloging\ServiceInterface\CatalogSearchServiceInterface;
 use App\Cataloging\ServiceInterface\CatalogCatalogTreeReadServiceInterface;
 use App\Locating\ServiceInterface\Provider\Location\Runtime\Geo\LocationDistanceServiceInterface;
 use App\Retailing\DependencyInjection\RetailingExtension;
@@ -34,11 +35,14 @@ use App\Retailing\Normalizer\RetailPricingProfileNormalizer;
 use App\Retailing\Service\RetailCategoryVocabularyService;
 use App\Retailing\Service\RetailKindVocabularyService;
 use App\Retailing\Service\RetailService;
+use App\Retailing\Service\RetailStorefrontFacetService;
 use App\Retailing\Repository\RetailRepository;
 use App\Retailing\EventSubscriber\RetailOwnershipSubscriber;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -888,9 +892,12 @@ final class RetailingBehaviorTest extends TestCase
     public function testRetailServicePersistsAndRemoves(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $repository = (new \ReflectionClass(RetailRepository::class))->newInstanceWithoutConstructor();
+        $entityManager->method('getClassMetadata')->willReturn(new ClassMetadata(RetailEntity::class));
+        $registry = $this->createStub(ManagerRegistry::class);
+        $registry->method('getManagerForClass')->willReturn($entityManager);
+        $repository = new RetailRepository($registry);
         $retail = new RetailEntity();
-        $service = new RetailService($entityManager, $repository);
+        $service = new RetailService($repository);
 
         $entityManager->expects(self::once())->method('persist')->with($retail);
         $entityManager->expects(self::once())->method('remove')->with($retail);
@@ -1215,7 +1222,7 @@ final class RetailingBehaviorTest extends TestCase
         $placement = $request->getSession()->get('retail_placement');
         self::assertSame('77', $placement['retailId'] ?? null);
         self::assertSame('vendor-77', $placement['vendorId'] ?? null);
-        self::assertSame('vendor-77', $placement['tenantId'] ?? null);
+        self::assertArrayNotHasKey('tenantId', $placement);
 
         $goods = $this->completeListing(RetailKind::Goods, 'access', 'temporary');
         $goods->setOwner(null);
@@ -1302,6 +1309,53 @@ final class RetailingBehaviorTest extends TestCase
         $invalidTask = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-1');
         $this->expectException(\InvalidArgumentException::class);
         $candidateMatcher->matchForTask($invalidTask);
+    }
+
+    public function testStorefrontFacetsDelegateToCatalogingContractsWithoutRecomputingSemantics(): void
+    {
+        $catalogSearch = $this->createMock(CatalogSearchServiceInterface::class);
+        $catalogSearch
+            ->expects(self::once())
+            ->method('search')
+            ->willReturn([
+                'facet_contracts' => [
+                    ['identifier' => 'workflow_state', 'buckets' => ['published' => 3, 'draft' => 1]],
+                    ['identifier' => 'locale', 'buckets' => ['en' => 4]],
+                ],
+            ]);
+
+        $facets = (new RetailStorefrontFacetService($catalogSearch))->published('en');
+
+        self::assertSame([
+            ['identifier' => 'workflow_state', 'buckets' => ['published' => 3, 'draft' => 1]],
+            ['identifier' => 'locale', 'buckets' => ['en' => 4]],
+        ], $facets);
+    }
+
+    public function testStorefrontFacetsReturnEmptyWhenCatalogingProvidesNoFacetContracts(): void
+    {
+        $catalogSearch = $this->createStub(CatalogSearchServiceInterface::class);
+        $catalogSearch->method('search')->willReturn(['items' => []]);
+
+        self::assertSame([], (new RetailStorefrontFacetService($catalogSearch))->published());
+    }
+
+    public function testStorefrontFacetsIgnoreMalformedCatalogingProjectionEntries(): void
+    {
+        $catalogSearch = $this->createStub(CatalogSearchServiceInterface::class);
+        $catalogSearch->method('search')->willReturn([
+            'facet_contracts' => [
+                null,
+                ['identifier' => '', 'buckets' => []],
+                ['identifier' => 'locale', 'buckets' => 'invalid'],
+                ['identifier' => 'published', 'buckets' => ['true' => 2]],
+            ],
+        ]);
+
+        self::assertSame(
+            [['identifier' => 'published', 'buckets' => ['true' => 2]]],
+            (new RetailStorefrontFacetService($catalogSearch))->published(),
+        );
     }
 
     public function testStandaloneKernelAndBundleSurfaces(): void

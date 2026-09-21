@@ -212,3 +212,15 @@
 - Follow-up host diagnosis confirmed `facting/fact` is installed from the local path package, but App's installed/locked Composer projection still exposes the older `App\\ => src/` autoload while current Facting source exposes `App\\Facting\\ => src/`. Canonical `composer dump-autoload` therefore reproduces the missing `FactingBundle` boot failure.
 - A package-scoped `composer update facting/fact --dry-run --no-scripts` was attempted and refused by Composer because App's root dependency/repository graph has unrelated unresolved drift, including missing `collectioning/collection` repository closure, legacy Streaming package resolution, and incompatible in-flight dependency constraints in other components. No App lock or generated Composer metadata was rewritten to fabricate a green host boot.
 - App's own orchestration journal independently documents this same stale path-package projection/root-graph condition. Retailing therefore remains merge-ready at the repository level, but canonical database migration execution is still blocked by host integration state outside Retailing ownership.
+
+### Faceting storefront acceptance and RC closure — 2026-09-21
+
+- Added `RetailStorefrontFacetService` as a read-only adapter over `CatalogSearchServiceInterface`; Retailing consumes Cataloging `facet_contracts` and does not duplicate Faceting filtering/counting semantics.
+- Removed active Retailing `tenantId` compatibility state. Placement now carries canonical `ownerId` / `vendorId`; Shipping still owns a separate broader tenant-identity migration tail and is not silently rewritten here.
+- Removed Entity-to-Repository metadata coupling and moved Doctrine manager ownership into `RetailRepository` / `RetailResponseRepository`; application services persist exclusively through repositories.
+- Added canonical `config/retail_gating_profile.yaml` and restored standard Composer-installed Gating execution through `vendor/bin/gating`.
+- Added repository-owned reproducible coverage producers. Behavioral evidence runs PHPUnit plus Playwright before emitting `var/coverage/behavioral-ui.json`. PHP coverage runs standard PHPUnit for Lines/Methods and a separate path-instrumented pass for Branches, then combines those independently measured metrics into the canonical text summary.
+- Added the missing storefront no-contract edge case. Final PHPUnit coverage is Lines 849/1055 (80.47%), Methods 120/150 (80.00%), Branches 891/1106 (80.56%).
+- Behavioral/UI evidence is GREEN: functional 2/2, behavioral 5/5, UI 1/1, critical 2/2. Playwright is 1/1.
+- Final `composer quality` is GREEN: PHP-CS-Fixer clean, PHPStan 0 errors, PHPUnit 52 tests / 274 assertions, and Gating 68 rules / 0 failed / 0 warning / 0 suppressed.
+- `PRODUCT_CAPABILITY_AUDIT.adoc` now records storefront facet projection as PARITY and uses explicit milestone wording rather than ambiguous M-number shorthand.

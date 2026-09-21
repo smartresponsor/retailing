@@ -53,8 +53,6 @@ final class RetailNewService extends CrudAbstractService
 
         $placement['retailId'] = (string) $context->object->getId();
         $placement['placementReference'] = 'retail:' . (string) $context->object->getId();
-        // Keep the legacy downstream key without creating a separate tenant identity.
-        $placement['tenantId'] = $ownerId;
         $placement['ownerType'] = $ownerType;
         $placement['ownerId'] = $ownerId;
         if ('vendor' === $ownerType) {

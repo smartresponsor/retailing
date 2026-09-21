@@ -20,6 +20,27 @@ final class RetailRepository extends ServiceEntityRepository
         parent::__construct($registry, RetailEntity::class);
     }
 
+    public function save(RetailEntity $retail, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($retail);
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(RetailEntity $retail, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($retail);
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function flush(): void
+    {
+        $this->getEntityManager()->flush();
+    }
+
     /**
      * Returns published listings for one catalog category, newest first.
      * @return list<RetailEntity>

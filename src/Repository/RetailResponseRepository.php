@@ -19,6 +19,19 @@ final class RetailResponseRepository extends ServiceEntityRepository
         parent::__construct($registry, RetailResponseEntity::class);
     }
 
+    public function save(RetailResponseEntity $response, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($response);
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function flush(): void
+    {
+        $this->getEntityManager()->flush();
+    }
+
     /**
      * Returns submitted responses that remain candidates for a specific customer request.
      * @return list<RetailResponseEntity>

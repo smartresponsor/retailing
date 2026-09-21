@@ -1,0 +1,38 @@
+= Product Capability Audit: Retailing
+:revdate: 2026-09-21
+
+== Boundary verdict
+
+Retailing should own the sellable/listing projection of catalog data: what is offered, in which commercial/store context, and with which publication state. It must not become the source of truth for catalog structure, pricing, stock, shipping, or generic tenant identity.
+
+== Capability matrix
+
+[cols="3,1,4",options="header"]
+|===
+|Capability |Status |Audit
+|Sellable listing identity |PARITY |Existing Retail entities and listing-kind vocabulary show a real sellable projection.
+|Publication lifecycle |PARTIAL |Needs one canonical publish/unpublish/schedule lifecycle.
+|Catalog linkage |PARITY |Retail kinds already map to catalog-owned vocabulary.
+|Storefront facet projection |PARITY |Retailing consumes Cataloging facet_contracts through CatalogSearchServiceInterface and does not duplicate Faceting counting/filter semantics.
+|Store/channel scoping |PARITY |Retailing now uses canonical owner/vendor identity only; the legacy tenantId alias has been removed from active Retailing placement state.
+|Assortment/listing eligibility |PARTIAL |Should be explicit and deterministic.
+|Merchandising placement |PARTIAL |Only if placement is retail-specific; generic presentation belongs elsewhere.
+|Price reference |PARTIAL |Reference Pricing results; do not calculate prices locally.
+|Stock/availability reference |PARTIAL |Reference Stocking availability; do not own quantities.
+|Shipping eligibility reference |PARTIAL |Retailing no longer emits tenantId, while Shipping still exposes a broader legacy tenantId contract that requires its own migration before direct handoff can be green.
+|Scheduled publication |MISSING |Modern retail platforms need effective windows and controlled rollout.
+|===
+
+== Boundary risks
+
+* Shipping still exposes a broader active tenantId contract; migrate that downstream contract independently before wiring Retailing placement directly into Shipping.
+* Avoid duplicating Cataloging taxonomy or Pricing/Stocking engines.
+* Keep seller/vendor identity in Vendoring.
+
+== Milestone direction
+
+First milestone: canonical listing + publication lifecycle and owner/vendor references.
+Second milestone: channel/store assortment eligibility and scheduled publication.
+Third milestone: deterministic pricing/stock/shipping projection contracts.
+Storefront integration milestone: Retailing-side tenantId compatibility removal and Cataloging/Searching facet projection acceptance are COMPLETE; downstream Shipping identity-contract migration remains separately owned.
+

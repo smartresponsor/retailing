@@ -8,7 +8,6 @@ use App\Retailing\Entity\Retail\RetailEntity;
 use App\Retailing\Enum\RetailKind;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 
 /**
@@ -33,7 +32,7 @@ final class RetailCustomerRequestFixtures extends Fixture implements FixtureGrou
      */
     public function load(ObjectManager $manager): void
     {
-        if (!$manager instanceof EntityManagerInterface) {
+        if (!method_exists($manager, 'getConnection')) {
             return;
         }
 

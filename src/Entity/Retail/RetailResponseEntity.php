@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Retailing\Entity\Retail;
 
-use App\Retailing\Repository\RetailResponseRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: RetailResponseRepository::class)]
+#[ORM\Entity]
 #[ORM\Table(name: 'retail_response')]
 #[ORM\Index(name: 'idx_retail_response_retail_status', columns: ['retail_id', 'status'])]
 #[ORM\Index(name: 'idx_retail_response_vendor_status', columns: ['vendor_id', 'status'])]
