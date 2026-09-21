@@ -491,6 +491,19 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
+    /**
+     * Returns a published listing to draft so it is no longer eligible for marketplace queries.
+     */
+    public function unpublish(): void
+    {
+        if ('published' !== $this->getObjectStatus()) {
+            throw new \DomainException('Only a published retail listing can be unpublished.');
+        }
+
+        $this->setObjectStatus('draft');
+        $this->touchModified();
+    }
+
     private function requiresExactLocation(): bool
     {
         $mode = is_string($this->fulfillmentProfile['mode'] ?? null) ? $this->fulfillmentProfile['mode'] : '';

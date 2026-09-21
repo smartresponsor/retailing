@@ -116,6 +116,29 @@ final class RetailingBehaviorTest extends TestCase
         $retail->setKind(RetailKind::Project);
     }
 
+    public function testRetailEntityPublicationLifecycleSupportsExplicitUnpublishAndRepublish(): void
+    {
+        $retail = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-1');
+
+        $this->expectException(\DomainException::class);
+        $retail->unpublish();
+    }
+
+    public function testRetailEntityCanRepublishAfterUnpublish(): void
+    {
+        $retail = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-1');
+        $retail->publish();
+        $retail->unpublish();
+
+        self::assertSame('draft', $retail->getObjectStatus());
+
+        $retail->setTitle('Updated listing');
+        $retail->publish();
+
+        self::assertSame('published', $retail->getObjectStatus());
+        self::assertSame('Updated listing', $retail->getTitle());
+    }
+
     public function testRetailEntityRejectsInvalidScalarState(): void
     {
         $retail = new RetailEntity();
