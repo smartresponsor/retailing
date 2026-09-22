@@ -12696,7 +12696,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Gating",
-                "reference": "957e9d5ade835d089d11e13560cd1f1d24632ac6"
+                "reference": "f319b355eacf73b1289fd7609fa332cdb5c16481"
             },
             "require": {
                 "php": "^8.4",
@@ -15544,6 +15544,6 @@
     "platform": {
         "php": "^8.4"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.9.0"
 }
