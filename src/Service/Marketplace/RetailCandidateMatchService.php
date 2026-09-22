@@ -26,8 +26,9 @@ final class RetailCandidateMatchService
      */
     public function matchForTask(RetailEntity $task): array
     {
-        if (RetailKind::Task !== $task->getKind() || 'access' !== $task->getOwnerType() || 'published' !== $task->getObjectStatus()) {
-            throw new \InvalidArgumentException('Marketplace candidate matching requires a published access-owned task.');
+        $at = new \DateTimeImmutable();
+        if (RetailKind::Task !== $task->getKind() || !$task->isMarketplaceEligibleAt($at)) {
+            throw new \InvalidArgumentException('Marketplace candidate matching requires an eligible access-owned task.');
         }
 
         $categoryId = $task->getCategoryId();
@@ -36,7 +37,11 @@ final class RetailCandidateMatchService
         }
 
         $matches = [];
-        foreach ($this->retailRepository->findPublishedVendorServicesByCategory($categoryId) as $service) {
+        foreach ($this->retailRepository->findPublishedVendorServicesByCategory($categoryId, $at) as $service) {
+            if (!$service->isMarketplaceEligibleAt($at)) {
+                continue;
+            }
+
             $areaMatch = $this->serviceAreaMatchService->match($task->getLocationProfile(), $service->getLocationProfile());
             if (null === $areaMatch) {
                 continue;

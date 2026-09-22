@@ -38,6 +38,11 @@ final readonly class RetailService
      */
     public function publishedByCategory(string $categoryId): array
     {
-        return $this->repository->findPublishedByCategory($categoryId);
+        $at = new \DateTimeImmutable();
+
+        return array_values(array_filter(
+            $this->repository->findPublishedByCategory($categoryId, $at),
+            static fn(RetailEntity $retail): bool => $retail->isMarketplaceEligibleAt($at),
+        ));
     }
 }

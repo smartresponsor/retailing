@@ -45,8 +45,10 @@ final class RetailRepository extends ServiceEntityRepository
      * Returns published listings for one catalog category, newest first.
      * @return list<RetailEntity>
      */
-    public function findPublishedByCategory(string $categoryId): array
+    public function findPublishedByCategory(string $categoryId, ?\DateTimeImmutable $at = null): array
     {
+        $at ??= new \DateTimeImmutable();
+
         return $this->createQueryBuilder('retail')
             ->andWhere('retail.categoryId = :categoryId')
             ->andWhere('retail.objectState.objectStatus = :status')
@@ -54,7 +56,7 @@ final class RetailRepository extends ServiceEntityRepository
             ->andWhere('(retail.publicationEndsAt IS NULL OR retail.publicationEndsAt > :now)')
             ->setParameter('categoryId', trim($categoryId))
             ->setParameter('status', 'published')
-            ->setParameter('now', new \DateTimeImmutable())
+            ->setParameter('now', $at)
             ->orderBy('retail.id', 'DESC')
             ->getQuery()
             ->getResult();
@@ -64,8 +66,10 @@ final class RetailRepository extends ServiceEntityRepository
      * Returns published vendor service offerings eligible for category-level marketplace matching.
      * @return list<RetailEntity>
      */
-    public function findPublishedVendorServicesByCategory(string $categoryId): array
+    public function findPublishedVendorServicesByCategory(string $categoryId, ?\DateTimeImmutable $at = null): array
     {
+        $at ??= new \DateTimeImmutable();
+
         return $this->createQueryBuilder('retail')
             ->andWhere('retail.categoryId = :categoryId')
             ->andWhere('retail.kind = :kind')
@@ -77,7 +81,7 @@ final class RetailRepository extends ServiceEntityRepository
             ->setParameter('kind', RetailKind::Service)
             ->setParameter('ownerType', 'vendor')
             ->setParameter('status', 'published')
-            ->setParameter('now', new \DateTimeImmutable())
+            ->setParameter('now', $at)
             ->orderBy('retail.amountMinor', 'ASC')
             ->addOrderBy('retail.id', 'ASC')
             ->getQuery()

@@ -174,6 +174,37 @@ final class RetailingBehaviorTest extends TestCase
         );
     }
 
+    public function testRetailEntityMarketplaceEligibilityReportsDeterministicReasons(): void
+    {
+        $retail = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-1');
+        $at = new \DateTimeImmutable('2026-09-23T10:00:00+00:00');
+        $retail->schedulePublication(new \DateTimeImmutable('2026-09-24T10:00:00+00:00'), null);
+
+        self::assertSame(
+            ['not_published', 'publication_not_started'],
+            $retail->marketplaceIneligibilityReasonsAt($at),
+        );
+
+        $retail->publish();
+        $retail->setCatalogCode('products');
+        $retail->setOwnerType('access');
+
+        self::assertSame(
+            ['publication_not_started', 'catalog_mismatch', 'owner_scope_mismatch'],
+            $retail->marketplaceIneligibilityReasonsAt($at),
+        );
+        self::assertFalse($retail->isMarketplaceEligibleAt($at));
+
+        $eligible = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-2');
+        $eligible->publish();
+        self::assertTrue($eligible->isMarketplaceEligibleAt($at));
+        self::assertSame([], $eligible->marketplaceIneligibilityReasonsAt($at));
+
+        $eligible->schedulePublication(null, new \DateTimeImmutable('2026-09-23T09:00:00+00:00'));
+        self::assertSame(['publication_expired'], $eligible->marketplaceIneligibilityReasonsAt($at));
+        self::assertFalse($eligible->isMarketplaceEligibleAt($at));
+    }
+
     public function testRetailEntityRejectsInvalidScalarState(): void
     {
         $retail = new RetailEntity();

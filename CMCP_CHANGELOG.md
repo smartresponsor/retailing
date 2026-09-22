@@ -238,3 +238,10 @@
 - Published category and vendor-service repository queries now exclude not-yet-effective and expired listings. Added PostgreSQL migration `Version20260922153000` with timezone-aware columns, publication-window index, and ordered-window constraint.
 - Added boundary tests for start-inclusive/end-exclusive eligibility and invalid windows. Verification is GREEN for PHP lint, PHP-CS-Fixer, PHPStan, PHPUnit 54 tests / 282 assertions, coverage Lines 863/1075 (80.28%), Methods 124/154 (80.52%), Branches 911/1126 (80.91%), and Playwright 1/1. Behavioral evidence is functional 2/2, behavioral 6/6, UI 1/1, critical 2/2.
 - Aggregate Gating is externally blocked only by Canon041 in current Gating master: the rule requires literal `symfony/test-pack`, while Symfony Flex correctly unpacks that meta-package into `symfony/browser-kit` / `symfony/css-selector`; Panther and Playwright are already configured and executable. No fake retained pack was introduced in Retailing.
+
+### Deterministic listing eligibility — 2026-09-22
+
+- Added explicit marketplace eligibility reason codes to `RetailEntity`: publication lifecycle/window, canonical catalog ownership, and owner scope are evaluated deterministically at a caller-supplied instant.
+- `RetailService` filters category results through the same eligibility contract; `RetailCandidateMatchService` evaluates customer tasks and vendor services using one shared instant, avoiding start/end boundary races.
+- Repository publication queries now accept an optional evaluation instant and bind it consistently into effective-window predicates.
+- Added exact reason-code coverage for draft/not-started, catalog mismatch, owner-scope mismatch, fully eligible, and expired listings. Verification is GREEN for PHP lint, PHP-CS-Fixer, PHPStan, PHPUnit 55 tests / 289 assertions, coverage Lines 881/1101 (80.02%), Methods 126/156 (80.77%), Branches 930/1150 (80.87%), and Playwright 1/1. Behavioral inventory now includes explicit listing eligibility.

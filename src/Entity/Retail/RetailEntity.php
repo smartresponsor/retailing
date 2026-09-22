@@ -517,6 +517,39 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         return true;
     }
 
+    /** @return list<string> */
+    public function marketplaceIneligibilityReasonsAt(\DateTimeImmutable $at): array
+    {
+        $reasons = [];
+        if ('published' !== $this->getObjectStatus()) {
+            $reasons[] = 'not_published';
+        }
+        if (null !== $this->publicationStartsAt && $this->publicationStartsAt > $at) {
+            $reasons[] = 'publication_not_started';
+        }
+        if (null !== $this->publicationEndsAt && $this->publicationEndsAt <= $at) {
+            $reasons[] = 'publication_expired';
+        }
+        if ($this->catalogCode !== $this->kind->catalogCode()) {
+            $reasons[] = 'catalog_mismatch';
+        }
+
+        $expectedOwnerType = match ($this->kind) {
+            RetailKind::Task, RetailKind::Project => 'access',
+            RetailKind::Service, RetailKind::Goods => 'vendor',
+        };
+        if ($this->ownerType !== $expectedOwnerType) {
+            $reasons[] = 'owner_scope_mismatch';
+        }
+
+        return $reasons;
+    }
+
+    public function isMarketplaceEligibleAt(\DateTimeImmutable $at): bool
+    {
+        return [] === $this->marketplaceIneligibilityReasonsAt($at);
+    }
+
     /**
      * Publishes a complete listing only after required ownership and commercial profiles are present.
      */
