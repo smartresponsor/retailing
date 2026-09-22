@@ -199,7 +199,7 @@
       "php bin/console doctrine:schema:validate --env=test",
       "php bin/console doctrine:migrations:up-to-date --env=test"
     ],
-    "gate": "@php vendor/bin/gating check --target=. --profile=config/retail_gating_profile.yaml --policy-root=vendor/gating/gate/.gating --severity-config=vendor/gating/gate/config/gate_severity.yaml",
+    "gate": "@php vendor/bin/gating check --target=. --profile=config/retail_gating_profile.yaml --policy-root=vendor/gating/gate/.gating --severity-config=vendor/gating/gate/.gating/config/severity.yaml",
     "quality": [
       "@cs:check",
       "@phpstan",

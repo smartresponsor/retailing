@@ -12,7 +12,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Administering",
-                "reference": "73adfc33df52f63a55dbc7ae634ef71ad37b0147"
+                "reference": "36a3c2c89347afaa0cf9ad6f4f85e3f9670844f4"
             },
             "require": {
                 "cruding/crud": "dev-master",
@@ -1563,7 +1563,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Cataloging",
-                "reference": "c6ed87a3ef37149fa2df990f5d25c8a4b287834b"
+                "reference": "2dfe6e6c7c12796f12b92b3c6df833255cd6489b"
             },
             "require": {
                 "administering/administration": "dev-master",
@@ -1853,7 +1853,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Collectioning",
-                "reference": "ec38869bba378a9e5347618a088fc8e5b8128fa5"
+                "reference": "8d0bf8ed56c06ff84d54a99abaadcaab55da11c2"
             },
             "require": {
                 "doctrine/doctrine-bundle": "^3.2",
@@ -2007,7 +2007,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Cruding",
-                "reference": "998dc7088cb4dec6e7bacb8f4568f8c059281793"
+                "reference": "5e4236178d21f0c7e934147df570ad95fd57e4d9"
             },
             "require": {
                 "collectioning/collection": "dev-master",
@@ -2130,7 +2130,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Currencing",
-                "reference": "5ba136f96bee1f75c9a0fdda583dae2982e8c36f"
+                "reference": "219d7914e8655cd3942370434e6989bdd83bdcfb"
             },
             "require": {
                 "collectioning/collection": "dev-master",
@@ -3582,7 +3582,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Interfacing",
-                "reference": "34c65c769e4306fb5c79395c937bb682d32a42a0"
+                "reference": "af859b3f475bb2b6e2731b5c64e83e47442c9ddd"
             },
             "require": {
                 "collectioning/collection": "dev-master",
@@ -3736,7 +3736,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Locating",
-                "reference": "c81d75435dbe8007a89bc0bc9639ec299d679383"
+                "reference": "f6101c6f87042b404ab7dd7d6cee574405d255dc"
             },
             "require": {
                 "collectioning/collection": "dev-master",
@@ -4193,7 +4193,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Navigating",
-                "reference": "7c27e088a5273e393efe36055bd647269fc09ad0"
+                "reference": "1f61a0aed58b499e72c9926b9dd9b29eaf42b311"
             },
             "require": {
                 "collectioning/collection": "dev-master",
@@ -4535,7 +4535,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Objecting",
-                "reference": "28dde694f067b3f4cac5c14db1385266d1d8b767"
+                "reference": "8d30b78e3cde74885c0a029f00b850d2abd42311"
             },
             "require": {
                 "doctrine/orm": "^3.3",
@@ -4960,7 +4960,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Pricing",
-                "reference": "a39a1b2e8b77ae4c1c663bed598823d46ee26b13"
+                "reference": "c3c5448f96811b6c20696a34752f80aac397ce3f"
             },
             "require": {
                 "collectioning/collection": "dev-master",
@@ -11369,7 +11369,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Tabling",
-                "reference": "beb48184a9615ae92b28239b750bd97d5421b8cf"
+                "reference": "0110010c7a5502b3c4736cfb6d7157e7ecb3c9bc"
             },
             "require": {
                 "collectioning/collection": "dev-master",
@@ -11665,7 +11665,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Viewing",
-                "reference": "5288a67908ef149cfdcaf1d9ae04d339c8913fdd"
+                "reference": "108a01f71bbc6ac59d07414a681d2a762c97753f"
             },
             "require": {
                 "interfacing/interface": "dev-master",
