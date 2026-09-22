@@ -231,3 +231,10 @@
 - `doctrine_migration_versions` now records `App\\Retailing\\Migrations\\Version20260914224500` as executed on 2026-09-15 03:50:24.
 - Direct read-only schema checks confirm the retired `retail.type_path` column and `idx_retail_type_path_kind` index are both absent. The Retailing cleanup migration is therefore applied in the canonical database.
 - A fresh guarded host Doctrine dry-run still cannot complete because the App runtime currently stops on stale `App\\RelatingBundle` package projection. This is an external host integration blocker, not remaining Retailing schema drift.
+
+### Scheduled publication — 2026-09-22
+
+- Added optional timezone-aware `publicationStartsAt` / `publicationEndsAt` effective windows to `RetailEntity`; lifecycle remains canonical `draft` / `published` rather than introducing a second scheduling status.
+- Published category and vendor-service repository queries now exclude not-yet-effective and expired listings. Added PostgreSQL migration `Version20260922153000` with timezone-aware columns, publication-window index, and ordered-window constraint.
+- Added boundary tests for start-inclusive/end-exclusive eligibility and invalid windows. Verification is GREEN for PHP lint, PHP-CS-Fixer, PHPStan, PHPUnit 54 tests / 282 assertions, coverage Lines 863/1075 (80.28%), Methods 124/154 (80.52%), Branches 911/1126 (80.91%), and Playwright 1/1. Behavioral evidence is functional 2/2, behavioral 6/6, UI 1/1, critical 2/2.
+- Aggregate Gating is externally blocked only by Canon041 in current Gating master: the rule requires literal `symfony/test-pack`, while Symfony Flex correctly unpacks that meta-package into `symfony/browser-kit` / `symfony/css-selector`; Panther and Playwright are already configured and executable. No fake retained pack was introduced in Retailing.

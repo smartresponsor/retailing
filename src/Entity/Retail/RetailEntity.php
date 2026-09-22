@@ -81,6 +81,12 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     #[ORM\Column(name: 'selection_profile', type: 'json', nullable: true)]
     private ?array $selectionProfile = null;
 
+    #[ORM\Column(name: 'publication_starts_at', type: 'datetimetz_immutable', nullable: true)]
+    private ?\DateTimeImmutable $publicationStartsAt = null;
+
+    #[ORM\Column(name: 'publication_ends_at', type: 'datetimetz_immutable', nullable: true)]
+    private ?\DateTimeImmutable $publicationEndsAt = null;
+
     public function __construct()
     {
         $this->initializeObjectCode();
@@ -467,6 +473,48 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
             'currency' => $service->getCurrency(),
         ];
         $this->touchModified();
+    }
+
+    public function getPublicationStartsAt(): ?\DateTimeImmutable
+    {
+        return $this->publicationStartsAt;
+    }
+
+    public function getPublicationEndsAt(): ?\DateTimeImmutable
+    {
+        return $this->publicationEndsAt;
+    }
+
+    /**
+     * Defines the optional effective publication window without changing lifecycle state.
+     */
+    public function schedulePublication(?\DateTimeImmutable $startsAt, ?\DateTimeImmutable $endsAt): void
+    {
+        if (null !== $startsAt && null !== $endsAt && $endsAt <= $startsAt) {
+            throw new \InvalidArgumentException('Retail publication end must be later than its start.');
+        }
+
+        $this->publicationStartsAt = $startsAt;
+        $this->publicationEndsAt = $endsAt;
+        $this->touchModified();
+    }
+
+    /**
+     * Reports whether a published listing is effective at the supplied instant.
+     */
+    public function isPublicationEffectiveAt(\DateTimeImmutable $at): bool
+    {
+        if ('published' !== $this->getObjectStatus()) {
+            return false;
+        }
+        if (null !== $this->publicationStartsAt && $this->publicationStartsAt > $at) {
+            return false;
+        }
+        if (null !== $this->publicationEndsAt && $this->publicationEndsAt <= $at) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

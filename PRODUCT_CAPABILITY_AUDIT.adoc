@@ -11,7 +11,7 @@ Retailing should own the sellable/listing projection of catalog data: what is of
 |===
 |Capability |Status |Audit
 |Sellable listing identity |PARITY |Existing Retail entities and listing-kind vocabulary show a real sellable projection.
-|Publication lifecycle |PARTIAL |Needs one canonical publish/unpublish/schedule lifecycle.
+|Publication lifecycle |PARITY |Canonical publish/unpublish lifecycle now includes optional effective publication windows without introducing a second workflow state.
 |Catalog linkage |PARITY |Retail kinds already map to catalog-owned vocabulary.
 |Storefront facet projection |PARITY |Retailing consumes Cataloging facet_contracts through CatalogSearchServiceInterface and does not duplicate Faceting counting/filter semantics.
 |Store/channel scoping |PARITY |Retailing now uses canonical owner/vendor identity only; the legacy tenantId alias has been removed from active Retailing placement state.
@@ -20,7 +20,7 @@ Retailing should own the sellable/listing projection of catalog data: what is of
 |Price reference |PARTIAL |Reference Pricing results; do not calculate prices locally.
 |Stock/availability reference |PARTIAL |Reference Stocking availability; do not own quantities.
 |Shipping eligibility reference |PARTIAL |Retailing no longer emits tenantId, while Shipping still exposes a broader legacy tenantId contract that requires its own migration before direct handoff can be green.
-|Scheduled publication |MISSING |Modern retail platforms need effective windows and controlled rollout.
+|Scheduled publication |PARITY |Published listings support optional start/end effective windows, and storefront/vendor-service queries exclude not-yet-effective or expired listings.
 |===
 
 == Boundary risks

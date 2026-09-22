@@ -143,6 +143,37 @@ final class RetailingBehaviorTest extends TestCase
         self::assertSame('Updated listing', $retail->getTitle());
     }
 
+    public function testRetailEntityScheduledPublicationWindowControlsEffectiveEligibility(): void
+    {
+        $retail = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-1');
+        $startsAt = new \DateTimeImmutable('2026-09-23T10:00:00+00:00');
+        $endsAt = new \DateTimeImmutable('2026-09-24T10:00:00+00:00');
+
+        $retail->schedulePublication($startsAt, $endsAt);
+        $retail->publish();
+
+        self::assertSame($startsAt, $retail->getPublicationStartsAt());
+        self::assertSame($endsAt, $retail->getPublicationEndsAt());
+        self::assertFalse($retail->isPublicationEffectiveAt(new \DateTimeImmutable('2026-09-23T09:59:59+00:00')));
+        self::assertTrue($retail->isPublicationEffectiveAt(new \DateTimeImmutable('2026-09-23T10:00:00+00:00')));
+        self::assertTrue($retail->isPublicationEffectiveAt(new \DateTimeImmutable('2026-09-24T09:59:59+00:00')));
+        self::assertFalse($retail->isPublicationEffectiveAt(new \DateTimeImmutable('2026-09-24T10:00:00+00:00')));
+
+        $retail->unpublish();
+        self::assertFalse($retail->isPublicationEffectiveAt(new \DateTimeImmutable('2026-09-23T12:00:00+00:00')));
+    }
+
+    public function testRetailEntityRejectsInvalidScheduledPublicationWindow(): void
+    {
+        $retail = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-1');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $retail->schedulePublication(
+            new \DateTimeImmutable('2026-09-24T10:00:00+00:00'),
+            new \DateTimeImmutable('2026-09-24T10:00:00+00:00'),
+        );
+    }
+
     public function testRetailEntityRejectsInvalidScalarState(): void
     {
         $retail = new RetailEntity();
