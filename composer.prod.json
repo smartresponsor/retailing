@@ -36,6 +36,11 @@
     },
     {
       "type": "vcs",
+      "url": "git@github.com:smartresponsor/stocking.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
       "url": "git@github.com:smartresponsor/tabling-.git",
       "no-api": true
     },
@@ -63,6 +68,7 @@
     "interfacing/interface": "dev-master",
     "locating/location": "dev-master",
     "objecting/object": "dev-master",
+    "stocking/stock": "dev-master",
     "symfony/dependency-injection": "^8.1",
     "symfony/form": "^8.1",
     "symfony/framework-bundle": "^8.1",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3b6dc757b859990fc7863b71818a71ed",
+    "content-hash": "03ef2e677a8a1a41773830af65a8265a",
     "packages": [
         {
             "name": "administering/administration",
@@ -5423,6 +5423,105 @@
                 "source": "https://github.com/DerManoMann/type-info-extras/tree/1.0.8"
             },
             "time": "2026-09-08T08:46:24+00:00"
+        },
+        {
+            "name": "stocking/stock",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../Stocking",
+                "reference": "42c33e9b660fd9a628735a3bfc10a5e9dab33006"
+            },
+            "require": {
+                "collectioning/collection": "dev-master",
+                "cruding/crud": "dev-master",
+                "doctrine/doctrine-bundle": "^3.3",
+                "doctrine/orm": "^3.7",
+                "easycorp/easyadmin-bundle": "^5.5",
+                "interfacing/interface": "dev-master",
+                "objecting/object": "dev-master",
+                "php": "^8.4",
+                "symfony/console": "^8.1",
+                "symfony/framework-bundle": "^8.1",
+                "symfony/yaml": "^8.1",
+                "tabling/table": "dev-master",
+                "viewing/view": "dev-master"
+            },
+            "require-dev": {
+                "doctrine/doctrine-migrations-bundle": "^4.0",
+                "friendsofphp/php-cs-fixer": "^3.95",
+                "gating/gate": "dev-master",
+                "phpstan/phpstan": "^2.2",
+                "phpunit/phpunit": "^13.3"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "symfony": {
+                    "bundle": "App\\Stocking\\StockingBundle",
+                    "require": "^8.1"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "App\\Stocking\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "App\\Stocking\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "phpunit"
+                ],
+                "test:coverage": [
+                    "@php -r \"if (!is_dir('var/coverage')) { mkdir('var/coverage', 0777, true); }\"",
+                    "@php -d xdebug.mode=coverage vendor/bin/phpunit --branch-coverage --coverage-text=var/coverage/summary.txt"
+                ],
+                "phpstan": [
+                    "phpstan analyse -c phpstan.neon"
+                ],
+                "lint:yaml": [
+                    "php bin/console lint:yaml config --parse-tags --env=test"
+                ],
+                "lint:container": [
+                    "php bin/console lint:container --env=test"
+                ],
+                "db:schema:validate": [
+                    "php bin/console doctrine:schema:validate --skip-sync --env=test"
+                ],
+                "db:migrations:status": [
+                    "php bin/console doctrine:migrations:status --env=test"
+                ],
+                "cs:check": [
+                    "php-cs-fixer fix --dry-run --diff --verbose"
+                ],
+                "cs:fix": [
+                    "php-cs-fixer fix --verbose"
+                ],
+                "gate": [
+                    "@php vendor/bin/gating check --target=. --profile=config/gating/profile.yaml --policy-root=vendor/gating/gate/.gating --severity-config=vendor/gating/gate/.gating/config/severity.yaml"
+                ],
+                "quality": [
+                    "@test:coverage",
+                    "@phpstan",
+                    "@lint:yaml",
+                    "@lint:container",
+                    "@db:schema:validate",
+                    "@db:migrations:status",
+                    "@cs:check",
+                    "@gate"
+                ]
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "SmartResponsor Stocking component: owns inventory availability, stock levels, reservations, incoming quantities, adjustments, and movements across stock locations.",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "symfony/asset",
@@ -15536,6 +15635,7 @@
         "locating/location": 20,
         "objecting/object": 20,
         "pricing/price": 20,
+        "stocking/stock": 20,
         "tabling/table": 20,
         "viewing/view": 20
     },

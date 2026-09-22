@@ -32,6 +32,7 @@ $requiredEvidence = [
         'testRetailEntityCanRepublishAfterUnpublish',
         'testRetailEntityScheduledPublicationWindowControlsEffectiveEligibility',
         'testRetailEntityMarketplaceEligibilityReportsDeterministicReasons',
+        'testRetailStockAvailabilityProjectsStockingFactsWithoutOwningQuantities',
         'testResponseAcceptanceRejectsInvalidLifecycleBeforePersistenceAccess',
         'testKindVocabularyMapsAndFallsBack',
         'testStorefrontFacetsDelegateToCatalogingContractsWithoutRecomputingSemantics',
@@ -62,8 +63,8 @@ $dimensions = [
         'covered' => ['standalone-kernel-bundle', 'dependency-injection-extension'],
     ],
     'behavioral' => [
-        'eligible' => ['publication-lifecycle', 'scheduled-publication', 'listing-eligibility', 'response-acceptance', 'catalog-vocabulary', 'storefront-facet-contract', 'retail-placement-vendor-identity'],
-        'covered' => ['publication-lifecycle', 'scheduled-publication', 'listing-eligibility', 'response-acceptance', 'catalog-vocabulary', 'storefront-facet-contract', 'retail-placement-vendor-identity'],
+        'eligible' => ['publication-lifecycle', 'scheduled-publication', 'listing-eligibility', 'stock-availability-projection', 'response-acceptance', 'catalog-vocabulary', 'storefront-facet-contract', 'retail-placement-vendor-identity'],
+        'covered' => ['publication-lifecycle', 'scheduled-publication', 'listing-eligibility', 'stock-availability-projection', 'response-acceptance', 'catalog-vocabulary', 'storefront-facet-contract', 'retail-placement-vendor-identity'],
     ],
     'ui' => [
         'eligible' => ['playwright-browser-harness'],

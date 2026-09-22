@@ -250,3 +250,10 @@
 
 - Re-read `RetailOrderIntentFactory` and `RetailPricingQuoteIntegrationTest`. Retailing already consumes typed `App\\Pricing\\DTO\\PriceQuoteDTO` facts, validates quote ownership and currency, and lets negotiated amount override reusable Pricing quotes.
 - Retailing does not own a price-selection engine in this path; it only projects external Pricing results into neutral Ordering intent. `PRODUCT_CAPABILITY_AUDIT.adoc` therefore upgrades Price reference from PARTIAL to PARITY without introducing duplicate pricing logic.
+
+### Stocking availability projection — 2026-09-22
+
+- Added `stocking/stock` as a first-party Retailing dependency in development and production Composer manifests and registered `StockingBundle` for standalone Retailing runtime composition.
+- Added `RetailStockAvailabilityService`, a read-only goods-listing projection over Stocking `StockLevelRepository` and `StockAvailabilityService`. The boundary accepts opaque Stocking item/location identities and returns `available`, `insufficient`, or `unmanaged` facts without reserving, backordering, or mutating inventory.
+- Added coverage for ATP projection, unmanaged inventory, non-goods guards, invalid quantity, and missing identity inputs. Final verification is GREEN: PHPUnit 57 tests / 295 assertions, coverage Lines 903/1123 (80.41%), Methods 128/158 (81.01%), Branches 951/1173 (81.07%), Playwright 1/1, behavioral 8/8, and Gating 68 rules / 0 failed / 0 warning.
+- `PRODUCT_CAPABILITY_AUDIT.adoc` upgrades Stock/availability reference from PARTIAL to PARITY while keeping Stocking as the sole owner of inventory quantities and mutation lifecycle.

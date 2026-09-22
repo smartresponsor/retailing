@@ -18,7 +18,7 @@ Retailing should own the sellable/listing projection of catalog data: what is of
 |Assortment/listing eligibility |PARITY |Eligibility is explicit and deterministic: lifecycle/window, canonical catalog ownership, and owner scope produce auditable reason codes used by storefront and marketplace matching.
 |Merchandising placement |PARTIAL |Only if placement is retail-specific; generic presentation belongs elsewhere.
 |Price reference |PARITY |Retailing consumes typed Pricing `PriceQuoteDTO` results, validates listing reference/currency, and projects quoted or negotiated amounts into Ordering intent without owning price calculation.
-|Stock/availability reference |PARTIAL |Reference Stocking availability; do not own quantities.
+|Stock/availability reference |PARITY |Retailing consumes Stocking available-to-promise facts through a read-only goods projection and never owns or mutates inventory quantities.
 |Shipping eligibility reference |PARTIAL |Retailing no longer emits tenantId, while Shipping still exposes a broader legacy tenantId contract that requires its own migration before direct handoff can be green.
 |Scheduled publication |PARITY |Published listings support optional start/end effective windows, and storefront/vendor-service queries exclude not-yet-effective or expired listings.
 |===

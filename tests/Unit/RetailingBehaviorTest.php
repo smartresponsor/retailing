@@ -36,6 +36,10 @@ use App\Retailing\Service\RetailCategoryVocabularyService;
 use App\Retailing\Service\RetailKindVocabularyService;
 use App\Retailing\Service\RetailService;
 use App\Retailing\Service\RetailStorefrontFacetService;
+use App\Retailing\Service\RetailStockAvailabilityService;
+use App\Stocking\Entity\StockLevelEntity;
+use App\Stocking\Repository\StockLevelRepository;
+use App\Stocking\Service\StockAvailabilityService;
 use App\Retailing\Repository\RetailRepository;
 use App\Retailing\EventSubscriber\RetailOwnershipSubscriber;
 use Doctrine\DBAL\Connection;
@@ -203,6 +207,58 @@ final class RetailingBehaviorTest extends TestCase
         $eligible->schedulePublication(null, new \DateTimeImmutable('2026-09-23T09:00:00+00:00'));
         self::assertSame(['publication_expired'], $eligible->marketplaceIneligibilityReasonsAt($at));
         self::assertFalse($eligible->isMarketplaceEligibleAt($at));
+    }
+
+    public function testRetailStockAvailabilityProjectsStockingFactsWithoutOwningQuantities(): void
+    {
+        $goods = $this->completeListing(RetailKind::Goods, 'vendor', 'vendor-1');
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+        $level = new StockLevelEntity('stock-1', 'warehouse:houston', 8, 3, 5);
+        $entityManager->method('find')->willReturnCallback(
+            static fn(string $class, array $id): ?StockLevelEntity
+                => StockLevelEntity::class === $class
+                && ['stockItemId' => 'stock-1', 'locationReference' => 'warehouse:houston'] === $id
+                    ? $level
+                    : null,
+        );
+        $service = new RetailStockAvailabilityService(
+            new StockLevelRepository($entityManager),
+            new StockAvailabilityService(),
+        );
+
+        self::assertSame(
+            ['status' => 'available', 'availableToPromise' => 5, 'requestedQuantity' => 4],
+            $service->project($goods, 'stock-1', 'warehouse:houston', 4),
+        );
+        self::assertSame(
+            ['status' => 'insufficient', 'availableToPromise' => 5, 'requestedQuantity' => 6],
+            $service->project($goods, 'stock-1', 'warehouse:houston', 6),
+        );
+        self::assertSame(
+            ['status' => 'unmanaged', 'availableToPromise' => null, 'requestedQuantity' => 1],
+            $service->project($goods, 'stock-missing', 'warehouse:houston'),
+        );
+    }
+
+    public function testRetailStockAvailabilityRejectsNonGoodsAndInvalidRequests(): void
+    {
+        $service = new RetailStockAvailabilityService(
+            new StockLevelRepository($this->createStub(EntityManagerInterface::class)),
+            new StockAvailabilityService(),
+        );
+
+        foreach ([
+            fn() => $service->project($this->completeListing(RetailKind::Service, 'vendor', 'vendor-1'), 'stock-1', 'warehouse:houston'),
+            fn() => $service->project($this->completeListing(RetailKind::Goods, 'vendor', 'vendor-1'), 'stock-1', 'warehouse:houston', 0),
+            fn() => $service->project($this->completeListing(RetailKind::Goods, 'vendor', 'vendor-1'), ' ', 'warehouse:houston'),
+        ] as $operation) {
+            try {
+                $operation();
+                self::fail('Expected invalid Stocking availability projection request.');
+            } catch (\InvalidArgumentException) {
+                self::addToAssertionCount(1);
+            }
+        }
     }
 
     public function testRetailEntityRejectsInvalidScalarState(): void

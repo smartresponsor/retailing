@@ -17,6 +17,7 @@
     "locating/location": "dev-master",
     "objecting/object": "dev-master",
     "pricing/price": "dev-master",
+    "stocking/stock": "dev-master",
     "symfony/dependency-injection": "^8.1",
     "symfony/form": "^8.1",
     "symfony/framework-bundle": "^8.1",
@@ -144,6 +145,16 @@
         "symlink": true,
         "versions": {
           "pricing/price": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Stocking",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "stocking/stock": "dev-master"
         }
       }
     },
