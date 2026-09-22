@@ -224,3 +224,10 @@
 - Behavioral/UI evidence is GREEN: functional 2/2, behavioral 5/5, UI 1/1, critical 2/2. Playwright is 1/1.
 - Final `composer quality` is GREEN: PHP-CS-Fixer clean, PHPStan 0 errors, PHPUnit 52 tests / 274 assertions, and Gating 68 rules / 0 failed / 0 warning / 0 suppressed.
 - `PRODUCT_CAPABILITY_AUDIT.adoc` now records storefront facet projection as PARITY and uses explicit milestone wording rather than ambiguous M-number shorthand.
+
+### Canonical PostgreSQL evidence refresh — 2026-09-21
+
+- Console MCP revalidated the host-owned PostgreSQL connection at `D:\\PhpstormProjects\\www\\app`: PostgreSQL 16.4, database `app`, with live `retail` and `retail_response` tables.
+- `doctrine_migration_versions` now records `App\\Retailing\\Migrations\\Version20260914224500` as executed on 2026-09-15 03:50:24.
+- Direct read-only schema checks confirm the retired `retail.type_path` column and `idx_retail_type_path_kind` index are both absent. The Retailing cleanup migration is therefore applied in the canonical database.
+- A fresh guarded host Doctrine dry-run still cannot complete because the App runtime currently stops on stale `App\\RelatingBundle` package projection. This is an external host integration blocker, not remaining Retailing schema drift.
