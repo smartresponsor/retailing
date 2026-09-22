@@ -245,3 +245,8 @@
 - `RetailService` filters category results through the same eligibility contract; `RetailCandidateMatchService` evaluates customer tasks and vendor services using one shared instant, avoiding start/end boundary races.
 - Repository publication queries now accept an optional evaluation instant and bind it consistently into effective-window predicates.
 - Added exact reason-code coverage for draft/not-started, catalog mismatch, owner-scope mismatch, fully eligible, and expired listings. Verification is GREEN for PHP lint, PHP-CS-Fixer, PHPStan, PHPUnit 55 tests / 289 assertions, coverage Lines 881/1101 (80.02%), Methods 126/156 (80.77%), Branches 930/1150 (80.87%), and Playwright 1/1. Behavioral inventory now includes explicit listing eligibility.
+
+### Pricing reference audit refresh — 2026-09-22
+
+- Re-read `RetailOrderIntentFactory` and `RetailPricingQuoteIntegrationTest`. Retailing already consumes typed `App\\Pricing\\DTO\\PriceQuoteDTO` facts, validates quote ownership and currency, and lets negotiated amount override reusable Pricing quotes.
+- Retailing does not own a price-selection engine in this path; it only projects external Pricing results into neutral Ordering intent. `PRODUCT_CAPABILITY_AUDIT.adoc` therefore upgrades Price reference from PARTIAL to PARITY without introducing duplicate pricing logic.
