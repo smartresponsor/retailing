@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "416c83aef3d52d1bbada2b2a07971507",
+    "content-hash": "3b6dc757b859990fc7863b71818a71ed",
     "packages": [
         {
             "name": "administering/administration",
@@ -54,6 +54,7 @@
             "require-dev": {
                 "ergebnis/composer-normalize": "^2.47",
                 "friendsofphp/php-cs-fixer": "^3.94",
+                "gating/gate": "dev-master",
                 "icanhazstring/composer-unused": "^0.9.6",
                 "phpstan/phpstan": "^2.1",
                 "phpstan/phpstan-doctrine": "^2.0",
@@ -113,7 +114,8 @@
                     "@lint:container",
                     "@stan",
                     "@cs:check",
-                    "@test"
+                    "@test",
+                    "@gate"
                 ],
                 "rc:proof": [
                     "@php bin/console administering:rc:proof --operation-type=administration.configuration.scan --target-prefix=administering:rc-proof --output-file=delivery/rc/runtime-proof-results/administering-rc-proof.json --json"
@@ -294,6 +296,9 @@
                 ],
                 "inspect:accessing-contract-cleanup": [
                     "@php tools/inspection/administering-accessing-contract-cleanup-guard.php"
+                ],
+                "gate": [
+                    "@php vendor/bin/gating check --target=."
                 ]
             },
             "license": [
@@ -1558,7 +1563,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Cataloging",
-                "reference": "b83752cda0526d6cb2baf1609c59264d019c2c08"
+                "reference": "c6ed87a3ef37149fa2df990f5d25c8a4b287834b"
             },
             "require": {
                 "administering/administration": "dev-master",
@@ -1597,6 +1602,7 @@
             "require-dev": {
                 "doctrine/doctrine-fixtures-bundle": "^4.3",
                 "friendsofphp/php-cs-fixer": "^3.94",
+                "gating/gate": "dev-master",
                 "phpstan/phpstan": "^2.1",
                 "phpstan/phpstan-doctrine": "^2.0",
                 "phpunit/phpunit": "^11.5",
@@ -1815,6 +1821,15 @@
                 ],
                 "test:coverage": [
                     "@php tools/php/php84.php -d xdebug.mode=coverage vendor/bin/phpunit -c phpunit.xml.dist --path-coverage --coverage-text=var/coverage-summary.txt"
+                ],
+                "gate": [
+                    "@php -d auto_prepend_file=vendor/autoload.php vendor/bin/gating check --target=. --profile=config/gating/cataloging.yaml --severity-config=config/gating/severity.yaml"
+                ],
+                "quality": [
+                    "@cs:check",
+                    "@stan",
+                    "@test",
+                    "@gate"
                 ]
             },
             "license": [
@@ -1853,6 +1868,7 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.95",
+                "gating/gate": "dev-master",
                 "phpstan/phpstan": "^2.2",
                 "phpunit/phpunit": "^13.3"
             },
@@ -1888,6 +1904,15 @@
                 ],
                 "cs:fix": [
                     "php-cs-fixer fix"
+                ],
+                "gate": [
+                    "@php vendor/bin/gating check --target=."
+                ],
+                "quality": [
+                    "@cs:check",
+                    "@phpstan",
+                    "@test",
+                    "@gate"
                 ]
             },
             "license": [
@@ -2005,6 +2030,7 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.95",
+                "gating/gate": "dev-master",
                 "phpstan/phpstan": "^2.0",
                 "phpunit/phpunit": "^12.0",
                 "symfony/dotenv": "^8.1"
@@ -2078,6 +2104,15 @@
                     "@canon:cruding",
                     "@smoke:cruding",
                     "@test"
+                ],
+                "gate": [
+                    "@php vendor/bin/gating check --target=."
+                ],
+                "quality": [
+                    "@cs:check",
+                    "@phpstan",
+                    "@test",
+                    "@gate"
                 ]
             },
             "license": [
@@ -2131,6 +2166,7 @@
             "require-dev": {
                 "doctrine/doctrine-fixtures-bundle": "^4.0",
                 "friendsofphp/php-cs-fixer": "^3.94",
+                "gating/gate": "dev-master",
                 "phpstan/phpstan": "^2.1",
                 "phpunit/phpunit": "^11.5 || ^12.0",
                 "symfony/browser-kit": "^8.1",
@@ -2202,6 +2238,15 @@
                     "php tools/currencing-api-contract-check.php",
                     "php tools/currencing-release-candidate-check.php",
                     "php tools/currencing-standalone-runtime-foundation-check.php"
+                ],
+                "gate": [
+                    "@php vendor/bin/gating check --target=."
+                ],
+                "quality": [
+                    "@cs:check",
+                    "@phpstan",
+                    "@test",
+                    "@gate"
                 ]
             },
             "license": [
@@ -3573,6 +3618,7 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.95.4",
+                "gating/gate": "dev-master",
                 "phpstan/extension-installer": "^1.4.3",
                 "phpstan/phpstan": "^2.2.2",
                 "phpstan/phpstan-phpunit": "^2.0.16",
@@ -3664,6 +3710,15 @@
                 ],
                 "canon:interfacing:seal": [
                     "php tools/qa/interfacing-seal-report.php"
+                ],
+                "gate": [
+                    "@php vendor/bin/gating check --target=."
+                ],
+                "quality": [
+                    "@cs:check",
+                    "@stan",
+                    "@test",
+                    "@gate"
                 ]
             },
             "license": [
@@ -3706,6 +3761,7 @@
                 "doctrine/doctrine-fixtures-bundle": "^4.3",
                 "doctrine/doctrine-migrations-bundle": "^4.0",
                 "friendsofphp/php-cs-fixer": "^3.94",
+                "gating/gate": "dev-master",
                 "phpstan/phpstan": "^2.1",
                 "phpstan/phpstan-phpunit": "^2.0",
                 "phpunit/phpunit": "^10.5"
@@ -4006,6 +4062,15 @@
                 ],
                 "canon:service-locator-address-reverse-path": [
                     "php .gate/check/location-service-locator-address-reverse-path-canon.php"
+                ],
+                "gate": [
+                    "@php vendor/bin/gating check --target=."
+                ],
+                "quality": [
+                    "@cs:check",
+                    "@stan",
+                    "@test",
+                    "@gate"
                 ]
             },
             "license": [
@@ -4160,6 +4225,7 @@
             "require-dev": {
                 "doctrine/doctrine-fixtures-bundle": "^4.3",
                 "friendsofphp/php-cs-fixer": "^3.95",
+                "gating/gate": "dev-master",
                 "phpstan/phpstan": "^2.0",
                 "phpstan/phpstan-doctrine": "^2.0",
                 "phpunit/phpunit": "^12.0",
@@ -4265,6 +4331,14 @@
                 ],
                 "qa": [
                     "@qa:all"
+                ],
+                "gate": [
+                    "@php vendor/bin/gating check --target=."
+                ],
+                "quality": [
+                    "@cs:check",
+                    "@phpstan",
+                    "@gate"
                 ]
             },
             "license": [
@@ -4474,6 +4548,7 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": ">=3.95 <4.0",
+                "gating/gate": "dev-master",
                 "phpstan/phpstan": "^2.0",
                 "phpunit/phpunit": "^11.0 || ^12.0"
             },
@@ -4630,6 +4705,14 @@
                 ],
                 "test:internal-types": [
                     "@php tools/test/objecting_internal_type_resolution_check.php"
+                ],
+                "gate": [
+                    "@php vendor/bin/gating check --target=."
+                ],
+                "quality": [
+                    "@phpstan",
+                    "@test",
+                    "@gate"
                 ]
             },
             "license": [
@@ -4877,7 +4960,7 @@
             "dist": {
                 "type": "path",
                 "url": "../Pricing",
-                "reference": "91f64de22b2e08e2b3279ed86488c48d35313892"
+                "reference": "a39a1b2e8b77ae4c1c663bed598823d46ee26b13"
             },
             "require": {
                 "collectioning/collection": "dev-master",
@@ -4899,8 +4982,13 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.95",
+                "gating/gate": "dev-master",
                 "phpstan/phpstan": "^2.2",
-                "phpunit/phpunit": "^13.3"
+                "phpunit/phpunit": "^13.3",
+                "symfony/browser-kit": "^8.1",
+                "symfony/css-selector": "^8.1",
+                "symfony/panther": "^2.4",
+                "symfony/test-pack": "^1.2"
             },
             "type": "symfony-bundle",
             "extra": {
@@ -4923,9 +5011,12 @@
                 "test": [
                     "phpunit"
                 ],
+                "test:behavioral-coverage": [
+                    "@php tool/price-behavioral-ui-coverage.php"
+                ],
                 "test:coverage": [
                     "@php -r \"if (!is_dir('var/coverage')) { mkdir('var/coverage', 0777, true); }\"",
-                    "@php -d xdebug.mode=coverage vendor/bin/phpunit --branch-coverage --coverage-text=var/coverage/summary.txt"
+                    "@php -d xdebug.mode=coverage vendor/bin/phpunit --branch-coverage --coverage-text=var/coverage/summary.txt --coverage-clover=var/coverage/clover.xml"
                 ],
                 "phpstan": [
                     "phpstan analyse -c phpstan.neon"
@@ -4936,13 +5027,23 @@
                 "cs:fix": [
                     "php-cs-fixer fix --verbose"
                 ],
+                "schema:validate": [
+                    "@php bin/console doctrine:schema:validate --skip-sync --env=test --no-interaction"
+                ],
+                "schema:parity": [
+                    "@php bin/console doctrine:migrations:migrate --env=test --no-interaction",
+                    "@php tool/price-schema-parity.php",
+                    "@php bin/console doctrine:migrations:up-to-date --env=test --no-interaction"
+                ],
                 "gate": [
-                    "@php ../Gating/bin/gating check --target=. --profile=.gating/profile.yaml --policy-root=../Gating/.gating --severity-config=../Gating/.gating/config/severity.yaml"
+                    "@php vendor/bin/gating check --target=."
                 ],
                 "quality": [
                     "@test",
                     "@phpstan",
                     "@cs:check",
+                    "@schema:parity",
+                    "@test:behavioral-coverage",
                     "@gate"
                 ]
             },
@@ -11280,6 +11381,7 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.95",
+                "gating/gate": "dev-master",
                 "phpstan/phpstan": "^2.2",
                 "phpunit/phpunit": "^13.3"
             },
@@ -11319,7 +11421,11 @@
                     "@test:coverage",
                     "@phpstan",
                     "@cs:check",
-                    "@validate:prod"
+                    "@validate:prod",
+                    "@gate"
+                ],
+                "gate": [
+                    "@php vendor/bin/gating check --target=."
                 ]
             },
             "license": [
@@ -11578,6 +11684,7 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.95",
+                "gating/gate": "dev-master",
                 "phpstan/phpstan": "^2.1",
                 "phpunit/phpunit": "^12.0",
                 "squizlabs/php_codesniffer": "^3.10",
@@ -11615,9 +11722,12 @@
                     "php-cs-fixer fix --dry-run --diff"
                 ],
                 "gate": [
-                    "@test",
+                    "@php vendor/bin/gating check --target=."
+                ],
+                "quality": [
                     "@phpstan",
-                    "@php-cs-fixer"
+                    "@test",
+                    "@gate"
                 ]
             },
             "license": [
@@ -12579,6 +12689,84 @@
                 }
             ],
             "time": "2026-09-08T11:11:37+00:00"
+        },
+        {
+            "name": "gating/gate",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../Gating",
+                "reference": "ec44358f053ea572ae1fc6f8b02edab23b7253c3"
+            },
+            "require": {
+                "php": "^8.4",
+                "symfony/console": "^8.1",
+                "symfony/filesystem": "^8.1",
+                "symfony/finder": "^8.1",
+                "symfony/yaml": "^8.1"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.95.4",
+                "phpstan/phpstan": "^2.2.2",
+                "phpunit/phpunit": "^13.3.3",
+                "rector/rector": "^2.4.1"
+            },
+            "bin": [
+                "bin/gating"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "App\\Gating\\": "src/"
+                }
+            },
+            "scripts": {
+                "gate": [
+                    "@php bin/gating check --target=."
+                ],
+                "scan": [
+                    "@php bin/gating scan --target=."
+                ],
+                "test": [
+                    "@php tests/calibration.php"
+                ],
+                "test:unit": [
+                    "phpunit tests/Unit"
+                ],
+                "test:coverage": [
+                    "@php -d xdebug.mode=coverage vendor/bin/phpunit --branch-coverage --coverage-text=var/coverage/summary.txt"
+                ],
+                "cs:check": [
+                    "php-cs-fixer fix --dry-run --diff --verbose"
+                ],
+                "cs:fix": [
+                    "php-cs-fixer fix --verbose"
+                ],
+                "phpstan": [
+                    "phpstan analyse -c .gating/quality/owner/php/phpstan.neon"
+                ],
+                "rector:check": [
+                    "rector process --dry-run --config .gating/quality/owner/php/rector.php"
+                ],
+                "rector:fix": [
+                    "rector process --config .gating/quality/owner/php/rector.php"
+                ],
+                "quality": [
+                    "@cs:check",
+                    "@phpstan",
+                    "@rector:check",
+                    "@test",
+                    "@gate"
+                ]
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Smart Responsor Symfony-oriented executable ecosystem gate.",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "myclabs/deep-copy",
@@ -15287,59 +15475,6 @@
             "time": "2026-05-26T12:45:58+00:00"
         },
         {
-            "name": "symfony/test-pack",
-            "version": "v1.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/test-pack.git",
-                "reference": "88285bd1b12ec408c09fd6abac0ba290ff81fd04"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/test-pack/zipball/88285bd1b12ec408c09fd6abac0ba290ff81fd04",
-                "reference": "88285bd1b12ec408c09fd6abac0ba290ff81fd04",
-                "shasum": ""
-            },
-            "require": {
-                "phpunit/phpunit": "*",
-                "symfony/browser-kit": "*",
-                "symfony/css-selector": "*"
-            },
-            "conflict": {
-                "phpunit/phpunit": "<11.1"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "*",
-                "symfony/browser-kit": "*",
-                "symfony/css-selector": "*"
-            },
-            "type": "symfony-pack",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "A pack for functional and end-to-end testing within a Symfony app",
-            "support": {
-                "issues": "https://github.com/symfony/test-pack/issues",
-                "source": "https://github.com/symfony/test-pack/tree/v1.2.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2025-05-20T15:03:19+00:00"
-        },
-        {
             "name": "theseer/tokenizer",
             "version": "2.0.1",
             "source": {
@@ -15396,6 +15531,7 @@
         "cataloging/catalog": 20,
         "collectioning/collection": 20,
         "cruding/crud": 20,
+        "gating/gate": 20,
         "interfacing/interface": 20,
         "locating/location": 20,
         "objecting/object": 20,
@@ -15408,6 +15544,6 @@
     "platform": {
         "php": "^8.4"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.9.0"
 }

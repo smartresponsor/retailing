@@ -29,10 +29,12 @@
   "require-dev": {
     "doctrine/doctrine-fixtures-bundle": "^4.3",
     "friendsofphp/php-cs-fixer": "^3.95",
+    "gating/gate": "dev-master",
     "phpstan/phpstan": "^2.2",
     "phpunit/phpunit": "^12.0",
-    "symfony/panther": "^2.3",
-    "symfony/test-pack": "^1.2"
+    "symfony/browser-kit": "^8.1",
+    "symfony/css-selector": "^8.1",
+    "symfony/panther": "^2.3"
   },
   "autoload": {
     "psr-4": {
@@ -45,18 +47,136 @@
     }
   },
   "repositories": [
-    { "type": "path", "url": "../Administering", "options": { "symlink": true, "versions": { "administering/administration": "dev-master" } } },
-    { "type": "path", "url": "../Cataloging", "options": { "symlink": true, "versions": { "cataloging/catalog": "dev-master" } } },
-    { "type": "path", "url": "../Cruding", "options": { "symlink": true, "versions": { "cruding/crud": "dev-master" } } },
-    { "type": "path", "url": "../Collectioning", "options": { "symlink": true, "versions": { "collectioning/collection": "dev-master" } } },
-    { "type": "path", "url": "../Tabling", "options": { "symlink": true, "versions": { "tabling/table": "dev-master" } } },
-    { "type": "path", "url": "../Interfacing", "options": { "symlink": true, "versions": { "interfacing/interface": "dev-master" } } },
-    { "type": "path", "url": "../Locating", "options": { "symlink": true, "versions": { "locating/location": "dev-master" } } },
-    { "type": "path", "url": "../Navigating", "options": { "symlink": true, "versions": { "navigating/navigation": "dev-master" } } },
-    { "type": "path", "url": "../Objecting", "options": { "symlink": true, "versions": { "objecting/object": "dev-master" } } },
-    { "type": "path", "url": "../Pricing", "options": { "symlink": true, "versions": { "pricing/price": "dev-master" } } },
-    { "type": "path", "url": "../Currencing", "options": { "symlink": true, "versions": { "currencing/currency": "dev-master" } } },
-    { "type": "path", "url": "../Viewing", "options": { "symlink": true, "versions": { "viewing/view": "dev-master" } } }
+    {
+      "type": "path",
+      "url": "../Administering",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "administering/administration": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Cataloging",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "cataloging/catalog": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Cruding",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "cruding/crud": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Collectioning",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "collectioning/collection": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Tabling",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "tabling/table": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Interfacing",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "interfacing/interface": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Locating",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "locating/location": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Navigating",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "navigating/navigation": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Objecting",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "objecting/object": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Pricing",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "pricing/price": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Currencing",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "currencing/currency": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Viewing",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "viewing/view": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Gating",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "gating/gate": "dev-master"
+        }
+      }
+    }
   ],
   "minimum-stability": "dev",
   "prefer-stable": true,
@@ -72,11 +192,19 @@
     "cs:fix": "php-cs-fixer fix",
     "phpstan": "phpstan analyse -c phpstan.neon",
     "test": "phpunit",
-    "test:coverage": "@php -d xdebug.mode=coverage vendor/bin/phpunit --coverage-text=var/coverage.txt --path-coverage",
+    "test:coverage": "@php tools/coverage/retail-php-coverage.php --coverage-text=var/coverage.txt",
+    "test:coverage:path": "@php -d xdebug.mode=coverage vendor/bin/phpunit --coverage-text=var/coverage/phpunit-path.txt --path-coverage",
+    "test:behavioral-coverage": "@php tools/coverage/retail-behavioral-coverage.php",
     "schema:parity": [
       "php bin/console doctrine:schema:validate --env=test",
       "php bin/console doctrine:migrations:up-to-date --env=test"
     ],
-    "gate": "@php .gating/bin/gating check --target=. --policy-root=.gating/.gating"
+    "gate": "@php vendor/bin/gating check --target=. --profile=config/retail_gating_profile.yaml --policy-root=vendor/gating/gate/.gating --severity-config=vendor/gating/gate/config/gate_severity.yaml",
+    "quality": [
+      "@cs:check",
+      "@phpstan",
+      "@test",
+      "@gate"
+    ]
   }
 }

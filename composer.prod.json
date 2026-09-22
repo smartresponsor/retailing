@@ -4,14 +4,51 @@
   "type": "symfony-bundle",
   "license": "proprietary",
   "repositories": [
-    { "type": "vcs", "url": "git@github.com:smartresponsor/cataloging.git", "no-api": true },
-    { "type": "vcs", "url": "git@github.com:smartresponsor/collectioning.git", "no-api": true },
-    { "type": "vcs", "url": "git@github.com:smartresponsor/cruding.git", "no-api": true },
-    { "type": "vcs", "url": "git@github.com:smartresponsor/interfacing.git", "no-api": true },
-    { "type": "vcs", "url": "git@github.com:smartresponsor/locating.git", "no-api": true },
-    { "type": "vcs", "url": "git@github.com:smartresponsor/objecting.git", "no-api": true },
-    { "type": "vcs", "url": "git@github.com:smartresponsor/tabling-.git", "no-api": true },
-    { "type": "vcs", "url": "git@github.com:smartresponsor/viewing.git", "no-api": true }
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/cataloging.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/collectioning.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/cruding.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/interfacing.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/locating.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/objecting.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/tabling-.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/viewing.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/smartresponsor/gating.git",
+      "no-api": true
+    }
   ],
   "require": {
     "php": "^8.4",
@@ -44,5 +81,8 @@
   "prefer-stable": true,
   "config": {
     "sort-packages": true
+  },
+  "require-dev": {
+    "gating/gate": "dev-master"
   }
 }
