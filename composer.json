@@ -2,10 +2,10 @@
   "name": "retailing/retail",
   "description": "Retail marketplace product component",
   "type": "symfony-bundle",
-  "license": "proprietary",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "require": {
     "php": "^8.4",
-    "cataloging/catalog": "dev-master",
+    "cataloging/catalog": "dev-feature/cataloging-post-merge-20260921-v2",
     "collectioning/collection": "dev-master",
     "cruding/crud": "dev-master",
     "tabling/table": "dev-master",
@@ -14,7 +14,7 @@
     "doctrine/doctrine-migrations-bundle": "^4.0",
     "doctrine/orm": "^3.3",
     "interfacing/interface": "dev-master",
-    "locating/location": "dev-master",
+    "locating/location": "dev-env/locating-l2",
     "objecting/object": "dev-master",
     "pricing/price": "dev-master",
     "stocking/stock": "dev-master",
@@ -59,14 +59,8 @@
       }
     },
     {
-      "type": "path",
-      "url": "../Cataloging",
-      "options": {
-        "symlink": true,
-        "versions": {
-          "cataloging/catalog": "dev-master"
-        }
-      }
+      "type": "vcs",
+      "url": "../Cataloging"
     },
     {
       "type": "path",
@@ -109,24 +103,12 @@
       }
     },
     {
-      "type": "path",
-      "url": "../Locating",
-      "options": {
-        "symlink": true,
-        "versions": {
-          "locating/location": "dev-master"
-        }
-      }
+      "type": "vcs",
+      "url": "../Locating"
     },
     {
-      "type": "path",
-      "url": "../Navigating",
-      "options": {
-        "symlink": true,
-        "versions": {
-          "navigating/navigation": "dev-master"
-        }
-      }
+      "type": "vcs",
+      "url": "../Navigating"
     },
     {
       "type": "path",
@@ -139,34 +121,16 @@
       }
     },
     {
-      "type": "path",
-      "url": "../Pricing",
-      "options": {
-        "symlink": true,
-        "versions": {
-          "pricing/price": "dev-master"
-        }
-      }
+      "type": "vcs",
+      "url": "../Pricing"
     },
     {
-      "type": "path",
-      "url": "../Stocking",
-      "options": {
-        "symlink": true,
-        "versions": {
-          "stocking/stock": "dev-master"
-        }
-      }
+      "type": "vcs",
+      "url": "../Stocking"
     },
     {
-      "type": "path",
-      "url": "../Currencing",
-      "options": {
-        "symlink": true,
-        "versions": {
-          "currencing/currency": "dev-master"
-        }
-      }
+      "type": "vcs",
+      "url": "../Currencing"
     },
     {
       "type": "path",
