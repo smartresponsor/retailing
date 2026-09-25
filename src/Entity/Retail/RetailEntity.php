@@ -11,13 +11,15 @@ use App\Objecting\EntityTrait\Embeddable\ObjectAuditEmbeddableTrait;
 use App\Objecting\EntityTrait\Embeddable\ObjectCodeEmbeddableTrait;
 use App\Objecting\EntityTrait\Embeddable\ObjectStateEmbeddableTrait;
 use App\Retailing\Enum\RetailKind;
-use App\Retailing\Repository\RetailRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: RetailRepository::class)]
-#[ORM\Table(name: 'retail')]
+#[ORM\Entity]
+#[ORM\Table(name: 'retail_listing')]
 #[ORM\Index(name: 'idx_retail_owner_scope_kind', columns: ['owner_type', 'owner_id', 'kind'])]
 #[ORM\Index(name: 'idx_retail_category_kind', columns: ['category_id', 'kind'])]
+/**
+ * Persists a customer request or vendor offering together with commercial and fulfillment profiles.
+ */
 final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface, ObjectStatefulInterface
 {
     use ObjectAuditEmbeddableTrait;
@@ -78,6 +80,12 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
     /** @var array<string, mixed>|null */
     #[ORM\Column(name: 'selection_profile', type: 'json', nullable: true)]
     private ?array $selectionProfile = null;
+
+    #[ORM\Column(name: 'publication_starts_at', type: 'datetimetz_immutable', nullable: true)]
+    private ?\DateTimeImmutable $publicationStartsAt = null;
+
+    #[ORM\Column(name: 'publication_ends_at', type: 'datetimetz_immutable', nullable: true)]
+    private ?\DateTimeImmutable $publicationEndsAt = null;
 
     public function __construct()
     {
@@ -288,6 +296,9 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         return $this->selectionProfile;
     }
 
+    /**
+     * Accepts a submitted vendor response after validating request, service, pricing, and ownership invariants.
+     */
     public function acceptResponse(RetailResponseEntity $response, ?RetailEntity $service = null): void
     {
         if ('submitted' !== $response->getStatus()) {
@@ -302,6 +313,9 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->projectAcceptedResponse($response, $service);
     }
 
+    /**
+     * Rebuilds the customer selection projection from a response that is already accepted.
+     */
     public function synchronizeAcceptedResponse(RetailResponseEntity $response, ?RetailEntity $service = null): void
     {
         if ('accepted' !== $response->getStatus()) {
@@ -423,6 +437,9 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
+    /**
+     * Selects a published vendor service directly for a customer task at an agreed amount.
+     */
     public function selectServiceCandidate(RetailEntity $service, int $agreedAmountMinor): void
     {
         if (RetailKind::Task !== $this->kind || 'access' !== $this->ownerType || 'published' !== $this->getObjectStatus()) {
@@ -458,6 +475,84 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
         $this->touchModified();
     }
 
+    public function getPublicationStartsAt(): ?\DateTimeImmutable
+    {
+        return $this->publicationStartsAt;
+    }
+
+    public function getPublicationEndsAt(): ?\DateTimeImmutable
+    {
+        return $this->publicationEndsAt;
+    }
+
+    /**
+     * Defines the optional effective publication window without changing lifecycle state.
+     */
+    public function schedulePublication(?\DateTimeImmutable $startsAt, ?\DateTimeImmutable $endsAt): void
+    {
+        if (null !== $startsAt && null !== $endsAt && $endsAt <= $startsAt) {
+            throw new \InvalidArgumentException('Retail publication end must be later than its start.');
+        }
+
+        $this->publicationStartsAt = $startsAt;
+        $this->publicationEndsAt = $endsAt;
+        $this->touchModified();
+    }
+
+    /**
+     * Reports whether a published listing is effective at the supplied instant.
+     */
+    public function isPublicationEffectiveAt(\DateTimeImmutable $at): bool
+    {
+        if ('published' !== $this->getObjectStatus()) {
+            return false;
+        }
+        if (null !== $this->publicationStartsAt && $this->publicationStartsAt > $at) {
+            return false;
+        }
+        if (null !== $this->publicationEndsAt && $this->publicationEndsAt <= $at) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /** @return list<string> */
+    public function marketplaceIneligibilityReasonsAt(\DateTimeImmutable $at): array
+    {
+        $reasons = [];
+        if ('published' !== $this->getObjectStatus()) {
+            $reasons[] = 'not_published';
+        }
+        if (null !== $this->publicationStartsAt && $this->publicationStartsAt > $at) {
+            $reasons[] = 'publication_not_started';
+        }
+        if (null !== $this->publicationEndsAt && $this->publicationEndsAt <= $at) {
+            $reasons[] = 'publication_expired';
+        }
+        if ($this->catalogCode !== $this->kind->catalogCode()) {
+            $reasons[] = 'catalog_mismatch';
+        }
+
+        $expectedOwnerType = match ($this->kind) {
+            RetailKind::Task, RetailKind::Project => 'access',
+            RetailKind::Service, RetailKind::Goods => 'vendor',
+        };
+        if ($this->ownerType !== $expectedOwnerType) {
+            $reasons[] = 'owner_scope_mismatch';
+        }
+
+        return $reasons;
+    }
+
+    public function isMarketplaceEligibleAt(\DateTimeImmutable $at): bool
+    {
+        return [] === $this->marketplaceIneligibilityReasonsAt($at);
+    }
+
+    /**
+     * Publishes a complete listing only after required ownership and commercial profiles are present.
+     */
     public function publish(): void
     {
         if (
@@ -473,6 +568,19 @@ final class RetailEntity implements ObjectAuditedInterface, ObjectCodedInterface
             throw new \DomainException('Retail owner, catalog, category, title, required location, fulfillment, and pricing are required before publication.');
         }
         $this->setObjectStatus('published');
+        $this->touchModified();
+    }
+
+    /**
+     * Returns a published listing to draft so it is no longer eligible for marketplace queries.
+     */
+    public function unpublish(): void
+    {
+        if ('published' !== $this->getObjectStatus()) {
+            throw new \DomainException('Only a published retail listing can be unpublished.');
+        }
+
+        $this->setObjectStatus('draft');
         $this->touchModified();
     }
 

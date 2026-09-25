@@ -2,20 +2,82 @@
   "name": "retailing/retail",
   "description": "Retail marketplace product component",
   "type": "symfony-bundle",
-  "license": "proprietary",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "repositories": [
-    { "type": "vcs", "url": "git@github.com:smartresponsor/cataloging.git", "no-api": true },
-    { "type": "vcs", "url": "git@github.com:smartresponsor/collectioning.git", "no-api": true },
-    { "type": "vcs", "url": "git@github.com:smartresponsor/cruding.git", "no-api": true },
-    { "type": "vcs", "url": "git@github.com:smartresponsor/interfacing.git", "no-api": true },
-    { "type": "vcs", "url": "git@github.com:smartresponsor/locating.git", "no-api": true },
-    { "type": "vcs", "url": "git@github.com:smartresponsor/objecting.git", "no-api": true },
-    { "type": "vcs", "url": "git@github.com:smartresponsor/tabling-.git", "no-api": true },
-    { "type": "vcs", "url": "git@github.com:smartresponsor/viewing.git", "no-api": true }
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/administering.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/cataloging.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/collectioning.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/cruding.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/interfacing.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/locating.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/navigating.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/objecting.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/pricing.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/stocking.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/tabling-.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/viewing.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:smartresponsor/currencing.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/smartresponsor/gating.git",
+      "no-api": true
+    }
   ],
   "require": {
     "php": "^8.4",
-    "cataloging/catalog": "dev-master",
+    "cataloging/catalog": "dev-feature/cataloging-post-merge-20260921-v2",
     "collectioning/collection": "dev-master",
     "cruding/crud": "dev-master",
     "tabling/table": "dev-master",
@@ -24,8 +86,10 @@
     "doctrine/doctrine-migrations-bundle": "^4.0",
     "doctrine/orm": "^3.3",
     "interfacing/interface": "dev-master",
-    "locating/location": "dev-master",
+    "locating/location": "dev-env/locating-l2",
     "objecting/object": "dev-master",
+    "pricing/price": "dev-master",
+    "stocking/stock": "dev-master",
     "symfony/dependency-injection": "^8.1",
     "symfony/form": "^8.1",
     "symfony/framework-bundle": "^8.1",
@@ -43,6 +107,13 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "config": {
+    "allow-plugins": {
+      "symfony/flex": true,
+      "symfony/runtime": true
+    },
     "sort-packages": true
+  },
+  "require-dev": {
+    "gating/gate": "dev-master"
   }
 }

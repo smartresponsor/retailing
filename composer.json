@@ -2,10 +2,10 @@
   "name": "retailing/retail",
   "description": "Retail marketplace product component",
   "type": "symfony-bundle",
-  "license": "proprietary",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "require": {
     "php": "^8.4",
-    "cataloging/catalog": "dev-master",
+    "cataloging/catalog": "dev-feature/cataloging-post-merge-20260921-v2",
     "collectioning/collection": "dev-master",
     "cruding/crud": "dev-master",
     "tabling/table": "dev-master",
@@ -14,8 +14,10 @@
     "doctrine/doctrine-migrations-bundle": "^4.0",
     "doctrine/orm": "^3.3",
     "interfacing/interface": "dev-master",
-    "locating/location": "dev-master",
+    "locating/location": "dev-env/locating-l2",
     "objecting/object": "dev-master",
+    "pricing/price": "dev-master",
+    "stocking/stock": "dev-master",
     "symfony/dependency-injection": "^8.1",
     "symfony/form": "^8.1",
     "symfony/framework-bundle": "^8.1",
@@ -28,10 +30,12 @@
   "require-dev": {
     "doctrine/doctrine-fixtures-bundle": "^4.3",
     "friendsofphp/php-cs-fixer": "^3.95",
+    "gating/gate": "dev-master",
     "phpstan/phpstan": "^2.2",
     "phpunit/phpunit": "^12.0",
-    "symfony/panther": "^2.3",
-    "symfony/test-pack": "^1.2"
+    "symfony/browser-kit": "^8.1",
+    "symfony/css-selector": "^8.1",
+    "symfony/panther": "^2.3"
   },
   "autoload": {
     "psr-4": {
@@ -44,21 +48,116 @@
     }
   },
   "repositories": [
-    { "type": "path", "url": "../Administering", "options": { "symlink": true } },
-    { "type": "path", "url": "../Cataloging", "options": { "symlink": true } },
-    { "type": "path", "url": "../Cruding", "options": { "symlink": true } },
-    { "type": "path", "url": "../Collectioning", "options": { "symlink": true } },
-    { "type": "path", "url": "../Tabling", "options": { "symlink": true } },
-    { "type": "path", "url": "../Interfacing", "options": { "symlink": true } },
-    { "type": "path", "url": "../Locating", "options": { "symlink": true } },
-    { "type": "path", "url": "../Navigating", "options": { "symlink": true } },
-    { "type": "path", "url": "../Objecting", "options": { "symlink": true } },
-    { "type": "path", "url": "../Viewing", "options": { "symlink": true } }
+    {
+      "type": "path",
+      "url": "../Administering",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "administering/administration": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "vcs",
+      "url": "../Cataloging"
+    },
+    {
+      "type": "path",
+      "url": "../Cruding",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "cruding/crud": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Collectioning",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "collectioning/collection": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Tabling",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "tabling/table": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Interfacing",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "interfacing/interface": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "vcs",
+      "url": "../Locating"
+    },
+    {
+      "type": "vcs",
+      "url": "../Navigating"
+    },
+    {
+      "type": "path",
+      "url": "../Objecting",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "objecting/object": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "vcs",
+      "url": "../Pricing"
+    },
+    {
+      "type": "vcs",
+      "url": "../Stocking"
+    },
+    {
+      "type": "vcs",
+      "url": "../Currencing"
+    },
+    {
+      "type": "path",
+      "url": "../Viewing",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "viewing/view": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Gating",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "gating/gate": "dev-master"
+        }
+      }
+    }
   ],
   "minimum-stability": "dev",
   "prefer-stable": true,
   "config": {
     "allow-plugins": {
+      "symfony/flex": true,
       "symfony/runtime": true
     },
     "sort-packages": true
@@ -68,11 +167,19 @@
     "cs:fix": "php-cs-fixer fix",
     "phpstan": "phpstan analyse -c phpstan.neon",
     "test": "phpunit",
-    "test:coverage": "@php -d xdebug.mode=coverage vendor/bin/phpunit --coverage-text=var/coverage.txt --path-coverage",
+    "test:coverage": "@php tools/coverage/retail-php-coverage.php --coverage-text=var/coverage.txt",
+    "test:coverage:path": "@php -d xdebug.mode=coverage vendor/bin/phpunit --coverage-text=var/coverage/phpunit-path.txt --path-coverage",
+    "test:behavioral-coverage": "@php tools/coverage/retail-behavioral-coverage.php",
     "schema:parity": [
       "php bin/console doctrine:schema:validate --env=test",
       "php bin/console doctrine:migrations:up-to-date --env=test"
     ],
-    "gate": "@php .gating/bin/gating check --target=."
+    "gate": "@php vendor/bin/gating check --target=. --profile=config/retail_gating_profile.yaml --policy-root=vendor/gating/gate/.gating --severity-config=vendor/gating/gate/.gating/config/severity.yaml",
+    "quality": [
+      "@cs:check",
+      "@phpstan",
+      "@test",
+      "@gate"
+    ]
   }
 }

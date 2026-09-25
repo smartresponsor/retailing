@@ -12,6 +12,7 @@ use App\Cruding\DTO\Entrypoint\CrudServiceResultDTO;
 use App\Cataloging\Entity\Catalog\CatalogCategoryEntity;
 use App\Cataloging\ServiceInterface\CatalogCategoryLookupServiceInterface;
 use App\Cataloging\ServiceInterface\CatalogCategoryVocabularyServiceInterface;
+use App\Cataloging\ServiceInterface\CatalogSearchServiceInterface;
 use App\Cataloging\ServiceInterface\CatalogCatalogTreeReadServiceInterface;
 use App\Locating\ServiceInterface\Provider\Location\Runtime\Geo\LocationDistanceServiceInterface;
 use App\Retailing\DependencyInjection\RetailingExtension;
@@ -34,11 +35,18 @@ use App\Retailing\Normalizer\RetailPricingProfileNormalizer;
 use App\Retailing\Service\RetailCategoryVocabularyService;
 use App\Retailing\Service\RetailKindVocabularyService;
 use App\Retailing\Service\RetailService;
+use App\Retailing\Service\RetailStorefrontFacetService;
+use App\Retailing\Service\RetailStockAvailabilityService;
+use App\Stocking\Entity\StockLevelEntity;
+use App\Stocking\Repository\StockLevelRepository;
+use App\Stocking\Service\StockAvailabilityService;
 use App\Retailing\Repository\RetailRepository;
 use App\Retailing\EventSubscriber\RetailOwnershipSubscriber;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -114,6 +122,143 @@ final class RetailingBehaviorTest extends TestCase
 
         $this->expectException(\DomainException::class);
         $retail->setKind(RetailKind::Project);
+    }
+
+    public function testRetailEntityPublicationLifecycleSupportsExplicitUnpublishAndRepublish(): void
+    {
+        $retail = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-1');
+
+        $this->expectException(\DomainException::class);
+        $retail->unpublish();
+    }
+
+    public function testRetailEntityCanRepublishAfterUnpublish(): void
+    {
+        $retail = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-1');
+        $retail->publish();
+        $retail->unpublish();
+
+        self::assertSame('draft', $retail->getObjectStatus());
+
+        $retail->setTitle('Updated listing');
+        $retail->publish();
+
+        self::assertSame('published', $retail->getObjectStatus());
+        self::assertSame('Updated listing', $retail->getTitle());
+    }
+
+    public function testRetailEntityScheduledPublicationWindowControlsEffectiveEligibility(): void
+    {
+        $retail = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-1');
+        $startsAt = new \DateTimeImmutable('2026-09-23T10:00:00+00:00');
+        $endsAt = new \DateTimeImmutable('2026-09-24T10:00:00+00:00');
+
+        $retail->schedulePublication($startsAt, $endsAt);
+        $retail->publish();
+
+        self::assertSame($startsAt, $retail->getPublicationStartsAt());
+        self::assertSame($endsAt, $retail->getPublicationEndsAt());
+        self::assertFalse($retail->isPublicationEffectiveAt(new \DateTimeImmutable('2026-09-23T09:59:59+00:00')));
+        self::assertTrue($retail->isPublicationEffectiveAt(new \DateTimeImmutable('2026-09-23T10:00:00+00:00')));
+        self::assertTrue($retail->isPublicationEffectiveAt(new \DateTimeImmutable('2026-09-24T09:59:59+00:00')));
+        self::assertFalse($retail->isPublicationEffectiveAt(new \DateTimeImmutable('2026-09-24T10:00:00+00:00')));
+
+        $retail->unpublish();
+        self::assertFalse($retail->isPublicationEffectiveAt(new \DateTimeImmutable('2026-09-23T12:00:00+00:00')));
+    }
+
+    public function testRetailEntityRejectsInvalidScheduledPublicationWindow(): void
+    {
+        $retail = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-1');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $retail->schedulePublication(
+            new \DateTimeImmutable('2026-09-24T10:00:00+00:00'),
+            new \DateTimeImmutable('2026-09-24T10:00:00+00:00'),
+        );
+    }
+
+    public function testRetailEntityMarketplaceEligibilityReportsDeterministicReasons(): void
+    {
+        $retail = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-1');
+        $at = new \DateTimeImmutable('2026-09-23T10:00:00+00:00');
+        $retail->schedulePublication(new \DateTimeImmutable('2026-09-24T10:00:00+00:00'), null);
+
+        self::assertSame(
+            ['not_published', 'publication_not_started'],
+            $retail->marketplaceIneligibilityReasonsAt($at),
+        );
+
+        $retail->publish();
+        $retail->setCatalogCode('products');
+        $retail->setOwnerType('access');
+
+        self::assertSame(
+            ['publication_not_started', 'catalog_mismatch', 'owner_scope_mismatch'],
+            $retail->marketplaceIneligibilityReasonsAt($at),
+        );
+        self::assertFalse($retail->isMarketplaceEligibleAt($at));
+
+        $eligible = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-2');
+        $eligible->publish();
+        self::assertTrue($eligible->isMarketplaceEligibleAt($at));
+        self::assertSame([], $eligible->marketplaceIneligibilityReasonsAt($at));
+
+        $eligible->schedulePublication(null, new \DateTimeImmutable('2026-09-23T09:00:00+00:00'));
+        self::assertSame(['publication_expired'], $eligible->marketplaceIneligibilityReasonsAt($at));
+        self::assertFalse($eligible->isMarketplaceEligibleAt($at));
+    }
+
+    public function testRetailStockAvailabilityProjectsStockingFactsWithoutOwningQuantities(): void
+    {
+        $goods = $this->completeListing(RetailKind::Goods, 'vendor', 'vendor-1');
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+        $level = new StockLevelEntity('stock-1', 'warehouse:houston', 8, 3, 5);
+        $entityManager->method('find')->willReturnCallback(
+            static fn(string $class, array $id): ?StockLevelEntity
+                => StockLevelEntity::class === $class
+                && ['stockItemId' => 'stock-1', 'locationReference' => 'warehouse:houston'] === $id
+                    ? $level
+                    : null,
+        );
+        $service = new RetailStockAvailabilityService(
+            new StockLevelRepository($entityManager),
+            new StockAvailabilityService(),
+        );
+
+        self::assertSame(
+            ['status' => 'available', 'availableToPromise' => 5, 'requestedQuantity' => 4],
+            $service->project($goods, 'stock-1', 'warehouse:houston', 4),
+        );
+        self::assertSame(
+            ['status' => 'insufficient', 'availableToPromise' => 5, 'requestedQuantity' => 6],
+            $service->project($goods, 'stock-1', 'warehouse:houston', 6),
+        );
+        self::assertSame(
+            ['status' => 'unmanaged', 'availableToPromise' => null, 'requestedQuantity' => 1],
+            $service->project($goods, 'stock-missing', 'warehouse:houston'),
+        );
+    }
+
+    public function testRetailStockAvailabilityRejectsNonGoodsAndInvalidRequests(): void
+    {
+        $service = new RetailStockAvailabilityService(
+            new StockLevelRepository($this->createStub(EntityManagerInterface::class)),
+            new StockAvailabilityService(),
+        );
+
+        foreach ([
+            fn() => $service->project($this->completeListing(RetailKind::Service, 'vendor', 'vendor-1'), 'stock-1', 'warehouse:houston'),
+            fn() => $service->project($this->completeListing(RetailKind::Goods, 'vendor', 'vendor-1'), 'stock-1', 'warehouse:houston', 0),
+            fn() => $service->project($this->completeListing(RetailKind::Goods, 'vendor', 'vendor-1'), ' ', 'warehouse:houston'),
+        ] as $operation) {
+            try {
+                $operation();
+                self::fail('Expected invalid Stocking availability projection request.');
+            } catch (\InvalidArgumentException) {
+                self::addToAssertionCount(1);
+            }
+        }
     }
 
     public function testRetailEntityRejectsInvalidScalarState(): void
@@ -865,9 +1010,12 @@ final class RetailingBehaviorTest extends TestCase
     public function testRetailServicePersistsAndRemoves(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $repository = (new \ReflectionClass(RetailRepository::class))->newInstanceWithoutConstructor();
+        $entityManager->method('getClassMetadata')->willReturn(new ClassMetadata(RetailEntity::class));
+        $registry = $this->createStub(ManagerRegistry::class);
+        $registry->method('getManagerForClass')->willReturn($entityManager);
+        $repository = new RetailRepository($registry);
         $retail = new RetailEntity();
-        $service = new RetailService($entityManager, $repository);
+        $service = new RetailService($repository);
 
         $entityManager->expects(self::once())->method('persist')->with($retail);
         $entityManager->expects(self::once())->method('remove')->with($retail);
@@ -1192,7 +1340,7 @@ final class RetailingBehaviorTest extends TestCase
         $placement = $request->getSession()->get('retail_placement');
         self::assertSame('77', $placement['retailId'] ?? null);
         self::assertSame('vendor-77', $placement['vendorId'] ?? null);
-        self::assertSame('vendor-77', $placement['tenantId'] ?? null);
+        self::assertArrayNotHasKey('tenantId', $placement);
 
         $goods = $this->completeListing(RetailKind::Goods, 'access', 'temporary');
         $goods->setOwner(null);
@@ -1279,6 +1427,53 @@ final class RetailingBehaviorTest extends TestCase
         $invalidTask = $this->completeListing(RetailKind::Service, 'vendor', 'vendor-1');
         $this->expectException(\InvalidArgumentException::class);
         $candidateMatcher->matchForTask($invalidTask);
+    }
+
+    public function testStorefrontFacetsDelegateToCatalogingContractsWithoutRecomputingSemantics(): void
+    {
+        $catalogSearch = $this->createMock(CatalogSearchServiceInterface::class);
+        $catalogSearch
+            ->expects(self::once())
+            ->method('search')
+            ->willReturn([
+                'facet_contracts' => [
+                    ['identifier' => 'workflow_state', 'buckets' => ['published' => 3, 'draft' => 1]],
+                    ['identifier' => 'locale', 'buckets' => ['en' => 4]],
+                ],
+            ]);
+
+        $facets = (new RetailStorefrontFacetService($catalogSearch))->published('en');
+
+        self::assertSame([
+            ['identifier' => 'workflow_state', 'buckets' => ['published' => 3, 'draft' => 1]],
+            ['identifier' => 'locale', 'buckets' => ['en' => 4]],
+        ], $facets);
+    }
+
+    public function testStorefrontFacetsReturnEmptyWhenCatalogingProvidesNoFacetContracts(): void
+    {
+        $catalogSearch = $this->createStub(CatalogSearchServiceInterface::class);
+        $catalogSearch->method('search')->willReturn(['items' => []]);
+
+        self::assertSame([], (new RetailStorefrontFacetService($catalogSearch))->published());
+    }
+
+    public function testStorefrontFacetsIgnoreMalformedCatalogingProjectionEntries(): void
+    {
+        $catalogSearch = $this->createStub(CatalogSearchServiceInterface::class);
+        $catalogSearch->method('search')->willReturn([
+            'facet_contracts' => [
+                null,
+                ['identifier' => '', 'buckets' => []],
+                ['identifier' => 'locale', 'buckets' => 'invalid'],
+                ['identifier' => 'published', 'buckets' => ['true' => 2]],
+            ],
+        ]);
+
+        self::assertSame(
+            [['identifier' => 'published', 'buckets' => ['true' => 2]]],
+            (new RetailStorefrontFacetService($catalogSearch))->published(),
+        );
     }
 
     public function testStandaloneKernelAndBundleSurfaces(): void

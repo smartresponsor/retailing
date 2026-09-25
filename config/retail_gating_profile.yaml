@@ -1,0 +1,19 @@
+component:
+  name: Retailing
+  nameEntity: retailing
+  namespace: App\Retailing
+  subject_prefix: Retail
+  business_prefix: Retail
+  database_prefix: retail_
+  typed_layers_required: true
+  service_interface_mirror: false
+
+  route_owner_root: retail
+  route_owner_roots:
+    - retail
+  mutation_mode: forbidden
+
+  secret_scan: enabled
+  docblock_preservation: enabled
+  release:
+    evidence_required: false

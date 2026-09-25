@@ -8,12 +8,10 @@ use App\Retailing\Entity\Retail\RetailEntity;
 use App\Retailing\Entity\Retail\RetailResponseEntity;
 use App\Retailing\Repository\RetailRepository;
 use App\Retailing\Repository\RetailResponseRepository;
-use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class RetailResponseAcceptanceService
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
         private RetailRepository $retailRepository,
         private RetailResponseRepository $responseRepository,
     ) {}
@@ -42,9 +40,9 @@ final readonly class RetailResponseAcceptanceService
             }
         }
 
-        $this->entityManager->persist($response);
-        $this->entityManager->persist($retail);
-        $this->entityManager->flush();
+        $this->responseRepository->save($response);
+        $this->retailRepository->save($retail);
+        $this->responseRepository->flush();
 
         return $retail;
     }
@@ -58,8 +56,7 @@ final readonly class RetailResponseAcceptanceService
         $retail = $response->getRetail();
         $service = $this->service($response);
         $retail->synchronizeAcceptedResponse($response, $service);
-        $this->entityManager->persist($retail);
-        $this->entityManager->flush();
+        $this->retailRepository->save($retail, true);
 
         return $retail;
     }

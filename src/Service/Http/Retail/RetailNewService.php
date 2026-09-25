@@ -14,6 +14,9 @@ use App\Retailing\Factory\RetailOrderIntentFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+/**
+ * Extends Cruding create flow with marketplace placement context before redirecting into fulfillment.
+ */
 final class RetailNewService extends CrudAbstractService
 {
     private const SESSION_KEY = 'retail_placement';
@@ -24,6 +27,9 @@ final class RetailNewService extends CrudAbstractService
         private readonly RetailOrderIntentFactory $orderIntentFactory,
     ) {}
 
+    /**
+     * Stores the created listing and matched service candidates in session after successful creation.
+     */
     protected function afterDefault(CrudServiceContextDTO $context, CrudServiceResultDTO $result): CrudServiceResultDTO
     {
         if (!$context->isPost() || !$result->payload() instanceof RedirectResponse || !$context->object instanceof RetailEntity) {
@@ -47,8 +53,6 @@ final class RetailNewService extends CrudAbstractService
 
         $placement['retailId'] = (string) $context->object->getId();
         $placement['placementReference'] = 'retail:' . (string) $context->object->getId();
-        // Keep the legacy downstream key without creating a separate tenant identity.
-        $placement['tenantId'] = $ownerId;
         $placement['ownerType'] = $ownerType;
         $placement['ownerId'] = $ownerId;
         if ('vendor' === $ownerType) {

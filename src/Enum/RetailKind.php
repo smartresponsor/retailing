@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Retailing\Enum;
 
+/**
+ * Defines supported retail listing kinds and their canonical catalog ownership.
+ */
 enum RetailKind: string
 {
     case Task = 'task';
@@ -11,6 +14,9 @@ enum RetailKind: string
     case Goods = 'goods';
     case Project = 'project';
 
+    /**
+     * Returns the human-facing label used by forms and presentation payloads.
+     */
     public function label(): string
     {
         return match ($this) {
@@ -21,6 +27,9 @@ enum RetailKind: string
         };
     }
 
+    /**
+     * Maps the listing kind to the catalog code that owns its category vocabulary.
+     */
     public function catalogCode(): string
     {
         return match ($this) {

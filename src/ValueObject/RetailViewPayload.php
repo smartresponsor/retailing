@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Retailing\ValueObject;
 
 use App\Retailing\Entity\Retail\RetailEntity;
-use App\Viewing\ValueInterface\View\ViewObjectPayloadInterface;
+use App\Viewing\ValueObjectInterface\ViewObjectPayloadInterface;
 
 final readonly class RetailViewPayload implements ViewObjectPayloadInterface
 {

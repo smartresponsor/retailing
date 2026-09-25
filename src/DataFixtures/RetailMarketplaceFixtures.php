@@ -8,9 +8,11 @@ use App\Retailing\Entity\Retail\RetailEntity;
 use App\Retailing\Enum\RetailKind;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 
+/**
+ * Seeds vendor-owned service offerings with pricing, service-area, fulfillment, and availability profiles.
+ */
 final class RetailMarketplaceFixtures extends Fixture implements FixtureGroupInterface
 {
     private const OFFERINGS = [
@@ -44,9 +46,12 @@ final class RetailMarketplaceFixtures extends Fixture implements FixtureGroupInt
         return ['retailing_marketplace'];
     }
 
+    /**
+     * Creates or refreshes published vendor services for deterministic marketplace matching scenarios.
+     */
     public function load(ObjectManager $manager): void
     {
-        if (!$manager instanceof EntityManagerInterface) {
+        if (!method_exists($manager, 'getConnection')) {
             return;
         }
 
