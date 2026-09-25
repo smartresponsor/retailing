@@ -2,7 +2,7 @@
   "name": "retailing/retail",
   "description": "Retail marketplace product component",
   "type": "symfony-bundle",
-  "license": "proprietary",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "repositories": [
     {
       "type": "vcs",
@@ -77,7 +77,7 @@
   ],
   "require": {
     "php": "^8.4",
-    "cataloging/catalog": "dev-master",
+    "cataloging/catalog": "dev-feature/cataloging-post-merge-20260921-v2",
     "collectioning/collection": "dev-master",
     "cruding/crud": "dev-master",
     "tabling/table": "dev-master",
@@ -107,6 +107,10 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "config": {
+    "allow-plugins": {
+      "symfony/flex": true,
+      "symfony/runtime": true
+    },
     "sort-packages": true
   },
   "require-dev": {
