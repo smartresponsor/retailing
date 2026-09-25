@@ -86,7 +86,7 @@
     "doctrine/doctrine-migrations-bundle": "^4.0",
     "doctrine/orm": "^3.3",
     "interfacing/interface": "dev-master",
-    "locating/location": "dev-master",
+    "locating/location": "dev-env/locating-l2",
     "objecting/object": "dev-master",
     "pricing/price": "dev-master",
     "stocking/stock": "dev-master",
