@@ -6,7 +6,7 @@ namespace App\Retailing\Provider;
 
 use App\Retailing\Entity\Retail\RetailEntity;
 use App\Retailing\ValueObject\RetailViewPayload;
-use App\Viewing\Value\View\ViewPayload;
+use App\Viewing\Value\ViewPayload;
 
 /**
  * Adapts RetailEntity into the neutral Viewing payload consumed by the platform presentation boundary.
