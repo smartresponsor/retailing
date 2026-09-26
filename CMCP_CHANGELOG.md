@@ -277,3 +277,35 @@
 - Production Composer solver verification (`COMPOSER=composer.prod.json composer update --dry-run --no-install --no-interaction --no-progress --no-scripts --no-plugins`) completed with exit code 0.
 - Current constituent quality is GREEN: PHP-CS-Fixer clean, PHPStan 0 errors, PHPUnit 57/57 with 295 assertions, default Gating local-dev 9/9 with zero failures/warnings. Explicit RC `release.yaml` Gating is also GREEN: 15 rules, 0 failed, 0 warning, 4 skipped.
 - Current Gating `origin/master` intentionally defaults `check` to `local-dev.yaml`; the earlier 70-rule full-registry count is historical evidence from the prior Gating execution model, not the current RC contract.
+
+## engine-20260925215322-retailing-a423c9
+
+### Reconnaissance and baseline
+
+- Authoritative workspace: `D:\\PhpstormProjects\\www\\Retailing`, accessed through Console MCP only.
+- Git baseline: branch `engine/retailing-rc-hardening-20260914` at `2785d7e5b5331b8d74964d29cfd924bf7e712f9c`, tracking its same-named origin branch, with one pre-existing dirty file: `.gating/README.md`.
+- Read target package/runtime surfaces: `composer.json`, `composer.prod.json`, `package.json`, `config/bundles.php`, `PRODUCT_CAPABILITY_AUDIT.adoc`, current Gating profile, orchestration journal, and current dirty diff.
+- Mandatory dependency contour verified: Objecting, Cruding, Viewing, and Interfacing are real Composer dependencies; local development path/symlink wiring is present for the mandatory helper packages.
+- Canonization rules consulted directly: Canon018 (Composer identity), Canon021 (Cruding generic CRUD ownership), Canon026 (PHP/Symfony baseline), Canon052 (Gating integration/artifact boundary), plus Canonization AGENTS typed-layer/default-App namespace contract.
+- Target-to-canon mapping: `retailing/retail` => `App\\Retailing\\` + `Retail*`; PHP ^8.4 / Symfony ^8.1 are compliant; no `src/Domain` namespace was found; no component-local generic CRUD controller was found; consumer `.gating/` must remain artifact-only.
+- Market baseline: Shopify emphasizes unified customer/inventory/order/fulfillment data and omnichannel operations; Saleor/Medusa model channels, inventory, pricing, fulfillment and commerce modules separately. Retailing should remain a listing/availability projection boundary, not absorb Cataloging/Pricing/Stocking/Shipping ownership.
+- RC-critical workstream selected: repair the current dirty `.gating/README.md`, which has been replaced by Gating-owner documentation and therefore violates Canon052's consumer artifact-surface contract.
+- Growth workstream remains non-blocking: merchandising/channel UX and richer retail projections should continue through existing owner components and typed read models, not by duplicating adjacent engines.
+- Planned deterministic gates: Composer validation, PHP-CS-Fixer, PHPStan, PHPUnit, Gating, plus Git diff/status inspection. UI/runtime evidence is not applicable unless source/UI behavior changes.
+
+### Material remediation
+
+- Replaced the accidental Gating-owner README content in consumer `.gating/README.md` with the canonical Retailing artifact-surface boundary text.
+- The repair restores the tracked HEAD form of that file, so no product/source diff remains for `.gating/README.md`; unrelated repository content was not changed.
+- No browser/mobile/UI source changed, so behavioral visual evidence is not applicable to this repair.
+
+### Verification
+
+- `composer validate --strict --check-lock`: GREEN.
+- `composer cs:check`: GREEN, 0/42 files fixable.
+- `composer phpstan`: GREEN, 0 errors.
+- `composer test`: GREEN, 57 tests / 295 assertions.
+- Aggregate `composer quality` and the standalone `composer gate` could not return through the Console MCP execution window; repeated bounded invocations timed out at the transport/tool-call layer. Gating is therefore NOT_VERIFIED in this execution window rather than claimed green.
+- Post-remediation Git status contains only this orchestration-journal update; the pre-existing `.gating/README.md` drift is fully removed.
+
+
