@@ -26,6 +26,17 @@
 - No user-observable UI was changed in this execution window, so new screenshot evidence is not applicable; the configured Playwright harness itself remains green from the behavioral coverage run.
 - Resulting Git diff is intentionally limited to this orchestration journal; the pre-existing `.gating/README.md` regression was restored to the repository's already-tracked Canon052-compliant content.
 
+### Host PostgreSQL continuation — 2026-09-26
+
+- User clarified that canonical database credentials are owned by the host application at `D:\\PhpstormProjects\\www\\App`. Console MCP resolved the host `DATABASE_URL` without exposing the secret and connected successfully to PostgreSQL 16.4 database `app`.
+- Live database diagnostics confirm `retail_listing` and `retail_response` are present and all Retailing migrations through `Version20260924144500` are recorded as executed.
+- Direct host Symfony command discovery remains broken independently of PostgreSQL connectivity (`COMMAND_DISCOVERY_FAILED`), so host Doctrine Console validation cannot currently be used as evidence.
+- Read-only PostgreSQL inspection found material Retailing schema drift against the current Objecting mapping contract: `retail_listing` still persists `object_code`, `object_active`, `object_enabled`, `object_status`, `object_created_at`, `object_modified_at`, `object_created_by`, and `object_modified_by`, while current Objecting embeddables require entity-native `code`, `active`, `enabled`, `status`, `created_at`, `modified_at`, `created_by`, and `modified_by` with `columnPrefix: false`.
+- The live table also retains the retired `owner_vendor_id` projection and its `idx_retail_owner_kind` index. Database evidence shows 15 rows with legacy owner values and zero rows where `owner_vendor_id` is populated while canonical `owner_id` is null, so the ownership backfill is complete.
+- Added forward-only PostgreSQL migration `Version20260926213000`: it renames the eight legacy Objecting physical columns to their entity-native names, refuses ambiguous pre-existing canonical columns, refuses removal if any legacy owner value is not already represented by `owner_id`, then drops the retired owner index/projection. No live database mutation was performed because destructive operations are forbidden for this engine task.
+- Post-change verification: changed-PHP lint PASS; PHP-CS-Fixer PASS; PHPStan PASS; PHPUnit PASS (57 tests / 295 assertions); Gating PASS (9 rules / 0 failed / 0 warnings).
+- Standalone Retailing Doctrine dry-run still cannot consume the host-owned `DATABASE_URL` automatically. Full migration execution/schema-parity acceptance therefore remains pending a safe host-runtime execution path; credentials themselves are no longer the blocker.
+
 ## engine-20260911142857-retailing-846401
 
 ### Iteration 1 — reconnaissance baseline
