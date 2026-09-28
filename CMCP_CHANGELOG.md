@@ -1,5 +1,11 @@
 # CMCP_CHANGELOG
 
+## Retailing host PostgreSQL continuation — 2026-09-28
+
+- Canonical PostgreSQL credentials are Host-owned at `D:\\PhpstormProjects\\www\\App`. Console MCP resolved them without exposing the secret and confirmed PostgreSQL 16.4 database `app`.
+- Host-native `composer test:preprod:postgres` reached isolated preprod database creation and `ltree` setup, then failed before schema validation during Symfony container boot: `Cruding\\Provider\\Failure\\CrudFailureProvider` requires `App\\Failing\\Contract\\FailureProviderInterface`, unavailable in the current Host autoload/runtime projection.
+- Retailing schema parity is therefore NOT_VERIFIED because of a concrete App/Cruding/Failing integration blocker outside Retailing write authority; PostgreSQL credential availability is no longer the blocker.
+
 ## engine-20260928094112-retailing-830ed5
 
 ### Reconnaissance and baseline
