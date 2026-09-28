@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(name: 'idx_retail_response_retail_status', columns: ['retail_id', 'status'])]
 #[ORM\Index(name: 'idx_retail_response_vendor_status', columns: ['vendor_id', 'status'])]
 #[ORM\UniqueConstraint(name: 'uniq_retail_response_retail_vendor', columns: ['retail_id', 'vendor_id'])]
+#[ORM\UniqueConstraint(name: 'uniq_retail_response_one_accepted', columns: ['retail_id'], options: ['where' => "status = 'accepted'"])]
 /**
  * Represents one vendor's commercial response and lifecycle for a customer task or project request.
  */

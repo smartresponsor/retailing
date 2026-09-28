@@ -17,6 +17,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'retail_listing')]
 #[ORM\Index(name: 'idx_retail_owner_scope_kind', columns: ['owner_type', 'owner_id', 'kind'])]
 #[ORM\Index(name: 'idx_retail_category_kind', columns: ['category_id', 'kind'])]
+#[ORM\Index(name: 'idx_retail_catalog_category_kind', columns: ['catalog_code', 'category_id', 'kind'])]
+#[ORM\Index(name: 'idx_retail_publication_window', columns: ['publication_starts_at', 'publication_ends_at'])]
 /**
  * Persists a customer request or vendor offering together with commercial and fulfillment profiles.
  */
