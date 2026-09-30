@@ -438,3 +438,11 @@
 - Re-verified Canon022 baseline and `App\\Failing\\FailingBundle` registration; no additional Canon022 remediation is required.
 - Post-refresh deterministic checks remain GREEN: Composer validation, PHP-CS-Fixer 0/44, PHPStan 0 errors, PHPUnit 57 tests / 295 assertions.
 - Fresh Gating execution was requested through both Composer and the named gate runner, but the repository scheduler currently admits light workloads only under engine-backlog pressure. The executable Gating result therefore remains NOT_VERIFIED due runtime capacity, not a known rule violation.
+
+### Canon053 refresh and resolution
+
+- Re-read the current authoritative `Canon053SiblingComposerSymlinkIsolationRule.md`, its Guard Matrix projection, Canonical Rules Journal entry, and executable `Canon053SiblingComposerSymlinkIsolationRule.php` mirror.
+- Canon053 now defines fourteen explicit non-host sibling symlink exceptions: Gating, Cruding, Viewing, Interfacing, Collectioning, Objecting, Tabling, Runtime, Indexing, Discovering, Administering, Accessing, Configuring, and Failing.
+- Retailing's active symlinked sibling path repositories are `Administering`, `Cruding`, `Collectioning`, `Tabling`, `Interfacing`, `Objecting`, `Viewing`, `Failing`, and `Gating`; every one is inside the refreshed Canon053 allow-list.
+- The previous concern that `../Administering` or the expanded helper contour could violate sibling-symlink isolation is therefore resolved by the refreshed canon. No `composer.json` mutation is required.
+- Fresh Gating execution was requested again after this re-resolution, but runtime capacity still reports `ADMIT_LIGHT_ONLY` / engine backlog and does not start the heavy gate process. The repository is canonically aligned by direct rule evidence, while executable Gating remains NOT_VERIFIED until the scheduler admits it.
