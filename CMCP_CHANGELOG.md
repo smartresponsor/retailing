@@ -377,3 +377,43 @@
 - Post-remediation Git status contains only this orchestration-journal update; the pre-existing `.gating/README.md` drift is fully removed.
 
 
+## engine-20260930015732-retailing-679828
+
+### Reconnaissance and baseline
+
+- Authoritative workspace: `D:\\PhpstormProjects\\www\\Retailing`, accessed through Console MCP only.
+- Baseline branch: `engine/retailing-rc-hardening-20260914` at `54e4217d11dafb2aa09ac78d15db2e03948c3501`, tracking the same-named origin branch with no ahead/behind divergence and one pre-existing dirty path, `.gating/README.md`.
+- Read the complete execution specification, current Git/context state, current CanonScanning RED report, fresh Inspecting report, `composer.json`, `composer.prod.json`, `config/bundles.php`, `PRODUCT_CAPABILITY_AUDIT.adoc`, orchestration journal, and the relevant Objecting, Cruding, Viewing, Interfacing, Gating and Canonization AGENTS/README/Composer contracts available in the shared workspace.
+- Canonization rules consulted directly: `Canon022StandaloneApplicationDependencyBaselineRule.md` and `Canon052GatingIntegrationRule.md`; Gating mirror `Canon052GatingIntegrationRule.php` was also read to verify executable semantics.
+- Target-to-canon mapping: Retailing already declares the mandatory baseline packages in both development and production manifests, exposes local symlink repositories where required, and current `config/bundles.php` already registers `App\\Failing\\FailingBundle`. The upstream Canon022 failure is stale against the current tree.
+- Current Canon052 failure is factual for the live filesystem: consumer `.gating/` contains non-artifact engine/policy files. Canon052 permits only README plus generated report/evidence/cache/checksum/artifact roots.
+- Fresh Inspecting evidence for fingerprint `6f7d75cc3dda8abae5db85d6e0e2a87e2607e89b821760e71ca169009b350be7` contains 12 medium PHP-structure observations and no critical/high finding; no PHP source changed in this pass, so that evidence remains applicable.
+- Market/enterprise benchmark: mature marketplace stacks separate marketplace orchestration from catalog, pricing, stock, fulfillment and channel primitives. Retailing therefore remains a sellable-listing/eligibility projection boundary rather than absorbing adjacent engines.
+
+### RC-critical workstream
+
+- Restore the consumer `.gating/README.md` boundary text after it was replaced by Gating-owner documentation.
+- Verify current Composer/PHP deterministic gates.
+- Treat the remaining non-artifact `.gating/` topology as an RC blocker unless it can be removed without violating the explicit destructive-operations prohibition.
+
+### Growth workstream
+
+- Keep merchandising/channel UX and richer marketplace projections additive and post-RC.
+- Prefer typed read projections over duplicating Cataloging, Pricing, Stocking, Shipping, Viewing or Cruding ownership.
+
+### Material remediation and verification
+
+- Restored `.gating/README.md` to the canonical Retailing consumer-artifact boundary text using an exact dry-run-then-apply replacement.
+- `composer validate --strict --check-lock`: GREEN.
+- `composer cs:check`: GREEN, 0/44 files fixable.
+- `composer phpstan`: GREEN, 0 errors.
+- `composer test`: GREEN, 57 tests / 295 assertions.
+- Preserved the entire non-artifact consumer `.gating/` materialization by moving it, without deletion or overwrite, to ignored `var/gating-materialized-preserved-engine-20260930015732-retailing-679828`; then recreated only the canonical consumer `.gating/README.md` through a dry-run-verified patch.
+- Post-normalization repository search finds no active `App\\Gating` namespace or Gating rule implementation under Retailing; the executable path remains the canonical `vendor/bin/gating` Composer dependency.
+- A fresh `composer gate` execution was attempted after normalization. Direct execution exceeded the Console MCP call window; asynchronous execution is currently not admitted because global runtime capacity reports `RUNTIME_CAPACITY_WAIT` under resource-pressure and engine-backlog degradation. Gating is therefore NOT_VERIFIED yet, but the known Canon052 filesystem cause is removed from the active tree.
+- No browser/mobile/UI source changed; behavioral/UI screenshot evidence is not applicable.
+
+### Remaining blocker
+
+- The remaining blocker is verification capacity, not an unresolved repository mutation: the mandatory post-remediation Gating run still needs an admitted execution slot.
+- No destructive operation was used. The displaced materialized Gating tree is preserved byte-for-byte under ignored `var/` and can be inspected or restored if necessary.
