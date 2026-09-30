@@ -426,3 +426,5 @@
 - Post-rebase verification remains GREEN for Composer validation, PHP-CS-Fixer (0/44), PHPStan (0 errors), and PHPUnit (57 tests / 295 assertions).
 - To avoid rewriting the already-published historical RC branch, created and published `engine/retailing-rc-postmerge-20260929` from rebased HEAD. GitHub comparison is now `ahead 7 / behind 0` against `master`.
 - Mandatory `composer gate` is still awaiting an admitted heavy execution slot; scheduler state remains `ADMIT_LIGHT_ONLY` under resource/stability/backlog pressure. Integration must not merge until that verifier is green.
+- Opened draft PR #11 (`Retailing post-merge RC continuation`) from `engine/retailing-rc-postmerge-20260929` to `master`; GitHub reports it mergeable with no conflicts, and draft state is the only merge gate blocker.
+- PR #11 remains intentionally draft until the mandatory post-remediation Gating run is green.
