@@ -417,3 +417,12 @@
 
 - The remaining blocker is verification capacity, not an unresolved repository mutation: the mandatory post-remediation Gating run still needs an admitted execution slot.
 - No destructive operation was used. The displaced materialized Gating tree is preserved byte-for-byte under ignored `var/` and can be inspected or restored if necessary.
+
+### Post-merge integration continuation
+
+- Fetched current `origin/master` and compared the published RC branch. The previous PR #9 is already merged; the continued branch had accumulated a separate post-merge tail and was `ahead 8 / behind 2` against current master.
+- Created preservation branch `checkpoint/retailing-pre-rebase-20260929-2247` at pre-rebase HEAD `7bf502e96a6a90dafbc0dccaa7df4344178ffddc`.
+- Rebased the active RC tail onto `origin/master` without conflicts. Git skipped one already-applied commit (`e0004a8`) and replayed the remaining seven commits successfully.
+- Post-rebase verification remains GREEN for Composer validation, PHP-CS-Fixer (0/44), PHPStan (0 errors), and PHPUnit (57 tests / 295 assertions).
+- To avoid rewriting the already-published historical RC branch, created and published `engine/retailing-rc-postmerge-20260929` from rebased HEAD. GitHub comparison is now `ahead 7 / behind 0` against `master`.
+- Mandatory `composer gate` is still awaiting an admitted heavy execution slot; scheduler state remains `ADMIT_LIGHT_ONLY` under resource/stability/backlog pressure. Integration must not merge until that verifier is green.
