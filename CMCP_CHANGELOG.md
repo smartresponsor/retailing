@@ -1,5 +1,73 @@
 # CMCP_CHANGELOG
 
+## Retailing host PostgreSQL continuation — 2026-09-28
+
+- Canonical PostgreSQL credentials are Host-owned at `D:\\PhpstormProjects\\www\\App`. Console MCP resolved them without exposing the secret and confirmed PostgreSQL 16.4 database `app`.
+- Host-native `composer test:preprod:postgres` reached isolated preprod database creation and `ltree` setup, then failed before schema validation during Symfony container boot: `Cruding\\Provider\\Failure\\CrudFailureProvider` requires `App\\Failing\\Contract\\FailureProviderInterface`, unavailable in the current Host autoload/runtime projection.
+- Retailing schema parity is therefore NOT_VERIFIED because of a concrete App/Cruding/Failing integration blocker outside Retailing write authority; PostgreSQL credential availability is no longer the blocker.
+
+## engine-20260928094112-retailing-830ed5
+
+### Reconnaissance and baseline
+
+- Authoritative workspace: `D:\\PhpstormProjects\\www\\Retailing`; all repository execution used Console MCP.
+- Baseline branch: `engine/retailing-rc-hardening-20260914` at `9273a04a49e0f081214fee5ec0e0c99891c984a8`, aligned with upstream; initial dirty path was `.gating/README.md`.
+- Upstream CanonScanning RED evidence (fingerprint `5ac5556b9f3498d6bb4e2f7501524f379ac6da192858596a767c8656f9f90c43`) reported Canon022 missing Failing bundle registration and Canon052 consumer-artifact contamination. Current repository inspection shows Canon022 has already converged since that scan: `failing/failure` is direct in development and production manifests, `../Failing` is a symlinked dev path repository, production uses packaged VCS resolution, and `App\\Failing\\FailingBundle` is registered in `config/bundles.php`.
+- Canonization textual rules consulted directly: `Canon022StandaloneApplicationDependencyBaselineRule.md`, `Canon052GatingIntegrationRule.md`, `GUARD_MATRIX.md`, and `CANONICAL_RULES_JOURNAL.md`. Target mapping: Retailing is standalone by boot surfaces, therefore the complete baseline including Failing is mandatory; consumer `.gating/` is artifact-only and may contain only a non-executable boundary README besides generated evidence/cache/checksums.
+- Mandatory dependency contour checked: Objecting, Cruding, Viewing, and Interfacing remain direct application dependencies; Gating remains development verification infrastructure, not a runtime application dependency. Existing fresh Inspecting evidence was consumed rather than redundantly re-run before mutation: 12 medium structural observations, no autofixable findings; Semgrep timed out upstream and is treated as incomplete evidence rather than a fabricated pass.
+- Market/maturity framing remains bounded to Retailing: mature commerce architecture separates listing/marketplace responsibility from pricing, inventory, promotion, ordering, fulfillment, presentation and shell ownership. RC-critical work is canon/dependency integrity and deterministic verification; growth work (ranking/personalization/merchandising DX) stays post-RC and outside this remediation.
+
+### Implementation
+
+- Restored `.gating/README.md` from copied Gating owner-package documentation to the Retailing consumer artifact-boundary README required by Canon052. No executable policy or sibling repository was modified.
+- Canon022 required no new patch in this execution window because the current tree already contains the Failing dependency and bundle-registration remediation that the older RED scan lacked.
+
+### Verification
+
+- Pre-remediation current-tree checks: `composer validate --strict --check-lock` PASS; repository `composer gate` PASS (9 rules, 0 failed, 0 warnings).
+- Post-remediation `composer quality`: PASS — PHP-CS-Fixer 43 files clean, PHPStan no errors, PHPUnit 57/57 tests with 295 assertions, repository Gating 9 rules / 0 failed / 0 warnings.
+- `composer test:behavioral-coverage`: PASS — PHPUnit 57/57 and Playwright 1/1; behavioral/UI evidence regenerated under `var/coverage/behavioral-ui.json`. No user-observable UI source changed, so new visual screenshots are not applicable.
+- `composer schema:parity`: BLOCKED before schema comparison because standalone test runtime has no `DATABASE_URL`. This is the existing host-environment boundary; no alternate SQLite/database substitution was introduced.
+- Fresh full CanonScanning replay could not be invoked through the available repository execution contract: `CanonScanning` is not a Git/Composer workspace and exposes no repository-local Composer entrypoint through Console MCP. The supplied RED report is therefore retained as historical scan evidence, while current-tree direct evidence proves Canon022's required Failing surfaces and the Canon052 README remediation.
+
+
+## engine-20260926081214-retailing-31f48e
+
+### Reconnaissance and baseline
+
+- Authoritative workspace: `D:\\PhpstormProjects\\www\\Retailing`, inspected and mutated only through Console MCP.
+- Git baseline: branch `engine/retailing-rc-hardening-20260914` at `e0004a86516f3e12e87066ece2aa5b615b451f98`, initially aligned with `origin/engine/retailing-rc-hardening-20260914`; the only initial dirty path was `.gating/README.md`.
+- Market/maturity baseline: mature commerce platforms keep product/listing, pricing, inventory, promotion, order and fulfillment responsibilities modular; Retailing therefore remains the marketplace/listing owner and must not absorb Pricing, Stocking, Promoting, Ordering or Shipping responsibilities.
+- Mandatory runtime contour verified in `composer.json`: `objecting/object`, `cruding/crud`, `viewing/view`, and `interfacing/interface` are direct runtime dependencies with local sibling development wiring. Canonization and Gating were read as normative/executable reference repositories.
+- Canonization textual rules consulted: Canon018 (Composer/namespace identity), Canon021 (Cruding owns generic CRUD), Canon022 (standalone Symfony application dependency baseline), Canon052 (Gating consumer integration), plus the canonical Architecture README/AGENTS projection. Concrete mapping: `retailing/retail` -> `App\\Retailing\\`; generic CRUD remains outside Retailing; standalone baseline stays declared; consumer `.gating/` is artifact-only and may contain only a non-executable boundary README.
+- Related helper contracts consulted directly: Objecting system-field/runtime ownership, Cruding generic CRUD ownership, Viewing presentation boundary, Interfacing shell/template boundary, and Gating canon-rule contract.
+- RC-critical workstream selected from factual baseline: repair the Canon052 consumer-artifact regression in `.gating/README.md`, retain the repository's already-green code/runtime gates, and re-check schema parity without inventing a substitute database.
+- Growth workstream (post-RC): deepen marketplace matching/ranking, merchandising/personalization and storefront DX only through explicit public contracts with Pricing/Stocking/Promoting/Viewing; these are not RC blockers.
+
+### Implementation and verification
+
+- Replaced the copied Gating owner-package README in Retailing's `.gating/README.md` with the canonical Retailing consumer artifact-boundary README required by Canon052. No executable Gating policy was added locally.
+- Baseline verification before journal finalization: `composer validate --strict --check-lock` PASS; Gating PASS (9 rules, 0 failed, 0 warnings); PHPStan PASS; PHPUnit PASS (57 tests, 295 assertions); PHP-CS-Fixer dry-run PASS; behavioral/UI coverage PASS including Playwright (1/1).
+- `composer schema:parity` remains externally blocked in the standalone Retailing process because `DATABASE_URL` is not present. Existing repository history explicitly records PostgreSQL as the canonical engine and forbids substituting SQLite merely to manufacture a green result; no fake test database was introduced.
+
+### Acceptance checkpoint
+
+- Post-fix Gating re-run: PASS, 9 rules / 0 failed / 0 warnings.
+- Post-fix PHPUnit re-run: PASS, 57 tests / 295 assertions.
+- No user-observable UI was changed in this execution window, so new screenshot evidence is not applicable; the configured Playwright harness itself remains green from the behavioral coverage run.
+- Resulting Git diff is intentionally limited to this orchestration journal; the pre-existing `.gating/README.md` regression was restored to the repository's already-tracked Canon052-compliant content.
+
+### Host PostgreSQL continuation — 2026-09-26
+
+- User clarified that canonical database credentials are owned by the host application at `D:\\PhpstormProjects\\www\\App`. Console MCP resolved the host `DATABASE_URL` without exposing the secret and connected successfully to PostgreSQL 16.4 database `app`.
+- Live database diagnostics confirm `retail_listing` and `retail_response` are present and all Retailing migrations through `Version20260924144500` are recorded as executed.
+- Direct host Symfony command discovery remains broken independently of PostgreSQL connectivity (`COMMAND_DISCOVERY_FAILED`), so host Doctrine Console validation cannot currently be used as evidence.
+- Read-only PostgreSQL inspection found material Retailing schema drift against the current Objecting mapping contract: `retail_listing` still persists `object_code`, `object_active`, `object_enabled`, `object_status`, `object_created_at`, `object_modified_at`, `object_created_by`, and `object_modified_by`, while current Objecting embeddables require entity-native `code`, `active`, `enabled`, `status`, `created_at`, `modified_at`, `created_by`, and `modified_by` with `columnPrefix: false`.
+- The live table also retains the retired `owner_vendor_id` projection and its `idx_retail_owner_kind` index. Database evidence shows 15 rows with legacy owner values and zero rows where `owner_vendor_id` is populated while canonical `owner_id` is null, so the ownership backfill is complete.
+- Added forward-only PostgreSQL migration `Version20260926213000`: it renames the eight legacy Objecting physical columns to their entity-native names, refuses ambiguous pre-existing canonical columns, refuses removal if any legacy owner value is not already represented by `owner_id`, then drops the retired owner index/projection. No live database mutation was performed because destructive operations are forbidden for this engine task.
+- Post-change verification: changed-PHP lint PASS; PHP-CS-Fixer PASS; PHPStan PASS; PHPUnit PASS (57 tests / 295 assertions); Gating PASS (9 rules / 0 failed / 0 warnings).
+- Standalone Retailing Doctrine dry-run still cannot consume the host-owned `DATABASE_URL` automatically. Full migration execution/schema-parity acceptance therefore remains pending a safe host-runtime execution path; credentials themselves are no longer the blocker.
+
 ## engine-20260911142857-retailing-846401
 
 ### Iteration 1 — reconnaissance baseline
@@ -309,3 +377,72 @@
 - Post-remediation Git status contains only this orchestration-journal update; the pre-existing `.gating/README.md` drift is fully removed.
 
 
+## engine-20260930015732-retailing-679828
+
+### Reconnaissance and baseline
+
+- Authoritative workspace: `D:\\PhpstormProjects\\www\\Retailing`, accessed through Console MCP only.
+- Baseline branch: `engine/retailing-rc-hardening-20260914` at `54e4217d11dafb2aa09ac78d15db2e03948c3501`, tracking the same-named origin branch with no ahead/behind divergence and one pre-existing dirty path, `.gating/README.md`.
+- Read the complete execution specification, current Git/context state, current CanonScanning RED report, fresh Inspecting report, `composer.json`, `composer.prod.json`, `config/bundles.php`, `PRODUCT_CAPABILITY_AUDIT.adoc`, orchestration journal, and the relevant Objecting, Cruding, Viewing, Interfacing, Gating and Canonization AGENTS/README/Composer contracts available in the shared workspace.
+- Canonization rules consulted directly: `Canon022StandaloneApplicationDependencyBaselineRule.md` and `Canon052GatingIntegrationRule.md`; Gating mirror `Canon052GatingIntegrationRule.php` was also read to verify executable semantics.
+- Target-to-canon mapping: Retailing already declares the mandatory baseline packages in both development and production manifests, exposes local symlink repositories where required, and current `config/bundles.php` already registers `App\\Failing\\FailingBundle`. The upstream Canon022 failure is stale against the current tree.
+- Current Canon052 failure is factual for the live filesystem: consumer `.gating/` contains non-artifact engine/policy files. Canon052 permits only README plus generated report/evidence/cache/checksum/artifact roots.
+- Fresh Inspecting evidence for fingerprint `6f7d75cc3dda8abae5db85d6e0e2a87e2607e89b821760e71ca169009b350be7` contains 12 medium PHP-structure observations and no critical/high finding; no PHP source changed in this pass, so that evidence remains applicable.
+- Market/enterprise benchmark: mature marketplace stacks separate marketplace orchestration from catalog, pricing, stock, fulfillment and channel primitives. Retailing therefore remains a sellable-listing/eligibility projection boundary rather than absorbing adjacent engines.
+
+### RC-critical workstream
+
+- Restore the consumer `.gating/README.md` boundary text after it was replaced by Gating-owner documentation.
+- Verify current Composer/PHP deterministic gates.
+- Treat the remaining non-artifact `.gating/` topology as an RC blocker unless it can be removed without violating the explicit destructive-operations prohibition.
+
+### Growth workstream
+
+- Keep merchandising/channel UX and richer marketplace projections additive and post-RC.
+- Prefer typed read projections over duplicating Cataloging, Pricing, Stocking, Shipping, Viewing or Cruding ownership.
+
+### Material remediation and verification
+
+- Restored `.gating/README.md` to the canonical Retailing consumer-artifact boundary text using an exact dry-run-then-apply replacement.
+- `composer validate --strict --check-lock`: GREEN.
+- `composer cs:check`: GREEN, 0/44 files fixable.
+- `composer phpstan`: GREEN, 0 errors.
+- `composer test`: GREEN, 57 tests / 295 assertions.
+- Preserved the entire non-artifact consumer `.gating/` materialization by moving it, without deletion or overwrite, to ignored `var/gating-materialized-preserved-engine-20260930015732-retailing-679828`; then recreated only the canonical consumer `.gating/README.md` through a dry-run-verified patch.
+- Post-normalization repository search finds no active `App\\Gating` namespace or Gating rule implementation under Retailing; the executable path remains the canonical `vendor/bin/gating` Composer dependency.
+- A fresh `composer gate` execution was attempted after normalization. Direct execution exceeded the Console MCP call window; asynchronous execution is currently not admitted because global runtime capacity reports `RUNTIME_CAPACITY_WAIT` under resource-pressure and engine-backlog degradation. Gating is therefore NOT_VERIFIED yet, but the known Canon052 filesystem cause is removed from the active tree.
+- No browser/mobile/UI source changed; behavioral/UI screenshot evidence is not applicable.
+
+### Remaining blocker
+
+- The remaining blocker is verification capacity, not an unresolved repository mutation: the mandatory post-remediation Gating run still needs an admitted execution slot.
+- No destructive operation was used. The displaced materialized Gating tree is preserved byte-for-byte under ignored `var/` and can be inspected or restored if necessary.
+
+### Post-merge integration continuation
+
+- Fetched current `origin/master` and compared the published RC branch. The previous PR #9 is already merged; the continued branch had accumulated a separate post-merge tail and was `ahead 8 / behind 2` against current master.
+- Created preservation branch `checkpoint/retailing-pre-rebase-20260929-2247` at pre-rebase HEAD `7bf502e96a6a90dafbc0dccaa7df4344178ffddc`.
+- Rebased the active RC tail onto `origin/master` without conflicts. Git skipped one already-applied commit (`e0004a8`) and replayed the remaining seven commits successfully.
+- Post-rebase verification remains GREEN for Composer validation, PHP-CS-Fixer (0/44), PHPStan (0 errors), and PHPUnit (57 tests / 295 assertions).
+- To avoid rewriting the already-published historical RC branch, created and published `engine/retailing-rc-postmerge-20260929` from rebased HEAD. GitHub comparison is now `ahead 7 / behind 0` against `master`.
+- Mandatory `composer gate` is still awaiting an admitted heavy execution slot; scheduler state remains `ADMIT_LIGHT_ONLY` under resource/stability/backlog pressure. Integration must not merge until that verifier is green.
+- Opened draft PR #11 (`Retailing post-merge RC continuation`) from `engine/retailing-rc-postmerge-20260929` to `master`; GitHub reports it mergeable with no conflicts, and draft state is the only merge gate blocker.
+- PR #11 remains intentionally draft until the mandatory post-remediation Gating run is green.
+
+### Canon refresh and Gating re-resolution
+
+- Re-read the current Canonization Canon022 and Canon052 textual rules and the current executable `Canon052GatingIntegrationRule.php` mirror before changing the consumer surface.
+- Current Canon052 explicitly treats consumer-local `.gating/` as optional artifact state: when the directory is absent, `artifactSurfaceHits()` returns no finding. A README is permitted when the directory exists but is not required.
+- Preserved the pre-existing working-tree deletion of `.gating/README.md` instead of restoring it; under the refreshed Canon052 this produces the cleanest compliant consumer topology because Retailing has no generated Gating artifacts to retain locally.
+- Re-verified the remaining Canon052 contract: `gating/gate=dev-master` is present in development, `../Gating` is a symlinked path repository, `gate` exists and `quality` includes `@gate`; production declares `gating/gate` without a local path repository.
+- Re-verified Canon022 baseline and `App\\Failing\\FailingBundle` registration; no additional Canon022 remediation is required.
+- Post-refresh deterministic checks remain GREEN: Composer validation, PHP-CS-Fixer 0/44, PHPStan 0 errors, PHPUnit 57 tests / 295 assertions.
+- Fresh Gating execution was requested through both Composer and the named gate runner, but the repository scheduler currently admits light workloads only under engine-backlog pressure. The executable Gating result therefore remains NOT_VERIFIED due runtime capacity, not a known rule violation.
+
+### Canon053 refresh and resolution
+
+- Re-read the current authoritative `Canon053SiblingComposerSymlinkIsolationRule.md`, its Guard Matrix projection, Canonical Rules Journal entry, and executable `Canon053SiblingComposerSymlinkIsolationRule.php` mirror.
+- Canon053 now defines fourteen explicit non-host sibling symlink exceptions: Gating, Cruding, Viewing, Interfacing, Collectioning, Objecting, Tabling, Runtime, Indexing, Discovering, Administering, Accessing, Configuring, and Failing.
+- Retailing's active symlinked sibling path repositories are `Administering`, `Cruding`, `Collectioning`, `Tabling`, `Interfacing`, `Objecting`, `Viewing`, `Failing`, and `Gating`; every one is inside the refreshed Canon053 allow-list.
+- The previous concern that `../Administering` or the expanded helper contour could violate sibling-symlink isolation is therefore resolved by the refreshed canon. No `composer.json` mutation is required.
+- Fresh Gating execution was requested again after this re-resolution, but runtime capacity still reports `ADMIT_LIGHT_ONLY` / engine backlog and does not start the heavy gate process. The repository is canonically aligned by direct rule evidence, while executable Gating remains NOT_VERIFIED until the scheduler admits it.

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Cataloging\CatalogingBundle;
 use App\Locating\LocatingBundle;
+use App\Failing\FailingBundle;
 use App\Retailing\RetailingBundle;
 use App\Stocking\StockingBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
@@ -22,5 +23,6 @@ return [
     CatalogingBundle::class => ['all' => true],
     LocatingBundle::class => ['all' => true],
     StockingBundle::class => ['all' => true],
+    FailingBundle::class => ['all' => true],
     RetailingBundle::class => ['all' => true],
 ];

@@ -8,6 +8,7 @@
     "cataloging/catalog": "dev-feature/cataloging-post-merge-20260921-v2",
     "collectioning/collection": "dev-master",
     "cruding/crud": "dev-master",
+    "failing/failure": "dev-master",
     "tabling/table": "dev-master",
     "easycorp/easyadmin-bundle": "^5.0",
     "doctrine/doctrine-bundle": "^3.2",
@@ -139,6 +140,16 @@
         "symlink": true,
         "versions": {
           "viewing/view": "dev-master"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../Failing",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "failing/failure": "dev-master"
         }
       }
     },

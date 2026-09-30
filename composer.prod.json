@@ -6,6 +6,11 @@
   "repositories": [
     {
       "type": "vcs",
+      "url": "https://github.com/smartresponsor/failing.git",
+      "no-api": true
+    },
+    {
+      "type": "vcs",
       "url": "git@github.com:smartresponsor/administering.git",
       "no-api": true
     },
@@ -80,6 +85,7 @@
     "cataloging/catalog": "dev-feature/cataloging-post-merge-20260921-v2",
     "collectioning/collection": "dev-master",
     "cruding/crud": "dev-master",
+    "failing/failure": "dev-master",
     "tabling/table": "dev-master",
     "easycorp/easyadmin-bundle": "^5.0",
     "doctrine/doctrine-bundle": "^3.2",
