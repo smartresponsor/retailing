@@ -428,3 +428,13 @@
 - Mandatory `composer gate` is still awaiting an admitted heavy execution slot; scheduler state remains `ADMIT_LIGHT_ONLY` under resource/stability/backlog pressure. Integration must not merge until that verifier is green.
 - Opened draft PR #11 (`Retailing post-merge RC continuation`) from `engine/retailing-rc-postmerge-20260929` to `master`; GitHub reports it mergeable with no conflicts, and draft state is the only merge gate blocker.
 - PR #11 remains intentionally draft until the mandatory post-remediation Gating run is green.
+
+### Canon refresh and Gating re-resolution
+
+- Re-read the current Canonization Canon022 and Canon052 textual rules and the current executable `Canon052GatingIntegrationRule.php` mirror before changing the consumer surface.
+- Current Canon052 explicitly treats consumer-local `.gating/` as optional artifact state: when the directory is absent, `artifactSurfaceHits()` returns no finding. A README is permitted when the directory exists but is not required.
+- Preserved the pre-existing working-tree deletion of `.gating/README.md` instead of restoring it; under the refreshed Canon052 this produces the cleanest compliant consumer topology because Retailing has no generated Gating artifacts to retain locally.
+- Re-verified the remaining Canon052 contract: `gating/gate=dev-master` is present in development, `../Gating` is a symlinked path repository, `gate` exists and `quality` includes `@gate`; production declares `gating/gate` without a local path repository.
+- Re-verified Canon022 baseline and `App\\Failing\\FailingBundle` registration; no additional Canon022 remediation is required.
+- Post-refresh deterministic checks remain GREEN: Composer validation, PHP-CS-Fixer 0/44, PHPStan 0 errors, PHPUnit 57 tests / 295 assertions.
+- Fresh Gating execution was requested through both Composer and the named gate runner, but the repository scheduler currently admits light workloads only under engine-backlog pressure. The executable Gating result therefore remains NOT_VERIFIED due runtime capacity, not a known rule violation.
